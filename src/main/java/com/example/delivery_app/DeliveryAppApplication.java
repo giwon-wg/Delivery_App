@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class DeliveryAppApplication {
 
 	public static void main(String[] args) {
+		// test pr 입니다. ㅎㅎ
 		SpringApplication.run(DeliveryAppApplication.class, args);
 	}
 
