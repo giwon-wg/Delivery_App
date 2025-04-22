@@ -37,7 +37,7 @@ public class Menu extends BaseEntity {
 	private String menuName;
 
 	@Column(nullable = false)
-	private int price;
+	private Integer price;
 
 	@Column(nullable = false)
 	private String menuContent;
