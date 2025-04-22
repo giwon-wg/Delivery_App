@@ -1,4 +1,4 @@
-package com.example.delivery_app.config;
+package com.example.delivery_app.common.config;
 
 
 import org.springframework.context.annotation.Bean;
