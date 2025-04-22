@@ -35,11 +35,19 @@ public class User {
 	@Column(nullable = false)
 	private UserRole role;
 
+	@Column(nullable = false)
+	private String address;
+
+	@Column(nullable = false)
+	private boolean isDeleted = false;
+
 	@Builder
-	public User(String email, String password, String nickname, UserRole role) {
+	public User(String email, String password, String nickname, UserRole role, String address, boolean isDeleted) {
 		this.email = email;
 		this.password = password;
 		this.nickname = nickname;
 		this.role = role;
+		this.address = address;
+		this.isDeleted = isDeleted;
 	}
 }
