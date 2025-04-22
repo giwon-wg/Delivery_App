@@ -19,7 +19,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/store/{storeId}/menus")
 public class MenuController {
 
-	private MenuService menuService;
+	private final MenuService menuService;
 
 	/**
 	 * 메뉴 저장

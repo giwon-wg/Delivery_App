@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MenuServiceImpl implements MenuService {
 
-	private MenuRepository menuRepository;
+	private final MenuRepository menuRepository;
 	// private StoreRepository storeRepository;
 
 	@Override
