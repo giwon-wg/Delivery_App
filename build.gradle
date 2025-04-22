@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.4.4'
     id 'io.spring.dependency-management' version '1.1.7'
+    id 'checkstyle'
 }
 
 group = 'com.example'
@@ -51,4 +52,26 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+//컴파일시 UTF-8로 인코딩해 한글 테스트에서 워닝 발생되지 않도록 설정
+compileJava.options.encoding = 'UTF-8'
+compileTestJava.options.encoding = 'UTF-8'
+
+//mxl 리포트 및 html 리포트를 생성하려면 추가
+tasks.withType(Checkstyle) {
+    reports {
+        xml.required = true
+        html.required = true
+    }
+}
+
+checkstyle {
+    // 규칙이 어긋나는 코드가 하나라도 있을 경우 빌드 fail을 내고 싶다면 이 선언을 추가
+    maxWarnings = 0
+    //rule 및 suppressions xml파일 위치 명시
+    configFile = file("config/checkstyle/naver-checkstyle-rules.xml")
+    configProperties = ["suppressionFile": "config/checkstyle/naver-checkstyle-suppressions.xml"]
+    // checkstyle 버전 8.24 이상 선언
+    toolVersion = "8.24"
 }
