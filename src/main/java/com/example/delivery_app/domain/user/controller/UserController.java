@@ -7,7 +7,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.delivery_app.domain.user.dto.SignUpRequest;
+import com.example.delivery_app.domain.user.dto.request.LoginRequest;
+import com.example.delivery_app.domain.user.dto.request.SignUpRequest;
+import com.example.delivery_app.domain.user.dto.response.LoginResponse;
 import com.example.delivery_app.domain.user.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,4 +31,11 @@ public class UserController {
 		userService.signUp(signUpRequest);
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
+
+	@Operation(summary = "로그인", description = "email, password 로 로그인 후 토큰 발급")
+	@PostMapping("/login")
+	public ResponseEntity<LoginResponse> login(@RequestBody @Valid LoginRequest request) {
+		return ResponseEntity.ok(userService.login(request));
+	}
+
 }

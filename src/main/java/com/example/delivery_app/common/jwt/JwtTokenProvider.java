@@ -1,0 +1,56 @@
+package com.example.delivery_app.common.jwt;
+
+import java.security.Key;
+import java.util.Date;
+
+import org.springframework.stereotype.Component;
+
+import com.example.delivery_app.domain.user.entity.UserRole;
+
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
+
+
+@Component
+public class JwtTokenProvider {
+
+	private final Key key;
+	private final long accessTokenExpireTime;
+	private final long refreshTokenExpireTime;
+
+	public JwtTokenProvider(
+		@Value("${spring.jwt.secret}") String secretKey,
+		@Value("${spring.jwt.token.access.hour}") long accessHour,
+		@Value("${spring.jwt.token.refresh.hour}") long refreshHour
+	) {
+		this.key = Keys.hmacShaKeyFor(secretKey.getBytes());
+		this.accessTokenExpireTime = accessHour * 60 * 60 * 1000;
+		this.refreshTokenExpireTime = refreshHour * 60 * 60 * 1000;
+	}
+
+	public String generateAccessToken(Long userId, UserRole role) {
+		Date now = new Date();
+		Date expiry = new Date(now.getTime() + accessTokenExpireTime);
+
+		return Jwts.builder()
+			.setSubject(userId.toString())
+			.claim("role", role.name())
+			.setIssuedAt(now)
+			.setExpiration(expiry)
+			.signWith(key, SignatureAlgorithm.HS256)
+			.compact();
+	}
+
+	public String generateRefreshToken() {
+		Date now = new Date();
+		Date expiry = new Date(now.getTime() + refreshTokenExpireTime);
+
+		return Jwts.builder()
+			.setIssuedAt(now)
+			.setExpiration(expiry)
+			.signWith(key, SignatureAlgorithm.HS256)
+			.compact();
+	}
+}
