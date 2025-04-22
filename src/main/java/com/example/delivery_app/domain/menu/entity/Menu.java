@@ -1,6 +1,7 @@
 package com.example.delivery_app.domain.menu.entity;
 
 import com.example.delivery_app.common.entity.BaseEntity;
+import com.example.delivery_app.domain.menu.dto.requestdto.MenuRequestDto;
 import com.example.delivery_app.domain.store.entity.Store;
 
 import jakarta.persistence.Column;
@@ -41,12 +42,12 @@ public class Menu extends BaseEntity {
 	@Column(nullable = false)
 	private String menuContent;
 
-	public Menu(Store store, String category, String menuPicture, String menuName, int price, String menuContent) {
+	public Menu(Store store, MenuRequestDto dto) {
 		this.store = store;
-		this.category = category;
-		this.menuPicture = menuPicture;
-		this.menuName = menuName;
-		this.price = price;
-		this.menuContent = menuContent;
+		this.category = dto.getCategory();
+		this.menuPicture = dto.getMenuPicture();
+		this.menuName = dto.getMenuName();
+		this.price = dto.getPrice();
+		this.menuContent = dto.getMenuContent();
 	}
 }
