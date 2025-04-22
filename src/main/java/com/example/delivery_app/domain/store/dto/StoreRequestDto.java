@@ -23,7 +23,4 @@ public class StoreRequestDto {
 
 	private final String deliveryTip;
 
-	private final String reviewCount;
-
-	private final String isOpen;
 }
