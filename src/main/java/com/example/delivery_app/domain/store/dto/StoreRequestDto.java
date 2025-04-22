@@ -7,8 +7,6 @@ import lombok.Getter;
 @AllArgsConstructor
 public class StoreRequestDto {
 
-	private final Long storeId;
-
 	private final String storeName;
 
 	private final String storeAddress;
