@@ -37,7 +37,7 @@ public class UserServiceImpl implements UserService {
 			.nickname(request.getNickname())
 			.role(request.getRole())
 			.address(request.getAddress())
-			.isDelete(false)
+			.isDeleted(false)
 			.build();
 
 		userRepository.save(user);
