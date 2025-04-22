@@ -2,13 +2,13 @@ package com.example.delivery_app.domain.store.dto;
 
 import com.example.delivery_app.domain.store.entity.Store;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Getter
 @Builder
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class StoreResponseDto {
 
 	private Long storeId;
