@@ -1,5 +1,6 @@
 package com.example.delivery_app.domain.order.entity;
 
+import com.example.delivery_app.common.entity.BaseEntity;
 import com.example.delivery_app.domain.menu.entity.Menu;
 import com.example.delivery_app.domain.store.entity.Store;
 import com.example.delivery_app.domain.user.entity.User;
@@ -22,7 +23,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor
 @Getter
-public class Order {
+public class Order extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -57,6 +58,10 @@ public class Order {
 		this.status = status;
 	}
 
+	/**
+	 *🚀 주문정보의 상태를 변경하는 메서드
+	 * @param status 주문 상태 enum
+	 */
 	public void setOrderStatus(OrderStatus status) {
 		this.status = status;
 	}
