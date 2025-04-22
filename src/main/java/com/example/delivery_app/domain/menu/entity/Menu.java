@@ -2,6 +2,7 @@ package com.example.delivery_app.domain.menu.entity;
 
 import com.example.delivery_app.common.entity.BaseEntity;
 import com.example.delivery_app.domain.menu.dto.requestdto.MenuRequestDto;
+import com.example.delivery_app.domain.order.entity.Order;
 import com.example.delivery_app.domain.store.entity.Store;
 
 import jakarta.persistence.Column;
@@ -12,6 +13,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -41,6 +43,9 @@ public class Menu extends BaseEntity {
 
 	@Column(nullable = false)
 	private String menuContent;
+
+	@OneToOne(mappedBy = "menu")
+	private Order order;
 
 	private String status;
 
