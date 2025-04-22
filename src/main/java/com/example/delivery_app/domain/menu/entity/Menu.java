@@ -42,6 +42,8 @@ public class Menu extends BaseEntity {
 	@Column(nullable = false)
 	private String menuContent;
 
+	private String status;
+
 	public Menu(Store store, MenuRequestDto dto) {
 		this.store = store;
 		this.category = dto.getCategory();
@@ -49,5 +51,9 @@ public class Menu extends BaseEntity {
 		this.menuName = dto.getMenuName();
 		this.price = dto.getPrice();
 		this.menuContent = dto.getMenuContent();
+	}
+
+	public void updateStatus(String status) {
+		this.status = status;
 	}
 }
