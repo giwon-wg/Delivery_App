@@ -1,6 +1,5 @@
 package com.example.delivery_app.common.config;
 
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -18,7 +17,9 @@ public class SecurityConfig {
 					"/swagger-ui/**",
 					"/swagger-ui.html",
 					"/v3/api-docs/**",
-					"/webjars/**"
+					"/webjars/**",
+					"/**/api/auth/signup",
+					"/**/api/auth/login"
 				).permitAll()
 				.anyRequest().authenticated()
 			)

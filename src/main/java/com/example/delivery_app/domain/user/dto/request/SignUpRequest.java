@@ -1,4 +1,4 @@
-package com.example.delivery_app.domain.user.dto;
+package com.example.delivery_app.domain.user.dto.request;
 
 import com.example.delivery_app.domain.user.entity.UserRole;
 
