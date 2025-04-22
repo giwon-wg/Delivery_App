@@ -20,7 +20,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity
+@Entity(name = "orders")
 @NoArgsConstructor
 @Getter
 public class Order extends BaseEntity {
