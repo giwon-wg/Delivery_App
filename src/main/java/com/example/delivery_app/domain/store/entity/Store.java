@@ -1,6 +1,8 @@
 package com.example.delivery_app.domain.store.entity;
 
 import com.example.delivery_app.common.entity.BaseEntity;
+import com.example.delivery_app.domain.store.enums.IsOpen;
+import com.example.delivery_app.domain.store.enums.StoreStatus;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -52,11 +54,11 @@ public class Store extends BaseEntity {
 
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
-	private String isOpen;
+	private IsOpen isOpen;
 
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
-	private String status;
+	private StoreStatus status;
 
 	@Builder
 	public Store(String storeName, String storeAddress, String storeIntro, String storePhone, String foodCategory,
@@ -70,7 +72,8 @@ public class Store extends BaseEntity {
 		this.deliveryTip = deliveryTip;
 		this.rating = "0.0";
 		this.reviewCount = "0";
-		this.isOpen = "true";
+		this.isOpen = IsOpen.OPEN;
+		this.status = StoreStatus.ACTIVE;
 	}
 }
 
