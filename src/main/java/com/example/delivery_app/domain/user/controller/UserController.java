@@ -2,6 +2,8 @@ package com.example.delivery_app.domain.user.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +16,7 @@ import com.example.delivery_app.domain.user.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -35,7 +38,19 @@ public class UserController {
 	@Operation(summary = "로그인", description = "email, password 로 로그인 후 토큰 발급")
 	@PostMapping("/login")
 	public ResponseEntity<LoginResponse> login(@RequestBody @Valid LoginRequest request) {
+
 		return ResponseEntity.ok(userService.login(request));
+	}
+
+	@Operation(summary = "로그아웃", description = "로그아웃 후 토큰 말소")
+	@PostMapping("/logout")
+	public ResponseEntity<String> logout(HttpServletRequest request) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (auth == null || !(auth.getPrincipal() instanceof Long userId)) {
+			throw new IllegalArgumentException("Sibar");
+		}
+
+		return ResponseEntity.ok("로그아웃되었습니다.");
 	}
 
 }
