@@ -12,9 +12,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@NoArgsConstructor
 public class Menu extends BaseEntity {
 
 	@Id
@@ -38,9 +40,6 @@ public class Menu extends BaseEntity {
 
 	@Column(nullable = false)
 	private String menuContent;
-
-	public Menu() {
-	}
 
 	public Menu(Store store, String category, String menuPicture, String menuName, int price, String menuContent) {
 		this.store = store;
