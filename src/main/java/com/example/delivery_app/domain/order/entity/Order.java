@@ -1,7 +1,7 @@
 package com.example.delivery_app.domain.order.entity;
 
-import java.awt.*;
-
+import com.example.delivery_app.domain.menu.entity.Menu;
+import com.example.delivery_app.domain.store.entity.Store;
 import com.example.delivery_app.domain.user.entity.User;
 
 import jakarta.persistence.Column;
@@ -30,17 +30,14 @@ public class Order {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
-	@Column(nullable = false)
 	private User user;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "store_id")
-	@Column(nullable = false)
 	private Store store;
 
 	@OneToOne
 	@JoinColumn(name = "menu_id")
-	@Column(nullable = false)
 	private Menu menu;
 
 	@Enumerated(EnumType.STRING)
