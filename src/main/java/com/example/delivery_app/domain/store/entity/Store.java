@@ -6,10 +6,13 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
+@NoArgsConstructor
 @Table(name = "store")
 public class Store {
 
@@ -45,4 +48,20 @@ public class Store {
 
 	@Column(nullable = false)
 	private String isOpen;
+
+	@Builder
+	public Store(String storeName, String storeAddress, String storeIntro, String storePhone, String foodCategory,
+		String minDeliveryPrice, String deliveryTip) {
+		this.storeName = storeName;
+		this.storeAddress = storeAddress;
+		this.storeIntro = storeIntro;
+		this.storePhone = storePhone;
+		this.foodCategory = foodCategory;
+		this.minDeliveryPrice = minDeliveryPrice;
+		this.deliveryTip = deliveryTip;
+		this.rating = "0.0";
+		this.reviewCount = "0";
+		this.isOpen = "true";
+	}
 }
+
