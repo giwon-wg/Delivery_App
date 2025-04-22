@@ -44,7 +44,7 @@ public class StoreResponseDto {
 			.deliveryTip(store.getDeliveryTip())
 			.rating(store.getRating())
 			.reviewCount(store.getReviewCount())
-			.isOpen(store.getIsOpen())
+			.isOpen(store.getIsOpen().toString())
 			.build();
 	}
 
