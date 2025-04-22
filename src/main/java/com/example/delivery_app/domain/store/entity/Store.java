@@ -12,26 +12,37 @@ import lombok.Getter;
 @Entity
 @Table(name = "store")
 public class Store {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long storeId;
+
 	@Column(nullable = false)
 	private String storeName;
+
 	@Column(nullable = false)
 	private String foodCategory;
+
 	@Column(nullable = false)
 	private String storeAddress;
+
 	@Column(nullable = false)
 	private String storePhone;
+
 	private String storeIntro;
+
 	@Column(nullable = false)
 	private String minDeliveryPrice;
+
 	@Column(nullable = false)
 	private String deliveryTip;
+
 	@Column(nullable = false)
 	private String rating;
+
 	@Column(nullable = false)
 	private String reviewCount;
+
 	@Column(nullable = false)
 	private String isOpen;
 }
