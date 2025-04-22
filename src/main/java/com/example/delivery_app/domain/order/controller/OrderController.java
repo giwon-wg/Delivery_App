@@ -24,7 +24,7 @@ import com.example.delivery_app.domain.order.service.OrderService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
-@RequestMapping("/api/ordesr")
+@RequestMapping("/api/orders")
 @RestController
 @RequiredArgsConstructor
 public class OrderController {
