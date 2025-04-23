@@ -1,4 +1,4 @@
-package com.example.delivery_app.domain.store.dto;
+package com.example.delivery_app.domain.store.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

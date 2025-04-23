@@ -4,9 +4,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.example.delivery_app.domain.store.dto.StoreRequestDto;
-import com.example.delivery_app.domain.store.dto.StoreResponseDto;
+import com.example.delivery_app.domain.store.dto.request.StoreRequestDto;
+import com.example.delivery_app.domain.store.dto.response.StoreDeleteResponseDto;
+import com.example.delivery_app.domain.store.dto.response.StoreResponseDto;
 import com.example.delivery_app.domain.store.entity.Store;
+import com.example.delivery_app.domain.store.enums.StoreStatus;
 import com.example.delivery_app.domain.store.repository.StoreRepository;
 
 import jakarta.transaction.Transactional;
@@ -36,7 +38,7 @@ public class StoreServiceImpl implements StoreService {
 
 	@Override
 	public StoreResponseDto getPostById(Long storeId) {
-		Store store = storeRepository.findById(storeId)
+		Store store = storeRepository.findByIdAndStatus(storeId, StoreStatus.ACTIVE)
 			.orElseThrow(() -> new IllegalArgumentException("해당 가게가 존재하지 않습니다. id=" + storeId));
 
 		return StoreResponseDto.fromStore(store);
@@ -44,14 +46,25 @@ public class StoreServiceImpl implements StoreService {
 
 	@Override
 	public Page<StoreResponseDto> getAllStoreList(Pageable pageable) {
-		return storeRepository.findAll(pageable).map(StoreResponseDto::fromStore);
+		return storeRepository.findAllByStatus(StoreStatus.ACTIVE, pageable).map(StoreResponseDto::fromStore);
 	}
 
+	@Transactional
 	@Override
 	public StoreResponseDto updateStore(Long storeId, StoreRequestDto storeRequestDto) {
-		Store store = storeRepository.findById(storeId)
+		Store store = storeRepository.findByIdAndStatus(storeId, StoreStatus.ACTIVE)
 			.orElseThrow(() -> new IllegalArgumentException("가게가 없습니다."));
 		store.updateStoreInfo(storeRequestDto);
 		return StoreResponseDto.fromStore(store);
+	}
+
+	@Override
+	public StoreDeleteResponseDto deleteStore(Long storeId) {
+		Store store = storeRepository.findByIdAndStatus(storeId, StoreStatus.ACTIVE)
+			.orElseThrow(() -> new IllegalArgumentException("가게가 없습니다."));
+
+		store.markAsInactive();
+		storeRepository.save(store);
+		return new StoreDeleteResponseDto(store.getStoreId());
 	}
 }
