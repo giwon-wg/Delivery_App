@@ -1,9 +1,5 @@
 package com.example.delivery_app.domain.store.entity;
 
-import org.hibernate.annotations.Filter;
-import org.hibernate.annotations.FilterDef;
-import org.hibernate.annotations.ParamDef;
-
 import com.example.delivery_app.common.entity.BaseEntity;
 import com.example.delivery_app.domain.store.dto.request.StoreRequestDto;
 import com.example.delivery_app.domain.store.enums.IsOpen;
@@ -25,8 +21,6 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor
 @Table(name = "store")
-@FilterDef(name = "storeStatusFilter", parameters = @ParamDef(name = "status", type = String.class))
-@Filter(name = "storeStatusFilter", condition = "status = :status")
 public class Store extends BaseEntity {
 
 	@Id
@@ -67,6 +61,7 @@ public class Store extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	private StoreStatus status;
 
+	//추후 테스트에 사용 가능성이 있어 남겨두었습니다!
 	@Builder
 	public Store(String storeName, String storeAddress, String storeIntro, String storePhone, String foodCategory,
 		int minDeliveryPrice, int deliveryTip) {
