@@ -47,7 +47,7 @@ public class Menu extends BaseEntity {
 	@OneToOne(mappedBy = "menu")
 	private Order order;
 
-	private String status;
+	private boolean status;
 
 	public Menu(Store store, MenuRequestDto dto) {
 		this.store = store;
@@ -58,7 +58,7 @@ public class Menu extends BaseEntity {
 		this.menuContent = dto.getMenuContent();
 	}
 
-	public void updateStatus(String status) {
-		this.status = status;
+	public void updateStatus() {
+		this.status = false;
 	}
 }
