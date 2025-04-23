@@ -79,3 +79,4 @@
 - 기본 응답형식은 `ResponseEntity<CommonResponseDto<Void>>` 형태로 합니다.
 - `Void`인 이유는 예외의 경우, 예외발생시 전달 데이터가 없기 때문입니다.
 - `Service Layer`에서 `CustomException` 생성자를 통해 `도메인 ErrorCode`를 넘겨 반환합니다.
+- 
