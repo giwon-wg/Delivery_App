@@ -24,4 +24,8 @@ public class MenuResponseDto {
 		this.price = menu.getPrice();
 		this.menuContent = menu.getMenuContent();
 	}
+
+	public static MenuResponseDto toDto(Menu menu) {
+		return new MenuResponseDto(menu);
+	}
 }

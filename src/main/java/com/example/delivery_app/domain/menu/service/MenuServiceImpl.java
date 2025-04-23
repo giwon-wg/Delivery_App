@@ -1,5 +1,7 @@
 package com.example.delivery_app.domain.menu.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.example.delivery_app.domain.menu.dto.requestdto.MenuRequestDto;
@@ -40,7 +42,7 @@ public class MenuServiceImpl implements MenuService {
 	@Override
 	public UpdateMenuResponseDto updateMenu(Long storeId, Long menuId, UpdateMenuRequestDto dto) {
 
-		Menu findMenu = menuRepository.findByIdOrElseThrow(menuId);
+		Menu findMenu = menuRepository.findByIdOrElseThrow(menuId, true);
 
 		findMenu.update(dto);
 
@@ -50,11 +52,22 @@ public class MenuServiceImpl implements MenuService {
 	@Transactional
 	@Override
 	public DeleteResponseDto deleteMenu(Long storeId, Long menuId) {
-		Menu findMenu = menuRepository.findByIdOrElseThrow(menuId);
+		Menu findMenu = menuRepository.findByIdOrElseThrow(menuId, true);
 
 		findMenu.deleteMenu();
 		menuRepository.save(findMenu);
 
 		return new DeleteResponseDto(findMenu);
+	}
+
+	/**
+	 * JPQL 확인을 위한 임시 메서드
+	 * @param storeId
+	 * @return
+	 */
+	@Override
+	public List<MenuResponseDto> findAll(Long storeId) {
+
+		return menuRepository.findAll(true).stream().map(MenuResponseDto::toDto).toList();
 	}
 }
