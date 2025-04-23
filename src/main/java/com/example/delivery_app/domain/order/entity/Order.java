@@ -1,5 +1,6 @@
 package com.example.delivery_app.domain.order.entity;
 
+import com.example.delivery_app.common.entity.BaseEntity;
 import com.example.delivery_app.domain.menu.entity.Menu;
 import com.example.delivery_app.domain.store.entity.Store;
 import com.example.delivery_app.domain.user.entity.User;
@@ -15,29 +16,31 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity
+@Entity(name = "orders")
+@Table(name = "orders")
 @NoArgsConstructor
 @Getter
-public class Order {
+public class Order extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "user_id")
+	@JoinColumn(name = "user_id", nullable = false)
 	private User user;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "store_id")
+	@JoinColumn(name = "store_id", nullable = false)
 	private Store store;
 
 	@OneToOne
-	@JoinColumn(name = "menu_id")
+	@JoinColumn(name = "menu_id", nullable = false)
 	private Menu menu;
 
 	@Enumerated(EnumType.STRING)
@@ -57,6 +60,10 @@ public class Order {
 		this.status = status;
 	}
 
+	/**
+	 *🚀 주문정보의 상태를 변경하는 메서드
+	 * @param status 주문 상태 enum
+	 */
 	public void setOrderStatus(OrderStatus status) {
 		this.status = status;
 	}
