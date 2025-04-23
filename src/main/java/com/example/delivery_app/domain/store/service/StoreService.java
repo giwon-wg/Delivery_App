@@ -6,4 +6,6 @@ import com.example.delivery_app.domain.store.dto.StoreResponseDto;
 public interface StoreService {
 
 	StoreResponseDto saveStore(StoreRequestDto storeRequestDto);
+
+	StoreResponseDto getPostById(Long storeId);
 }

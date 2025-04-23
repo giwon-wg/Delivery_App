@@ -31,4 +31,12 @@ public class StoreServiceImpl implements StoreService {
 		Store savedStore = storeRepository.save(store);
 		return StoreResponseDto.fromStore(savedStore);
 	}
+
+	@Override
+	public StoreResponseDto getPostById(Long storeId) {
+		Store store = storeRepository.findById(storeId)
+			.orElseThrow(() -> new IllegalArgumentException("해당 가게가 존재하지 않습니다. id=" + storeId));
+
+		return StoreResponseDto.fromStore(store);
+	}
 }
