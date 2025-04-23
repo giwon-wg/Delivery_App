@@ -24,8 +24,6 @@ public class MenuController {
 
 	/**
 	 * 메뉴 저장
-	 * 아직 StoreRepository가 생성되지않아서 주석처리하였음
-	 * storeId를 어떻게 받아오는지 확인해야함
 	 * @param storeId
 	 * @param dto
 	 * @return
