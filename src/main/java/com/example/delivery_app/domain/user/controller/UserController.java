@@ -2,6 +2,8 @@ package com.example.delivery_app.domain.user.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,7 +15,9 @@ import com.example.delivery_app.domain.user.dto.response.LoginResponse;
 import com.example.delivery_app.domain.user.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -25,7 +29,7 @@ public class UserController {
 
 	private final UserService userService;
 
-	@Operation(summary = "회원가입", description = "email, password, nickname, address, role 을 입력받아 회원가입")
+	@Operation(summary = "회원가입", description = "email, password, nickname, role, address 을 입력받아 회원가입")
 	@PostMapping("/signup")
 	public ResponseEntity<Void> signUp(@RequestBody @Valid SignUpRequest signUpRequest) {
 		userService.signUp(signUpRequest);
@@ -35,7 +39,23 @@ public class UserController {
 	@Operation(summary = "로그인", description = "email, password 로 로그인 후 토큰 발급")
 	@PostMapping("/login")
 	public ResponseEntity<LoginResponse> login(@RequestBody @Valid LoginRequest request) {
+
 		return ResponseEntity.ok(userService.login(request));
+	}
+
+	@Operation(
+		summary = "로그아웃",
+		description = "로그아웃 후 토큰 말소",
+		security = {@SecurityRequirement(name = "bearerAuth")}
+	)
+	@PostMapping("/logout")
+	public ResponseEntity<String> logout(HttpServletRequest request) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (auth == null || !(auth.getPrincipal() instanceof Long userId)) {
+			throw new IllegalArgumentException("무언가 무언가 문제 발생");
+		}
+
+		return ResponseEntity.ok("로그아웃되었습니다.");
 	}
 
 }
