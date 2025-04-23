@@ -37,11 +37,11 @@ public class StoreRequestDto {
 	/**
 	 * 가게의 최소 주문 금액입니다.
 	 */
-	private final String minDeliveryPrice;
+	private final int minDeliveryPrice;
 
 	/**
 	 * 가게의 배달 팁 금액 입니다.
 	 */
-	private final String deliveryTip;
+	private final int deliveryTip;
 
 }
