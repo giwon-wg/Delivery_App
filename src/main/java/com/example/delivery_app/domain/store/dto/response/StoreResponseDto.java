@@ -1,4 +1,4 @@
-package com.example.delivery_app.domain.store.dto;
+package com.example.delivery_app.domain.store.dto.response;
 
 import com.example.delivery_app.domain.store.entity.Store;
 
