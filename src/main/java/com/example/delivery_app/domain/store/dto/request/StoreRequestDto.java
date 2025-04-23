@@ -2,6 +2,8 @@ package com.example.delivery_app.domain.store.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
