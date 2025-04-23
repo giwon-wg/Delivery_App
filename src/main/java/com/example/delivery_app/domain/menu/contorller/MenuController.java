@@ -12,6 +12,7 @@ import com.example.delivery_app.domain.menu.dto.requestdto.MenuRequestDto;
 import com.example.delivery_app.domain.menu.dto.responsedto.MenuResponseDto;
 import com.example.delivery_app.domain.menu.service.MenuService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -32,11 +33,12 @@ public class MenuController {
 	@PostMapping
 	public ResponseEntity<MenuResponseDto> saveMenu(
 		@PathVariable Long storeId,
-		@RequestBody MenuRequestDto dto
+		@Valid @RequestBody MenuRequestDto dto
 	) {
 
 		MenuResponseDto savedMenu = menuService.saveMenu(storeId, dto);
 
 		return new ResponseEntity<>(savedMenu, HttpStatus.CREATED);
 	}
+
 }
