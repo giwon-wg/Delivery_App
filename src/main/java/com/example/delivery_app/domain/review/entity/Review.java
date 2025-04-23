@@ -1,6 +1,7 @@
 package com.example.delivery_app.domain.review.entity;
 
 
+import com.example.delivery_app.common.entity.BaseEntity;
 import com.example.delivery_app.domain.store.entity.Store;
 import com.example.delivery_app.domain.user.entity.User;
 
@@ -13,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Entity                 // 클래스를 jap entity로 만들어 준다.> table과 매핑해준다.
 @Table(name = "review") // @entity > 지정 db의 이름
 @NoArgsConstructor      // 매개변수 없이도 생성 가능
-public class Review extends BaseEntity{
+public class Review extends BaseEntity {
 
     @Id     //테이블의 pk(대표컬럼하나)값 지정 (속성, 필드값)
     @GeneratedValue(strategy = GenerationType.IDENTITY) // 자동으로 1씩 증가
