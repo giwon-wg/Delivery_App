@@ -11,9 +11,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.delivery_app.common.dto.CommonResponseDto;
 import com.example.delivery_app.domain.menu.dto.requestdto.MenuRequestDto;
 import com.example.delivery_app.domain.menu.dto.requestdto.UpdateMenuRequestDto;
 import com.example.delivery_app.domain.menu.dto.responsedto.MenuResponseDto;
+import com.example.delivery_app.domain.menu.dto.responsedto.MenuSuccessCode;
 import com.example.delivery_app.domain.menu.dto.responsedto.UpdateMenuResponseDto;
 import com.example.delivery_app.domain.menu.service.MenuService;
 
@@ -35,14 +37,16 @@ public class MenuController {
 	 */
 	@PreAuthorize("hasRole('OWNER')")
 	@PostMapping
-	public ResponseEntity<MenuResponseDto> saveMenu(
+	public ResponseEntity<CommonResponseDto<MenuResponseDto>> saveMenu(
 		@PathVariable Long storeId,
 		@Valid @RequestBody MenuRequestDto dto
 	) {
 
 		MenuResponseDto savedMenu = menuService.saveMenu(storeId, dto);
 
-		return new ResponseEntity<>(savedMenu, HttpStatus.CREATED);
+		return ResponseEntity
+			.status(HttpStatus.CREATED)
+			.body(CommonResponseDto.of(MenuSuccessCode.MENU_CREATE_SUCCESS, savedMenu));
 	}
 
 	/**
@@ -54,7 +58,7 @@ public class MenuController {
 	 */
 	@PreAuthorize("hasRole('OWNER')")
 	@PatchMapping("/{menuId}")
-	public ResponseEntity<UpdateMenuResponseDto> updateMenu(
+	public ResponseEntity<CommonResponseDto<UpdateMenuResponseDto>> updateMenu(
 		@PathVariable Long storeId,
 		@PathVariable Long menuId,
 		@Valid @RequestBody UpdateMenuRequestDto dto
@@ -62,7 +66,12 @@ public class MenuController {
 
 		UpdateMenuResponseDto updateMenu = menuService.updateMenu(storeId, menuId, dto);
 
-		return new ResponseEntity<>(updateMenu, HttpStatus.OK);
+		return ResponseEntity.ok(
+			CommonResponseDto.of(
+				MenuSuccessCode.MENU_PATCH_SUCCESS,
+				updateMenu
+			)
+		);
 	}
 
 	/**
@@ -74,13 +83,18 @@ public class MenuController {
 	 */
 	@PreAuthorize("hasRole('OWNER')")
 	@DeleteMapping("/{menuId}")
-	public ResponseEntity<Void> deleteMenu(
+	public ResponseEntity<CommonResponseDto<Long>> deleteMenu(
 		@PathVariable Long storeId,
 		@PathVariable Long menuId
 	) {
 
 		menuService.deleteMenu(storeId, menuId);
 
-		return new ResponseEntity<>(HttpStatus.OK);
+		return ResponseEntity.ok(
+			CommonResponseDto.of(
+				MenuSuccessCode.MENU_DELETE_SUCCESS,
+				menuId
+			)
+		);
 	}
 }
