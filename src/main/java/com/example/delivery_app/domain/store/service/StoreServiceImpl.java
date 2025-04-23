@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.example.delivery_app.domain.store.dto.request.StoreOperatingTimeRequestDto;
 import com.example.delivery_app.domain.store.dto.request.StoreRequestDto;
 import com.example.delivery_app.domain.store.dto.response.StoreDeleteResponseDto;
 import com.example.delivery_app.domain.store.dto.response.StoreResponseDto;
@@ -13,7 +14,9 @@ import com.example.delivery_app.domain.store.repository.StoreRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class StoreServiceImpl implements StoreService {
@@ -31,6 +34,8 @@ public class StoreServiceImpl implements StoreService {
 			.foodCategory(storeRequestDto.getFoodCategory())
 			.minDeliveryPrice(storeRequestDto.getMinDeliveryPrice())
 			.deliveryTip(storeRequestDto.getDeliveryTip())
+			.openTime(storeRequestDto.getOpenTime())
+			.closeTime(storeRequestDto.getCloseTime())
 			.build();
 		Store savedStore = storeRepository.save(store);
 		return StoreResponseDto.fromStore(savedStore);
@@ -66,5 +71,16 @@ public class StoreServiceImpl implements StoreService {
 		store.markAsInactive();
 		storeRepository.save(store);
 		return new StoreDeleteResponseDto(store.getStoreId());
+	}
+
+	@Transactional
+	@Override
+	public void updateOperatingTime(Long storeId, StoreOperatingTimeRequestDto dto) {
+		Store store = storeRepository.findByIdAndStatus(storeId, StoreStatus.ACTIVE)
+			.orElseThrow(() -> new IllegalArgumentException("가게가 없습니다"));
+		log.info(">> DTO openTime = {}", dto.getOpenTime());    // 꼭 찍어보세요
+		log.info(">> DTO closeTime = {}", dto.getCloseTime());  // 여기가 null이면 DTO 바인딩 문제
+
+		store.updateOperatingTime(dto.getOpenTime(), dto.getCloseTime());
 	}
 }

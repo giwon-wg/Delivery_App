@@ -1,5 +1,7 @@
 package com.example.delivery_app.domain.store.entity;
 
+import java.time.LocalTime;
+
 import com.example.delivery_app.common.entity.BaseEntity;
 import com.example.delivery_app.domain.store.dto.request.StoreRequestDto;
 import com.example.delivery_app.domain.store.enums.IsOpen;
@@ -61,10 +63,15 @@ public class Store extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	private StoreStatus status;
 
-	//추후 테스트에 사용 가능성이 있어 남겨두었습니다!
+	@Column(nullable = false)
+	private LocalTime openTime;
+
+	@Column(nullable = false)
+	private LocalTime closeTime;
+
 	@Builder
 	public Store(String storeName, String storeAddress, String storeIntro, String storePhone, String foodCategory,
-		int minDeliveryPrice, int deliveryTip) {
+		int minDeliveryPrice, int deliveryTip, LocalTime openTime, LocalTime closeTime) {
 		this.storeName = storeName;
 		this.storeAddress = storeAddress;
 		this.storeIntro = storeIntro;
@@ -72,6 +79,8 @@ public class Store extends BaseEntity {
 		this.foodCategory = foodCategory;
 		this.minDeliveryPrice = minDeliveryPrice;
 		this.deliveryTip = deliveryTip;
+		this.openTime = openTime;
+		this.closeTime = closeTime;
 		this.rating = 0.0;
 		this.reviewCount = 0;
 		this.isOpen = IsOpen.OPEN;
@@ -86,6 +95,15 @@ public class Store extends BaseEntity {
 		this.storeIntro = storeRequestDto.getStoreIntro();
 		this.minDeliveryPrice = storeRequestDto.getMinDeliveryPrice();
 		this.deliveryTip = storeRequestDto.getDeliveryTip();
+	}
+
+	public void updateOperatingTime(LocalTime openTime, LocalTime closeTime) {
+		this.openTime = openTime;
+		this.closeTime = closeTime;
+	}
+
+	public void updateOpenStatus(IsOpen isOpen) {
+		this.isOpen = isOpen;
 	}
 
 	public void markAsInactive() {
