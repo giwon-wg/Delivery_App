@@ -9,6 +9,7 @@ import lombok.Getter;
 @Getter
 @Builder
 @AllArgsConstructor
+
 public class StoreResponseDto {
 
 	private Long storeId;
@@ -44,7 +45,7 @@ public class StoreResponseDto {
 			.deliveryTip(store.getDeliveryTip())
 			.rating(store.getRating())
 			.reviewCount(store.getReviewCount())
-			.isOpen(store.getIsOpen())
+			.isOpen(store.getIsOpen().toString())
 			.build();
 	}
 

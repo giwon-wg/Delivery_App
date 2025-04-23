@@ -1,10 +1,10 @@
 package com.example.delivery_app.domain.store.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Getter
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class StoreRequestDto {
 
 	private final String storeName;
