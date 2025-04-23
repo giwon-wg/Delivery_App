@@ -52,7 +52,7 @@ public class MenuServiceImpl implements MenuService {
 	public DeleteResponseDto deleteMenu(Long storeId, Long menuId) {
 		Menu findMenu = menuRepository.findByIdOrElseThrow(menuId);
 
-		findMenu.updateStatus();
+		findMenu.deleteMenu();
 		menuRepository.save(findMenu);
 
 		return new DeleteResponseDto(findMenu);

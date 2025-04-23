@@ -63,7 +63,7 @@ public class Menu extends BaseEntity {
 		this.menuContent = dto.getMenuContent();
 	}
 
-	public void updateStatus() {
+	public void deleteMenu() {
 		this.status = false;
 	}
 
