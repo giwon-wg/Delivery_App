@@ -7,8 +7,6 @@ import com.example.delivery_app.domain.store.dto.request.StoreRequestDto;
 import com.example.delivery_app.domain.store.dto.response.StoreDeleteResponseDto;
 import com.example.delivery_app.domain.store.dto.response.StoreResponseDto;
 
-import jakarta.validation.Valid;
-
 public interface StoreService {
 
 	StoreResponseDto saveStore(StoreRequestDto storeRequestDto);
@@ -17,7 +15,7 @@ public interface StoreService {
 
 	Page<StoreResponseDto> getAllStoreList(Pageable pageable);
 
-	StoreResponseDto updateStore(Long storeId, @Valid StoreRequestDto storeRequestDto);
+	StoreResponseDto updateStore(Long storeId,  StoreRequestDto storeRequestDto);
 
 	StoreDeleteResponseDto deleteStore(Long storeId);
 }
