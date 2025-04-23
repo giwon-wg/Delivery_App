@@ -9,6 +9,7 @@ import com.example.delivery_app.domain.menu.repository.MenuRepository;
 import com.example.delivery_app.domain.store.entity.Store;
 import com.example.delivery_app.domain.store.repository.StoreRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -18,6 +19,7 @@ public class MenuServiceImpl implements MenuService {
 	private final MenuRepository menuRepository;
 	private final StoreRepository storeRepository;
 
+	@Transactional
 	@Override
 	public MenuResponseDto saveMenu(Long storeId, MenuRequestDto dto) {
 
