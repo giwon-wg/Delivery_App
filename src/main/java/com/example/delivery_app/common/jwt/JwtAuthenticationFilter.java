@@ -1,15 +1,7 @@
 package com.example.delivery_app.common.jwt;
 
-import java.io.IOException;
-import java.util.Collections;
-
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import org.springframework.stereotype.Component;
-import org.springframework.web.filter.OncePerRequestFilter;
-import org.springframework.http.HttpHeaders;
-
+import com.example.delivery_app.domain.user.Auth.UserAuth;
+import com.example.delivery_app.domain.user.entity.UserRole;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -17,6 +9,15 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
+import java.util.List;
 
 @Slf4j
 @Component
@@ -34,12 +35,27 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		if (token != null && jwtTokenProvider.validateToken(token)) {
 			Claims claims = jwtTokenProvider.getClaims(token);
 			Long userId = Long.parseLong(claims.getSubject());
-			String role = claims.get("role", String.class);
 
+			// roles 꺼내기 (List<String> → List<UserRole>)
+			List<String> roleNames = claims.get("roles", List.class);
+			List<UserRole> roles = roleNames.stream()
+				.map(UserRole::valueOf)
+				.toList();
+
+			// UserAuth 객체 생성
+			UserAuth userAuth = UserAuth.builder()
+				.id(userId)
+				.roles(roles)
+				.build();
+
+			// 인증 객체 등록
 			UsernamePasswordAuthenticationToken authentication =
-				new UsernamePasswordAuthenticationToken(userId, null, Collections.emptyList());
+				new UsernamePasswordAuthenticationToken(
+					userAuth,
+					null,
+					userAuth.getAuthorities()
+				);
 			authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
 			SecurityContextHolder.getContext().setAuthentication(authentication);
 		}
 
