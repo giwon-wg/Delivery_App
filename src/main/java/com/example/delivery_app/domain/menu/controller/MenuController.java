@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.delivery_app.common.dto.CommonResponseDto;
 import com.example.delivery_app.domain.menu.dto.requestdto.MenuRequestDto;
 import com.example.delivery_app.domain.menu.dto.requestdto.UpdateMenuRequestDto;
+import com.example.delivery_app.domain.menu.dto.responsedto.DeleteResponseDto;
 import com.example.delivery_app.domain.menu.dto.responsedto.MenuResponseDto;
 import com.example.delivery_app.domain.menu.dto.responsedto.MenuSuccessCode;
 import com.example.delivery_app.domain.menu.dto.responsedto.UpdateMenuResponseDto;
@@ -42,11 +43,12 @@ public class MenuController {
 		@Valid @RequestBody MenuRequestDto dto
 	) {
 
-		MenuResponseDto savedMenu = menuService.saveMenu(storeId, dto);
-
 		return ResponseEntity
 			.status(HttpStatus.CREATED)
-			.body(CommonResponseDto.of(MenuSuccessCode.MENU_CREATE_SUCCESS, savedMenu));
+			.body(
+				CommonResponseDto.of(
+					MenuSuccessCode.MENU_CREATE_SUCCESS,
+					menuService.saveMenu(storeId, dto)));
 	}
 
 	/**
@@ -64,12 +66,10 @@ public class MenuController {
 		@Valid @RequestBody UpdateMenuRequestDto dto
 	) {
 
-		UpdateMenuResponseDto updateMenu = menuService.updateMenu(storeId, menuId, dto);
-
 		return ResponseEntity.ok(
 			CommonResponseDto.of(
 				MenuSuccessCode.MENU_PATCH_SUCCESS,
-				updateMenu
+				menuService.updateMenu(storeId, menuId, dto)
 			)
 		);
 	}
@@ -83,17 +83,15 @@ public class MenuController {
 	 */
 	@PreAuthorize("hasRole('OWNER')")
 	@DeleteMapping("/{menuId}")
-	public ResponseEntity<CommonResponseDto<Long>> deleteMenu(
+	public ResponseEntity<CommonResponseDto<DeleteResponseDto>> deleteMenu(
 		@PathVariable Long storeId,
 		@PathVariable Long menuId
 	) {
 
-		menuService.deleteMenu(storeId, menuId);
-
 		return ResponseEntity.ok(
 			CommonResponseDto.of(
 				MenuSuccessCode.MENU_DELETE_SUCCESS,
-				menuId
+				menuService.deleteMenu(storeId, menuId)
 			)
 		);
 	}
