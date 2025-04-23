@@ -2,6 +2,7 @@ package com.example.delivery_app.domain.order.controller;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -68,10 +69,15 @@ public class OrderController {
 	 * @param auth 로그인 객체
 	 */
 	@PostMapping("/{menuId}")
-	public void sendOrder(
+	public ResponseEntity<ResponseDto<OrderResponseDto>> sendOrder(
 		@PathVariable(name = "menuId") Long menuId,
 		@AuthenticationPrincipal UserAuth auth) {
-		orderService.sendOrder(menuId, auth);
+		return ResponseEntity.status(HttpStatus.CREATED).body(
+			ResponseDto.of(
+				OrderSuccessCode.ORDER_CREATE_SUCCESS,
+				orderService.sendOrder(menuId, auth)
+			)
+		);
 	}
 
 	/**
