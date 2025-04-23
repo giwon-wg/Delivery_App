@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.delivery_app.common.redis.dto.TokenRefreshRequest;
+import com.example.delivery_app.common.redis.dto.TokenRefreshResponse;
+import com.example.delivery_app.common.redis.service.RefreshTokenService;
 import com.example.delivery_app.domain.user.Auth.UserAuth;
 import com.example.delivery_app.domain.user.dto.request.LoginRequest;
 import com.example.delivery_app.domain.user.dto.request.SignUpRequest;
@@ -29,6 +32,7 @@ import lombok.RequiredArgsConstructor;
 public class UserController {
 
 	private final UserService userService;
+	private final RefreshTokenService refreshTokenService;
 
 	@Operation(summary = "회원가입", description = "email, password, nickname, role, address 을 입력받아 회원가입")
 	@PostMapping("/signup")
@@ -58,7 +62,15 @@ public class UserController {
 
 		Long userId = user.getId();
 
+		// 로그아웃시 리프레쉬 토큰 삭제
+		refreshTokenService.delete(userId);
+
 		return ResponseEntity.ok("로그아웃되었습니다. (User ID: " + userId + ")");
+	}
+
+	@PostMapping("/reissue")
+	public ResponseEntity<TokenRefreshResponse> reissue(@RequestBody TokenRefreshRequest refreshRequest) {
+		return ResponseEntity.ok(userService.reissue(refreshRequest));
 	}
 
 }
