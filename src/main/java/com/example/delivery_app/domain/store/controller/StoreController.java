@@ -1,6 +1,11 @@
 package com.example.delivery_app.domain.store.controller;
 
+import static org.springframework.data.domain.Sort.Direction.*;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,6 +42,12 @@ public class StoreController {
 	public ResponseEntity<StoreResponseDto> getStorebyId(@PathVariable Long storeId) {
 		StoreResponseDto store = storeService.getPostById(storeId);
 		return ResponseEntity.ok(store);
+	}
+
+	public ResponseEntity<Page<StoreResponseDto>> getAllStores(
+		@PageableDefault(size = 10, direction = DESC) Pageable pageable) {
+		Page<StoreResponseDto> stores = storeService.getAllStoreList(pageable);
+		return ResponseEntity.ok(stores);
 	}
 
 }

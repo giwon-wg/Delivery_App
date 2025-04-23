@@ -1,5 +1,7 @@
 package com.example.delivery_app.domain.store.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.example.delivery_app.domain.store.dto.StoreRequestDto;
@@ -38,5 +40,10 @@ public class StoreServiceImpl implements StoreService {
 			.orElseThrow(() -> new IllegalArgumentException("해당 가게가 존재하지 않습니다. id=" + storeId));
 
 		return StoreResponseDto.fromStore(store);
+	}
+
+	@Override
+	public Page<StoreResponseDto> getAllStoreList(Pageable pageable) {
+		return storeRepository.findAll(pageable).map(StoreResponseDto::fromStore);
 	}
 }
