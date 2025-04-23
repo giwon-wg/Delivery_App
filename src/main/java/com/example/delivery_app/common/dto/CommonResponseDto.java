@@ -10,7 +10,7 @@ import lombok.Getter;
 
 @Getter
 @JsonPropertyOrder({"timestamp", "code", "message", "data"})
-public class ResponseDto<T> {
+public class CommonResponseDto<T> {
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
 	private final LocalDateTime timestamp;
 	private final int code;
@@ -20,7 +20,7 @@ public class ResponseDto<T> {
 	private final T data;
 
 	// 생성자 (정적 팩토리 메서드 패턴 적용을 위한 private 설정)
-	private ResponseDto(ResponseCode responseCode, T data) {
+	private CommonResponseDto(ResponseCode responseCode, T data) {
 		this.timestamp = LocalDateTime.now();
 		this.code = responseCode.getHttpStatus().value();
 		this.message = responseCode.getMessage();
@@ -33,8 +33,8 @@ public class ResponseDto<T> {
 	 * @param data 도메인별 응답 DTO
 	 * @return ResponseDto 반환
 	 */
-	public static <T> ResponseDto<T> of(ResponseCode responseCode, T data) {
-		return new ResponseDto<>(responseCode, data);
+	public static <T> CommonResponseDto<T> of(ResponseCode responseCode, T data) {
+		return new CommonResponseDto<>(responseCode, data);
 	}
 
 	/**
@@ -43,7 +43,7 @@ public class ResponseDto<T> {
 	 * @param responseCode 도메인별 응답 코드 객체
 	 * @return 도메인별 응답 DTO
 	 */
-	public static <T> ResponseDto<T> of(ResponseCode responseCode) {
-		return new ResponseDto<>(responseCode, null);
+	public static <T> CommonResponseDto<T> of(ResponseCode responseCode) {
+		return new CommonResponseDto<>(responseCode, null);
 	}
 }
