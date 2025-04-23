@@ -21,6 +21,7 @@ public class MenuServiceImpl implements MenuService {
 	private final MenuRepository menuRepository;
 	private final StoreRepository storeRepository;
 
+	@Transactional
 	@Override
 	public MenuResponseDto saveMenu(Long storeId, MenuRequestDto dto) {
 
