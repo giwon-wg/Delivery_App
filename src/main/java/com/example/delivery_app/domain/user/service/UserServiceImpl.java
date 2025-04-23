@@ -35,6 +35,10 @@ public class UserServiceImpl implements UserService {
 			throw new IllegalArgumentException("이미 등록된 이메일입니다.");
 		}
 
+		if (userRepository.existsByNickname(request.getNickname())) {
+			throw new IllegalArgumentException("이미 존재하는 닉네임 입니다.");
+		}
+
 		String encodedPassword = passwordEncoder.encode(request.getPassword());
 
 		User user = User.builder()

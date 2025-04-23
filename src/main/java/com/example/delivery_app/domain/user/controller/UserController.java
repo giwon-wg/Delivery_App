@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.delivery_app.domain.user.Auth.UserAuth;
 import com.example.delivery_app.domain.user.dto.request.LoginRequest;
 import com.example.delivery_app.domain.user.dto.request.SignUpRequest;
 import com.example.delivery_app.domain.user.dto.response.LoginResponse;
@@ -51,11 +52,13 @@ public class UserController {
 	@PostMapping("/logout")
 	public ResponseEntity<String> logout(HttpServletRequest request) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		if (auth == null || !(auth.getPrincipal() instanceof Long userId)) {
-			throw new IllegalArgumentException("무언가 무언가 문제 발생");
+		if (auth == null || !(auth.getPrincipal() instanceof UserAuth user)) {
+			throw new IllegalArgumentException("로그인 유저 정보가 없습니다.");
 		}
 
-		return ResponseEntity.ok("로그아웃되었습니다.");
+		Long userId = user.getId();
+
+		return ResponseEntity.ok("로그아웃되었습니다. (User ID: " + userId + ")");
 	}
 
 }
