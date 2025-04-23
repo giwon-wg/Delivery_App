@@ -45,4 +45,13 @@ public class MenuServiceImpl implements MenuService {
 
 		return new UpdateMenuResponseDto(findMenu);
 	}
+
+	@Transactional
+	@Override
+	public void deleteMenu(Long storeId, Long menuId) {
+		Menu findMenu = menuRepository.findByIdOrElseThrow(menuId);
+
+		findMenu.updateStatus();
+		menuRepository.save(findMenu);
+	}
 }

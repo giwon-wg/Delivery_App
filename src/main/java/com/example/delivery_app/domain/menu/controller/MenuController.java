@@ -2,6 +2,8 @@ package com.example.delivery_app.domain.menu.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,6 +33,7 @@ public class MenuController {
 	 * @param dto
 	 * @return
 	 */
+	@PreAuthorize("hasRole('OWNER')")
 	@PostMapping
 	public ResponseEntity<MenuResponseDto> saveMenu(
 		@PathVariable Long storeId,
@@ -49,6 +52,7 @@ public class MenuController {
 	 * @param dto
 	 * @return
 	 */
+	@PreAuthorize("hasRole('OWNER')")
 	@PatchMapping("/{menuId}")
 	public ResponseEntity<UpdateMenuResponseDto> updateMenu(
 		@PathVariable Long storeId,
@@ -61,4 +65,22 @@ public class MenuController {
 		return new ResponseEntity<>(updateMenu, HttpStatus.OK);
 	}
 
+	/**
+	 * 메뉴 삭제
+	 * Menu Entity의 updateStatus 메서드를 이용하여 soft delete로 구현하였습니다
+	 * @param storeId
+	 * @param menuId
+	 * @return
+	 */
+	@PreAuthorize("hasRole('OWNER')")
+	@DeleteMapping("/{menuId}")
+	public ResponseEntity<Void> deleteMenu(
+		@PathVariable Long storeId,
+		@PathVariable Long menuId
+	) {
+
+		menuService.deleteMenu(storeId, menuId);
+
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
 }

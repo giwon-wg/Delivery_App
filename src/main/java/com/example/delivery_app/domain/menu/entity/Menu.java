@@ -52,7 +52,7 @@ public class Menu extends BaseEntity {
 	 * 기본값 true
 	 * 삭제 시 updateStatus를 통해 false로 바뀝니다
 	 */
-	private boolean status;
+	private boolean status = true;
 
 	public Menu(Store store, MenuRequestDto dto) {
 		this.store = store;

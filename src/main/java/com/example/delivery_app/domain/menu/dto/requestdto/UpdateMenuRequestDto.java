@@ -6,8 +6,10 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Getter
+@RequiredArgsConstructor
 public class UpdateMenuRequestDto {
 
 	@JsonProperty(value = "menuPicture")
@@ -26,10 +28,4 @@ public class UpdateMenuRequestDto {
 	@JsonProperty("menuContent")
 	private final String menuContent;
 
-	public UpdateMenuRequestDto(String menuPicture, String menuName, Integer price, String menuContent) {
-		this.menuPicture = menuPicture;
-		this.menuName = menuName;
-		this.price = price;
-		this.menuContent = menuContent;
-	}
 }

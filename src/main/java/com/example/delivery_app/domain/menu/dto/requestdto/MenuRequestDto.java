@@ -6,8 +6,10 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Getter
+@RequiredArgsConstructor
 public class MenuRequestDto {
 
 	@NotBlank(message = "카테고리를 입력해주세요")
@@ -30,11 +32,4 @@ public class MenuRequestDto {
 	@JsonProperty("menuContent")
 	private final String menuContent;
 
-	public MenuRequestDto(String category, String menuPicture, String menuName, Integer price, String menuContent) {
-		this.category = category;
-		this.menuPicture = menuPicture;
-		this.menuName = menuName;
-		this.price = price;
-		this.menuContent = menuContent;
-	}
 }
