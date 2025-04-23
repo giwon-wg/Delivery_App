@@ -1,5 +1,7 @@
 package com.example.delivery_app.domain.user.service;
 
+import java.util.List;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +35,10 @@ public class UserServiceImpl implements UserService {
 			throw new IllegalArgumentException("이미 등록된 이메일입니다.");
 		}
 
+		if (userRepository.existsByNickname(request.getNickname())) {
+			throw new IllegalArgumentException("이미 존재하는 닉네임 입니다.");
+		}
+
 		String encodedPassword = passwordEncoder.encode(request.getPassword());
 
 		User user = User.builder()
@@ -56,7 +62,10 @@ public class UserServiceImpl implements UserService {
 			throw new IllegalArgumentException("비밀번호가 일치 하지 않습니다.");
 		}
 
-		String accessToken = jwtTokenProvider.generateAccessToken(user.getId(), user.getRole());
+		// AccessToken 발급
+		String accessToken = jwtTokenProvider.generateAccessToken(user.getId(), List.of(user.getRole()));
+
+		// RefreshToken 발급
 		String refreshToken = jwtTokenProvider.generateRefreshToken();
 
 		return new LoginResponse(accessToken, refreshToken);

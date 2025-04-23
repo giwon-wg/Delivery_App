@@ -2,14 +2,11 @@ package com.example.delivery_app.domain.store.dto;
 
 import com.example.delivery_app.domain.store.entity.Store;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 @Builder
-@AllArgsConstructor
-
 public class StoreResponseDto {
 
 	private Long storeId;
@@ -24,13 +21,13 @@ public class StoreResponseDto {
 
 	private String storeIntro;
 
-	private String minDeliveryPrice;
+	private int minDeliveryPrice;
 
-	private String deliveryTip;
+	private int deliveryTip;
 
-	private String rating;
+	private double rating;
 
-	private String reviewCount;
+	private int reviewCount;
 
 	private String isOpen;
 
