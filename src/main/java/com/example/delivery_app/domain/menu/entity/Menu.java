@@ -48,6 +48,10 @@ public class Menu extends BaseEntity {
 	@OneToOne(mappedBy = "menu")
 	private Order order;
 
+	/**
+	 * 기본값 true
+	 * 삭제 시 updateStatus를 통해 false로 바뀝니다
+	 */
 	private boolean status;
 
 	public Menu(Store store, MenuRequestDto dto) {
