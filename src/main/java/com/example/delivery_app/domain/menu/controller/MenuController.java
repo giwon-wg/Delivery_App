@@ -1,4 +1,4 @@
-package com.example.delivery_app.domain.menu.contorller;
+package com.example.delivery_app.domain.menu.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
