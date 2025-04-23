@@ -52,5 +52,6 @@ public class MenuServiceImpl implements MenuService {
 		Menu findMenu = menuRepository.findByIdOrElseThrow(menuId);
 
 		findMenu.updateStatus();
+		menuRepository.save(findMenu);
 	}
 }
