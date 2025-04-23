@@ -12,6 +12,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -41,16 +42,16 @@ public class Store extends BaseEntity {
 	private String storeIntro;
 
 	@Column(nullable = false)
-	private String minDeliveryPrice;
+	private int minDeliveryPrice;
 
 	@Column(nullable = false)
-	private String deliveryTip;
+	private int deliveryTip;
 
 	@Column(nullable = false)
-	private String rating;
+	private double rating;
 
 	@Column(nullable = false)
-	private String reviewCount;
+	private int reviewCount;
 
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
@@ -62,7 +63,7 @@ public class Store extends BaseEntity {
 
 	@Builder
 	public Store(String storeName, String storeAddress, String storeIntro, String storePhone, String foodCategory,
-		String minDeliveryPrice, String deliveryTip) {
+		int minDeliveryPrice, int deliveryTip) {
 		this.storeName = storeName;
 		this.storeAddress = storeAddress;
 		this.storeIntro = storeIntro;
@@ -70,8 +71,8 @@ public class Store extends BaseEntity {
 		this.foodCategory = foodCategory;
 		this.minDeliveryPrice = minDeliveryPrice;
 		this.deliveryTip = deliveryTip;
-		this.rating = "0.0";
-		this.reviewCount = "0";
+		this.rating = 0.0;
+		this.reviewCount = 0;
 		this.isOpen = IsOpen.OPEN;
 		this.status = StoreStatus.ACTIVE;
 	}
