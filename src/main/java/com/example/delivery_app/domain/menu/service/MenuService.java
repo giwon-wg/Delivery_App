@@ -5,5 +5,5 @@ import com.example.delivery_app.domain.menu.dto.responsedto.MenuResponseDto;
 
 public interface MenuService {
 
-	MenuResponseDto saveMenu(Long id, MenuRequestDto dto);
+	MenuResponseDto saveMenu(Long storeId, MenuRequestDto dto);
 }

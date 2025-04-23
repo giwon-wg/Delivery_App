@@ -16,11 +16,11 @@ public class MenuServiceImpl implements MenuService {
 	// private StoreRepository storeRepository;
 
 	@Override
-	public MenuResponseDto saveMenu(Long id, MenuRequestDto dto) {
+	public MenuResponseDto saveMenu(Long storeId, MenuRequestDto dto) {
 
-		// Store store = storeRepository.findByIdOrElseThrow(id);
+		// Store findStore = storeRepository.findByIdOrElseThrow(storeId);
 		//
-		// Menu menu = new Menu(store, dto);
+		// Menu menu = new Menu(findStore, dto);
 		//
 		// Menu savedMenu = menuRepository.save(menu);
 		//
