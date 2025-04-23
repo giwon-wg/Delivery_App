@@ -10,4 +10,6 @@ public interface MenuService {
 	MenuResponseDto saveMenu(Long storeId, MenuRequestDto dto);
 
 	UpdateMenuResponseDto updateMenu(Long storeId, Long menuId, UpdateMenuRequestDto dto);
+
+	void deleteMenu(Long storeId, Long menuId);
 }
