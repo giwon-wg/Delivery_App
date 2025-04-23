@@ -38,6 +38,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 			// roles 꺼내기 (List<String> → List<UserRole>)
 			List<String> roleNames = claims.get("roles", List.class);
+
+			if (roleNames == null) {
+				log.warn("JWT 토큰에 roles 클레임이 없습니다. userId: {}", userId);
+				roleNames = List.of(); // 또는 throw new CustomAuthenticationException("권한 없음");
+			}
+
 			List<UserRole> roles = roleNames.stream()
 				.map(UserRole::valueOf)
 				.toList();

@@ -18,10 +18,10 @@ public class RefreshTokenService {
 	}
 
 	public String get(Long userId) {
-		return redisTemplate.opsForValue().get("RT: " + userId);
+		return redisTemplate.opsForValue().get("RT:" + userId);
 	}
 
 	public void delete(Long userId) {
-		redisTemplate.delete("RT: " + userId);
+		redisTemplate.delete("RT:" + userId);
 	}
 }
