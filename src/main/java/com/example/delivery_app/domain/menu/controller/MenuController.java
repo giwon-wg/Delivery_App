@@ -62,6 +62,13 @@ public class MenuController {
 		return new ResponseEntity<>(updateMenu, HttpStatus.OK);
 	}
 
+	/**
+	 * 메뉴 삭제
+	 * Menu Entity의 updateStatus 메서드를 이용하여 soft delete로 구현하였습니다
+	 * @param storeId
+	 * @param menuId
+	 * @return
+	 */
 	@DeleteMapping("/{menuId}")
 	public ResponseEntity<Void> deleteMenu(
 		@PathVariable Long storeId,
