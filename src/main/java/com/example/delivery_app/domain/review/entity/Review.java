@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor      // 매개변수 없이도 생성 가능
 public class Review extends BaseEntity{
 
-    @Id     //테이블의 pk값 지정
+    @Id     //테이블의 pk(대표컬럼하나)값 지정 (속성, 필드값)
     @GeneratedValue(strategy = GenerationType.IDENTITY) // 자동으로 1씩 증가
     private Long id;
 
@@ -25,17 +25,19 @@ public class Review extends BaseEntity{
     @Column(nullable = false)
     private String content;
 
-    @Column(nullable = false)
-    private String status;
+    @Column(nullable = false) //순수한 클래스의 컬럼
+    private boolean status;
 
-    @ManyToOne  //나중에 공부
+    @ManyToOne(fetch = FetchType.LAZY)  // many= 지금 이 테이블 명, one = 지금 선언한 user (nㄷ1 관계)
+    @JoinColumn(nullable = false, name = "user_id") // join해 온 테이블 객체
     private User user;
 
-    @ManyToOne  //나중에 공부
+    @ManyToOne(fetch = FetchType.LAZY) // Lazy: 지연 로딩, 필요로할때만 가져온다.
+    @JoinColumn(nullable = false, name = "store_id")
     private Store store;
 
     @Builder
-    public Review(int rating, String content, String status){
+    public Review(int rating, String content, boolean status){
         this.rating = rating;
         this.content = content;
         this.status = status;
