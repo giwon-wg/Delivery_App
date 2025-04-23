@@ -46,4 +46,12 @@ public class StoreServiceImpl implements StoreService {
 	public Page<StoreResponseDto> getAllStoreList(Pageable pageable) {
 		return storeRepository.findAll(pageable).map(StoreResponseDto::fromStore);
 	}
+
+	@Override
+	public StoreResponseDto updateStore(Long storeId, StoreRequestDto storeRequestDto) {
+		Store store = storeRepository.findById(storeId)
+			.orElseThrow(() -> new IllegalArgumentException("가게가 없습니다."));
+		store.updateStoreInfo(storeRequestDto);
+		return StoreResponseDto.fromStore(store);
+	}
 }

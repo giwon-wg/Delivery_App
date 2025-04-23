@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -44,10 +45,19 @@ public class StoreController {
 		return ResponseEntity.ok(store);
 	}
 
+	@GetMapping
 	public ResponseEntity<Page<StoreResponseDto>> getAllStores(
 		@PageableDefault(size = 10, direction = DESC) Pageable pageable) {
 		Page<StoreResponseDto> stores = storeService.getAllStoreList(pageable);
 		return ResponseEntity.ok(stores);
+	}
+
+	@PutMapping("/{storeId}")
+	public ResponseEntity<StoreResponseDto> updateStore(
+		@PathVariable Long storeId,
+		@Valid @RequestBody StoreRequestDto storeRequestDto) {
+		StoreResponseDto updatedStore = storeService.updateStore(storeId, storeRequestDto);
+		return ResponseEntity.ok(updatedStore);
 	}
 
 }

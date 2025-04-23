@@ -1,6 +1,7 @@
 package com.example.delivery_app.domain.store.entity;
 
 import com.example.delivery_app.common.entity.BaseEntity;
+import com.example.delivery_app.domain.store.dto.StoreRequestDto;
 import com.example.delivery_app.domain.store.enums.IsOpen;
 import com.example.delivery_app.domain.store.enums.StoreStatus;
 
@@ -12,7 +13,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -75,6 +75,16 @@ public class Store extends BaseEntity {
 		this.reviewCount = 0;
 		this.isOpen = IsOpen.OPEN;
 		this.status = StoreStatus.ACTIVE;
+	}
+
+	public void updateStoreInfo(StoreRequestDto storeRequestDto) {
+		this.storeName = storeRequestDto.getStoreName();
+		this.foodCategory = storeRequestDto.getFoodCategory();
+		this.storeAddress = storeRequestDto.getStoreAddress();
+		this.storePhone = storeRequestDto.getStorePhone();
+		this.storeIntro = storeRequestDto.getStoreIntro();
+		this.minDeliveryPrice = storeRequestDto.getMinDeliveryPrice();
+		this.deliveryTip = storeRequestDto.getDeliveryTip();
 	}
 }
 
