@@ -2,6 +2,7 @@ package com.example.delivery_app.common.jwt;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.stereotype.Component;
 
@@ -33,13 +34,15 @@ public class JwtTokenProvider {
 		this.refreshTokenExpireTime = refreshHour * 60 * 60 * 1000;
 	}
 
-	public String generateAccessToken(Long userId, UserRole role) {
+	public String generateAccessToken(Long userId, List<UserRole> roles) {
 		Date now = new Date();
 		Date expiry = new Date(now.getTime() + accessTokenExpireTime);
 
 		return Jwts.builder()
 			.setSubject(userId.toString())
-			.claim("role", role.name())
+			.claim("roles", roles.stream()
+				.map(UserRole::name)
+				.toList())
 			.setIssuedAt(now)
 			.setExpiration(expiry)
 			.signWith(key, SignatureAlgorithm.HS256)
