@@ -48,6 +48,10 @@ public class Menu extends BaseEntity {
 	@OneToOne(mappedBy = "menu")
 	private Order order;
 
+	/**
+	 * 기본값 true
+	 * 삭제 시 updateStatus를 통해 false로 바뀝니다
+	 */
 	private boolean status;
 
 	public Menu(Store store, MenuRequestDto dto) {
@@ -65,11 +69,12 @@ public class Menu extends BaseEntity {
 
 	/**
 	 * updateMenu를 위한 메서드
-	 * 근데 여기서 menuPicture 같은게 null로 들어오면 null로 바뀌지 않나..?
 	 * @param dto
 	 */
 	public void update(UpdateMenuRequestDto dto) {
-		this.menuPicture = dto.getMenuPicture();
+		if (dto.getMenuPicture() != null) {
+			this.menuPicture = dto.getMenuPicture();
+		}
 		this.menuName = dto.getMenuName();
 		this.price = dto.getPrice();
 		this.menuContent = dto.getMenuContent();
