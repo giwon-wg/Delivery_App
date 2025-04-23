@@ -2,6 +2,7 @@ package com.example.delivery_app.domain.menu.entity;
 
 import com.example.delivery_app.common.entity.BaseEntity;
 import com.example.delivery_app.domain.menu.dto.requestdto.MenuRequestDto;
+import com.example.delivery_app.domain.menu.dto.requestdto.UpdateMenuRequestDto;
 import com.example.delivery_app.domain.order.entity.Order;
 import com.example.delivery_app.domain.store.entity.Store;
 
@@ -64,5 +65,18 @@ public class Menu extends BaseEntity {
 
 	public void updateStatus() {
 		this.status = false;
+	}
+
+	/**
+	 * updateMenu를 위한 메서드
+	 * @param dto
+	 */
+	public void update(UpdateMenuRequestDto dto) {
+		if (dto.getMenuPicture() != null) {
+			this.menuPicture = dto.getMenuPicture();
+		}
+		this.menuName = dto.getMenuName();
+		this.price = dto.getPrice();
+		this.menuContent = dto.getMenuContent();
 	}
 }
