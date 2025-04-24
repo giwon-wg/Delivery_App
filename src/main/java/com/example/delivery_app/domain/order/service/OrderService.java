@@ -82,15 +82,31 @@ public class OrderService {
 	}
 
 	/**
-	 * [Service] 주문 상태 변경 메서드
+	 * [Service] 관리자 주문 상태 변경 메서드
 	 * @param orderId 주문 id
 	 * @param status 주문 상태
 	 * @param userAuth 로그인 객체
 	 * @return 주문 응답 DTO 반환
 	 */
 	@Transactional
-	public OrderResponseDto requestOrder(Long orderId, OrderStatus status, UserAuth userAuth) {
+	public OrderResponseDto requestAdminOrder(Long orderId, OrderStatus status, UserAuth userAuth) {
 		forbidOrderIfHasRole(userAuth, UserRole.USER);
+
+		Order order = orderRepository.findByIdOrElseThrow(orderId);
+		order.setOrderStatus(status);
+		return buildOrderResponseDto(order);
+	}
+
+	/**
+	 * [Service] 유저 주문 상태 변경 메서드
+	 * @param orderId 주문 id
+	 * @param status 주문 상태
+	 * @param userAuth 로그인 객체
+	 * @return 주문 응답 DTO 반환
+	 */
+	@Transactional
+	public OrderResponseDto requestUserOrder(Long orderId, OrderStatus status, UserAuth userAuth) {
+		forbidOrderIfHasRole(userAuth, UserRole.ADMIN);
 
 		Order order = orderRepository.findByIdOrElseThrow(orderId);
 		order.setOrderStatus(status);
