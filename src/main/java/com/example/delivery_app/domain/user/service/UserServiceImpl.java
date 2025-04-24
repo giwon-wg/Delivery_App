@@ -1,24 +1,41 @@
 package com.example.delivery_app.domain.user.service;
 
+import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.example.delivery_app.common.exception.CustomException;
+import com.example.delivery_app.common.jwt.JwtAuthenticationFilter;
 import com.example.delivery_app.common.jwt.JwtTokenProvider;
 import com.example.delivery_app.common.redis.dto.TokenRefreshRequest;
 import com.example.delivery_app.common.redis.dto.TokenRefreshResponse;
+import com.example.delivery_app.common.redis.service.BlackListService;
 import com.example.delivery_app.common.redis.service.RefreshTokenService;
+import com.example.delivery_app.domain.user.Auth.UserAuth;
 import com.example.delivery_app.domain.user.dto.request.LoginRequest;
+import com.example.delivery_app.domain.user.dto.request.PasswordChangeRequest;
 import com.example.delivery_app.domain.user.dto.request.SignUpRequest;
+import com.example.delivery_app.domain.user.dto.request.UserProfileUpdateRequest;
 import com.example.delivery_app.domain.user.dto.response.LoginResponse;
+import com.example.delivery_app.domain.user.dto.response.UserProfileDto;
 import com.example.delivery_app.domain.user.entity.User;
+import com.example.delivery_app.domain.user.entity.UserRole;
+import com.example.delivery_app.domain.user.exception.AuthErrorCode;
+import com.example.delivery_app.domain.user.exception.UserErrorCode;
 import com.example.delivery_app.domain.user.repository.UserRepository;
 
 import io.jsonwebtoken.Claims;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -27,9 +44,12 @@ public class UserServiceImpl implements UserService {
 	private final PasswordEncoder passwordEncoder;
 	private final JwtTokenProvider jwtTokenProvider;
 	private final RefreshTokenService refreshTokenService;
+	private final RedisTemplate<String, String> redisTemplate;
+	private final BlackListService blackListService;
+	private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-	@Value("${spring.jwt.token.refresh.hour}")
-	private long refreshTokenExpireHour;
+	@Value("${spring.jwt.token.refresh.minute}")
+	private long refreshTokenExpireMinute;
 
 	/**
 	 * 회원가입
@@ -40,12 +60,12 @@ public class UserServiceImpl implements UserService {
 	public void signUp(SignUpRequest request) {
 
 		// 예외처리는 코드 작성 완료 후 예외처리 통일화 진행 예정
-		if (userRepository.existsByEmail(request.getEmail())) {
-			throw new IllegalArgumentException("이미 등록된 이메일입니다.");
+		if (userRepository.existsByEmailAndIsDeletedFalse(request.getEmail())) {
+			throw new CustomException(UserErrorCode.DUPLICATE_EMAIL);
 		}
 
-		if (userRepository.existsByNickname(request.getNickname())) {
-			throw new IllegalArgumentException("이미 존재하는 닉네임 입니다.");
+		if (userRepository.existsByNicknameAndIsDeletedFalse(request.getNickname())) {
+			throw new CustomException(UserErrorCode.DUPLICATE_NICKNAME);
 		}
 
 		String encodedPassword = passwordEncoder.encode(request.getPassword());
@@ -65,44 +85,194 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public LoginResponse login(LoginRequest request) {
 		User user = userRepository.findByEmail(request.getEmail())
-			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이메일 입니다."));
+			.orElseThrow(() -> new CustomException(UserErrorCode.EMAIL_NOT_FOUND));
 
 		if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-			throw new IllegalArgumentException("비밀번호가 일치 하지 않습니다.");
+			throw new CustomException(UserErrorCode.PASSWORD_MISMATCH);
 		}
 
 		// AccessToken 발급
 		String accessToken = jwtTokenProvider.generateAccessToken(user.getId(), List.of(user.getRole()));
 
 		// RefreshToken 발급
-		String refreshToken = jwtTokenProvider.generateRefreshToken();
+		String refreshToken = jwtTokenProvider.generateRefreshToken(user.getId());
+
+		//Redis 에 저장
+		redisTemplate.opsForValue().set(
+			"RT:" + user.getId(),
+			refreshToken,
+			7,
+			TimeUnit.DAYS
+		);
+		log.info("[Redis 저장] RT:{} = {}", user.getId(), refreshToken);
 
 		return new LoginResponse(accessToken, refreshToken);
 	}
 
 	@Override
-	public TokenRefreshResponse reissue(TokenRefreshRequest refreshRequest) {
+	public TokenRefreshResponse reissue(TokenRefreshRequest refreshRequest, HttpServletRequest request) {
+
 		String refreshToken = refreshRequest.getRefreshToken();
 
+		if (refreshToken == null || refreshToken.isBlank()) {
+			throw new CustomException(AuthErrorCode.NULL_REFRESH_TOKEN);
+		}
+
 		if(!jwtTokenProvider.validateToken(refreshToken)) {
-			throw new IllegalArgumentException("유효하지 않은 RefreshToken 입니다.");
+			throw new CustomException(AuthErrorCode.INVALID_REFRESH_TOKEN);
+		}
+
+		//기존 토큰 블랙리스트 추가
+		String oldAccessToken = jwtTokenProvider.resolveAccessTokenFromContext(request);
+		if (oldAccessToken != null && jwtTokenProvider.validateToken(oldAccessToken)) {
+			Date expiration = jwtTokenProvider.getExpiration(oldAccessToken);
+
+			long remaining = expiration.getTime() - System.currentTimeMillis();
+
+			if (remaining > 0) {
+				blackListService.addToBlacklist(oldAccessToken, remaining);
+			}
 		}
 
 		Claims claims = jwtTokenProvider.getClaims(refreshToken);
+
 		Long userId = Long.parseLong(claims.getSubject());
+
 		String storedToken = refreshTokenService.get(userId);
+
 		if (storedToken == null || !storedToken.equals(refreshToken)) {
-			throw new IllegalArgumentException("서버에 저장된 RefreshToken 과 다릅니다.");
+			throw new CustomException(AuthErrorCode.INVALID_REFRESH_TOKEN);
 		}
 
-		User user = userRepository.findById(userId)
-			.orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+		User user = userRepository.findActiveById(userId)
+			.orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+
+		UserRole role = user.getRole();
+		if (role == null) {
+			throw new CustomException(UserErrorCode.USER_ROLE_NOT_DEFINED);
+		}
 
 		String newAccessToken = jwtTokenProvider.generateAccessToken(user.getId(), List.of(user.getRole()));
-		String newRefreshToken = jwtTokenProvider.generateRefreshToken();
-		long refreshTokenExpireTime = refreshTokenExpireHour * 60 * 60 * 1000;
+		String newRefreshToken = jwtTokenProvider.generateRefreshToken(user.getId());
+		long refreshTokenExpireTime = refreshTokenExpireMinute * 60 * 1000;
 		refreshTokenService.save(userId, newRefreshToken, refreshTokenExpireTime);
 
 		return new TokenRefreshResponse(newAccessToken, newRefreshToken);
 	}
+
+	@Override
+	public void logout(Long userId, String accessToken) {
+
+		//refreshToken 제거
+		refreshTokenService.delete(userId);
+
+		Date expiration = jwtTokenProvider.getExpiration(accessToken);
+		long now = System.currentTimeMillis();
+		long remainingTime = expiration.getTime() - now;
+
+		if (remainingTime > 0) {
+			blackListService.addToBlacklist(accessToken, remainingTime);
+		}
+
+	}
+
+	@Override
+	public UserProfileDto getProfile(Long id, boolean isPrivate) {
+		User user = userRepository.findActiveById(id)
+			.orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+
+		if (isPrivate) {
+			return UserProfileDto.fromPrivate(user); // 전체 정보 조회
+		} else {
+			return UserProfileDto.fromPublic(user);
+		}
+	}
+
+	@Override
+	public void updateProfile(Long id, UserAuth currentUser, UserProfileUpdateRequest request) {
+
+		User user = userRepository.findActiveById(id)
+			.orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+
+		if (!currentUser.getId().equals(id) && !currentUser.hasRole("ADMIN")) {
+			throw new CustomException(UserErrorCode.ACCESS_DENIED);
+		}
+
+		if (!user.getNickname().equals(request.getNickname())
+			&& userRepository.existsByNicknameAndIsDeletedFalse(request.getNickname())) {
+			throw new CustomException(UserErrorCode.DUPLICATE_NICKNAME);
+		}
+
+		user.updateProfile(request.getNickname(), request.getAddress());
+		userRepository.save(user);
+	}
+
+	@Override
+	public void changePassword(Long targetId, UserAuth currentUser, PasswordChangeRequest request) {
+
+		User user = userRepository.findActiveById(targetId)
+			.orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+
+		if (!currentUser.getId().equals(targetId) && !currentUser.hasRole("ADMIN")) {
+			throw new CustomException(UserErrorCode.ACCESS_DENIED);
+		}
+
+		// 어드민이 아닌 경우, 현재 비밀번호 확인 필요
+		if (!currentUser.hasRole("ADMIN")) {
+			if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
+				throw new CustomException(UserErrorCode.PASSWORD_MISMATCH);
+			}
+		}
+
+		if (!request.getNewPassword().equals(request.getConfirmNewPassword())) {
+			throw new CustomException(UserErrorCode.PASSWORD_CONFIRM_MISMATCH);
+		}
+
+		String encodedPassword = passwordEncoder.encode(request.getNewPassword());
+		user.changePassword(encodedPassword);
+	}
+
+	@Override
+	public void deleteAccount(Long targetId, UserAuth currentUser, String token) {
+		if (!currentUser.getId().equals(targetId) && !currentUser.hasRole("ADMIN")) {
+			throw new CustomException(UserErrorCode.ACCESS_DENIED);
+		}
+
+		if (currentUser.getId().equals(targetId) && currentUser.hasRole("ADMIN")) {
+			throw new CustomException(UserErrorCode.ADMIN_SELF_DELETE_BLOCKED);
+		}
+
+		User user = userRepository.findActiveById(targetId)
+			.orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+
+		user.delete();
+		userRepository.save(user);
+
+		if (token != null && jwtTokenProvider.validateToken(token)) {
+			Date expiration = jwtTokenProvider.getExpiration(token);
+			long remaining = expiration.getTime() - System.currentTimeMillis();
+			if (remaining > 0) {
+				blackListService.addToBlacklist(token, remaining);
+			}
+		}
+	}
+
+	@Override
+	public void deleteAccountByAdmin(Long targetId, UserAuth currentUser) {
+
+		if (!currentUser.getId().equals(targetId) && !currentUser.hasRole("ADMIN")) {
+			throw new CustomException(UserErrorCode.ACCESS_DENIED);
+		}
+
+		if (currentUser.getId().equals(targetId) && currentUser.hasRole("ADMIN")) {
+			throw new CustomException(UserErrorCode.ADMIN_SELF_DELETE_BLOCKED);
+		}
+
+		User user = userRepository.findActiveById(targetId)
+			.orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+
+		user.delete();
+		userRepository.save(user);
+	}
+
 }

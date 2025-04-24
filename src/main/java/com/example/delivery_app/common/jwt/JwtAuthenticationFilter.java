@@ -1,5 +1,6 @@
 package com.example.delivery_app.common.jwt;
 
+import com.example.delivery_app.common.redis.service.BlackListService;
 import com.example.delivery_app.domain.user.Auth.UserAuth;
 import com.example.delivery_app.domain.user.entity.UserRole;
 import io.jsonwebtoken.Claims;
@@ -25,6 +26,7 @@ import java.util.List;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	private final JwtTokenProvider jwtTokenProvider;
+	private final BlackListService blackListService;
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
@@ -36,8 +38,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			Claims claims = jwtTokenProvider.getClaims(token);
 			Long userId = Long.parseLong(claims.getSubject());
 
+			if (blackListService.isBlacklisted(token)) {
+				log.warn("만료 혹은 소멸된 토큰입니다.");
+				filterChain.doFilter(request, response);
+				return;
+			}
+
 			// roles 꺼내기 (List<String> → List<UserRole>)
 			List<String> roleNames = claims.get("roles", List.class);
+
+			if (roleNames == null) {
+				log.warn("JWT 토큰에 roles 클레임이 없습니다. userId: {}", userId);
+				roleNames = List.of(); // 또는 throw new CustomAuthenticationException("권한 없음");
+			}
+
 			List<UserRole> roles = roleNames.stream()
 				.map(UserRole::valueOf)
 				.toList();
@@ -62,7 +76,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		filterChain.doFilter(request, response);
 	}
 
-	private String resolveToken(HttpServletRequest request) {
+	public String resolveToken(HttpServletRequest request) {
 		String bearerToken = request.getHeader(HttpHeaders.AUTHORIZATION);
 		if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
 			return bearerToken.substring(7);
