@@ -162,4 +162,5 @@ public class UserController {
 		userService.applyForBusiness(request, user);
 		return ResponseEntity.ok(CommonResponseDto.of(UserSuccessCode.OWNER_GRANTED));
 	}
+
 }
