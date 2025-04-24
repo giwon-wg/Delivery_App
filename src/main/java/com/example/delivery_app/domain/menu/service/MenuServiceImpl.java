@@ -33,7 +33,14 @@ public class MenuServiceImpl implements MenuService {
 		Store findStore = storeRepository.findById(storeId)
 			.orElseThrow(() -> new IllegalArgumentException("해당 가게가 존재하지 않습니다. id=" + storeId));
 
-		Menu menu = new Menu(findStore, dto);
+		Menu menu = Menu.builder()
+			.store(findStore)
+			.category(dto.getCategory())
+			.menuPicture(dto.getMenuPicture())
+			.menuName(dto.getMenuName())
+			.price(dto.getPrice())
+			.menuContent(dto.getMenuContent())
+			.build();
 
 		Menu savedMenu = menuRepository.save(menu);
 
@@ -96,7 +103,9 @@ public class MenuServiceImpl implements MenuService {
 	@Override
 	public List<MenuResponseDto> search(Long storeId, String word) {
 
-		List<Menu> findMenus = menuRepository.findAllByIdByWord(storeId, word, true);
+		// List<Menu> findMenus = menuRepository.findAllByIdByWord(storeId, word, true);
+
+		List<Menu> findMenus = menuRepository.findAllByStoreStoreIdAndMenuNameContainingAndStatus(storeId, word, true);
 
 		return findMenus.stream().map(MenuResponseDto::toDto).toList();
 	}
