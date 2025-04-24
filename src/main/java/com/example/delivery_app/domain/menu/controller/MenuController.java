@@ -40,7 +40,7 @@ public class MenuController {
 	 * @param dto
 	 * @return
 	 */
-	@PreAuthorize("hasRole('OWNER')")
+	@PreAuthorize("hasRole('OWNER') or hasRole('ADMIN')")
 	@PostMapping
 	public ResponseEntity<CommonResponseDto<MenuResponseDto>> saveMenu(
 		@PathVariable Long storeId,
@@ -62,7 +62,7 @@ public class MenuController {
 	 * @param dto
 	 * @return
 	 */
-	@PreAuthorize("hasRole('OWNER')")
+	@PreAuthorize("hasRole('OWNER') or hasRole('ADMIN')")
 	@PatchMapping("/{menuId}")
 	public ResponseEntity<CommonResponseDto<UpdateMenuResponseDto>> updateMenu(
 		@PathVariable Long storeId,
@@ -85,7 +85,7 @@ public class MenuController {
 	 * @param menuId
 	 * @return
 	 */
-	@PreAuthorize("hasRole('OWNER')")
+	@PreAuthorize("hasRole('OWNER') or hasRole('ADMIN')")
 	@DeleteMapping("/{menuId}")
 	public ResponseEntity<CommonResponseDto<DeleteResponseDto>> deleteMenu(
 		@PathVariable Long storeId,
@@ -124,6 +124,7 @@ public class MenuController {
 	 * @param word
 	 * @return
 	 */
+	@PreAuthorize("hasRole('OWNER') or hasRole('ADMIN')")
 	@GetMapping("/search")
 	public ResponseEntity<CommonResponseDto<List<MenuResponseDto>>> search(
 		@PathVariable Long storeId,
