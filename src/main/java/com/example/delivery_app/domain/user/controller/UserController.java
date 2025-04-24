@@ -3,7 +3,10 @@ package com.example.delivery_app.domain.user.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,6 +21,7 @@ import com.example.delivery_app.domain.user.Auth.UserAuth;
 import com.example.delivery_app.domain.user.dto.request.LoginRequest;
 import com.example.delivery_app.domain.user.dto.request.SignUpRequest;
 import com.example.delivery_app.domain.user.dto.response.LoginResponse;
+import com.example.delivery_app.domain.user.dto.response.UserProfileDto;
 import com.example.delivery_app.domain.user.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -87,5 +91,24 @@ public class UserController {
 	public ResponseEntity<TokenRefreshResponse> reissue(@RequestBody TokenRefreshRequest refreshRequest, HttpServletRequest request) {
 		return ResponseEntity.ok(userService.reissue(refreshRequest, request));
 	}
+
+	@Operation(summary = "내 프로필 조회", security = {@SecurityRequirement(name = "bearerAuth")})
+	@GetMapping("/profiles/me")
+	public ResponseEntity<UserProfileDto> getMyProfile(@AuthenticationPrincipal UserAuth user) {
+		UserProfileDto profile = userService.getProfile(user.getId(), true);
+		return ResponseEntity.ok(profile);
+	}
+
+	@Operation(summary = "프로필 조회", security = {@SecurityRequirement(name = "bearerAuth")})
+	@GetMapping("/profiles/{id}")
+	public ResponseEntity<UserProfileDto> getProfile(
+		@PathVariable Long id,
+		@AuthenticationPrincipal UserAuth user
+	) {
+		boolean isOwnerOrAdmin = user.getId().equals(id) || user.hasRole("ADMIN");
+		UserProfileDto profile = userService.getProfile(id, isOwnerOrAdmin);
+		return ResponseEntity.ok(profile);
+	}
+
 
 }

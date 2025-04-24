@@ -26,4 +26,11 @@ public class UserAuth {
 			.map(role -> new SimpleGrantedAuthority("ROLE_" + role.name()))
 			.toList();
 	}
+
+	public boolean hasRole(String roleName) {
+		if (roles == null) return false;
+		return roles.stream()
+			.anyMatch(role -> role.name().equalsIgnoreCase(roleName));
+	}
+
 }
