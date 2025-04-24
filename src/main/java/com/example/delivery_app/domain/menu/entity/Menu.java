@@ -15,7 +15,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,8 +22,6 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Table(name = "menu")
 public class Menu extends BaseEntity {
 
@@ -58,6 +55,16 @@ public class Menu extends BaseEntity {
 	 * 삭제 시 updateStatus를 통해 true로 바뀝니다
 	 */
 	private boolean isDeleted;
+
+	@Builder
+	public Menu(Store store, String category, String menuPicture, String menuName, Integer price, String menuContent) {
+		this.store = store;
+		this.category = category;
+		this.menuPicture = menuPicture;
+		this.menuName = menuName;
+		this.price = price;
+		this.menuContent = menuContent;
+	}
 
 	/**
 	 * deleteMenu 시 status 상태 변경 메서드
