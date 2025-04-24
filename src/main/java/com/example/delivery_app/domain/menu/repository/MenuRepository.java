@@ -3,25 +3,29 @@ package com.example.delivery_app.domain.menu.repository;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 
 import com.example.delivery_app.domain.menu.entity.Menu;
-
-import io.lettuce.core.dynamic.annotation.Param;
+import com.example.delivery_app.domain.menu.exception.CustomException;
+import com.example.delivery_app.domain.menu.exception.ErrorCode;
 
 public interface MenuRepository extends JpaRepository<Menu, Long> {
 
 	/**
 	 * store에 해당하는 메뉴 리스트 출력
-	 * @param storeId
+	 * @param storeStoreId
 	 * @param status
 	 * @return
 	 */
-	@Query("SELECT m FROM Menu m WHERE m.store.storeId = :storeId AND m.status = :status")
-	List<Menu> findByIdAndStatus(@Param("storeId") Long storeId, @Param("status") boolean status);
+	// @Query("SELECT m FROM Menu m WHERE m.store.storeId = :storeId AND m.status = :status")
+	// List<Menu> findByIdAndStatus(@Param("storeId") Long storeId, @Param("status") boolean status);
+	//
+	// default List<Menu> findByIdOrElseThrow1(Long storeId, boolean status) {
+	// 	return findByIdAndStatus(storeId, status);
+	// }
+	List<Menu> findAllByStore_StoreIdAndStatus(Long storeStoreId, boolean status);
 
-	default List<Menu> findByIdOrElseThrow(Long storeId, boolean status) {
-		return findByIdAndStatus(storeId, status);
+	default Menu findByIdOrElseThrow(Long menuId) {
+		return findById(menuId).orElseThrow(() -> new CustomException(ErrorCode.MENU_NOT_FOUND));
 	}
 
 	/**
@@ -33,6 +37,6 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
 	 */
 	// @Query("SELECT m FROM Menu m WHERE m.store.storeId = :storeId AND m.menuName LIKE CONCAT('%', :word, '%') AND m.status = :status")
 	// List<Menu> findAllByIdByWord(@Param("storeId") Long storeId, @Param("word") String word, boolean status);
-	List<Menu> findAllByStoreStoreIdAndMenuNameContainingAndStatus(Long storeStoreId, String menuName, boolean status);
+	List<Menu> findAllByStore_StoreIdAndMenuNameContainingAndStatus(Long storeStoreId, String menuName, boolean status);
 
 }
