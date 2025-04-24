@@ -1,5 +1,6 @@
 package com.example.delivery_app.domain.user.service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -8,9 +9,11 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.example.delivery_app.common.jwt.JwtAuthenticationFilter;
 import com.example.delivery_app.common.jwt.JwtTokenProvider;
 import com.example.delivery_app.common.redis.dto.TokenRefreshRequest;
 import com.example.delivery_app.common.redis.dto.TokenRefreshResponse;
+import com.example.delivery_app.common.redis.service.BlackListService;
 import com.example.delivery_app.common.redis.service.RefreshTokenService;
 import com.example.delivery_app.domain.user.dto.request.LoginRequest;
 import com.example.delivery_app.domain.user.dto.request.SignUpRequest;
@@ -20,6 +23,7 @@ import com.example.delivery_app.domain.user.entity.UserRole;
 import com.example.delivery_app.domain.user.repository.UserRepository;
 
 import io.jsonwebtoken.Claims;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,9 +37,11 @@ public class UserServiceImpl implements UserService {
 	private final JwtTokenProvider jwtTokenProvider;
 	private final RefreshTokenService refreshTokenService;
 	private final RedisTemplate<String, String> redisTemplate;
+	private final BlackListService blackListService;
+	private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-	@Value("${spring.jwt.token.refresh.hour}")
-	private long refreshTokenExpireHour;
+	@Value("${spring.jwt.token.refresh.minute}")
+	private long refreshTokenExpireMinute;
 
 	/**
 	 * 회원가입
@@ -96,10 +102,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public TokenRefreshResponse reissue(TokenRefreshRequest refreshRequest) {
-
-		log.info("[리프레시 요청] refreshRequest = {}", refreshRequest);
-		log.info("[리프레시 요청] refreshToken = {}", refreshRequest.getRefreshToken());
+	public TokenRefreshResponse reissue(TokenRefreshRequest refreshRequest, HttpServletRequest request) {
 
 		String refreshToken = refreshRequest.getRefreshToken();
 
@@ -111,13 +114,23 @@ public class UserServiceImpl implements UserService {
 			throw new IllegalArgumentException("유효하지 않은 RefreshToken 입니다.");
 		}
 
+		//기존 토큰 블랙리스트 추가
+		String oldAccessToken = jwtTokenProvider.resolveAccessTokenFromContext(request);
+		if (oldAccessToken != null && jwtTokenProvider.validateToken(oldAccessToken)) {
+			Date expiration = jwtTokenProvider.getExpiration(oldAccessToken);
+			long remaining = expiration.getTime() - System.currentTimeMillis();
+			if (remaining > 0) {
+				blackListService.addToBlacklist(oldAccessToken, remaining);
+			}
+		}
+		log.info("[리프레시 요청] 추출된 엑세스토큰 = {}", oldAccessToken);
+
 		Claims claims = jwtTokenProvider.getClaims(refreshToken);
 
 		Long userId = Long.parseLong(claims.getSubject());
-		log.info("[리프레시 요청] 추출된 userId = {}", userId);
+
 
 		String storedToken = refreshTokenService.get(userId);
-		log.info("[리프레시 요청] Redis에서 가져온 refreshToken = {}", storedToken);
 
 		if (storedToken == null || !storedToken.equals(refreshToken)) {
 			throw new IllegalArgumentException("서버에 저장된 RefreshToken 과 다릅니다.");
@@ -128,17 +141,31 @@ public class UserServiceImpl implements UserService {
 
 		UserRole role = user.getRole();
 		if (role == null) {
-			throw new IllegalStateException("user.getRole()이 null입니다. DB 확인 필요!");
+			throw new IllegalStateException("userRole()이 null입니다.");
 		}
 
+
+
 		String newAccessToken = jwtTokenProvider.generateAccessToken(user.getId(), List.of(user.getRole()));
-
-
-
 		String newRefreshToken = jwtTokenProvider.generateRefreshToken(user.getId());
-		long refreshTokenExpireTime = refreshTokenExpireHour * 60 * 60 * 1000;
+		long refreshTokenExpireTime = refreshTokenExpireMinute * 60 * 1000;
 		refreshTokenService.save(userId, newRefreshToken, refreshTokenExpireTime);
 
 		return new TokenRefreshResponse(newAccessToken, newRefreshToken);
+	}
+
+	@Override
+	public void logout(Long userId, String accessToken) {
+		//refreshToken 제거
+		refreshTokenService.delete(userId);
+
+		Date expiration = jwtTokenProvider.getExpiration(accessToken);
+		long now = System.currentTimeMillis();
+		long remainingTime = expiration.getTime() - now;
+
+		if (remainingTime > 0) {
+			blackListService.addToBlacklist(accessToken, remainingTime);
+		}
+
 	}
 }
