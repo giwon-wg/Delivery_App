@@ -27,7 +27,10 @@ public class UserAuth {
 			.toList();
 	}
 
-	public boolean hasRole(UserRole role) {
-		return roles.contains(role);
+	public boolean hasRole(String roleName) {
+		if (roles == null) return false;
+		return roles.stream()
+			.anyMatch(role -> role.name().equalsIgnoreCase(roleName));
 	}
+
 }
