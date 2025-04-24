@@ -20,7 +20,7 @@ public enum OrderErrorCode implements ResponseCode {
 	ORDER_STATUS_EQUALS(HttpStatus.BAD_REQUEST, "중복된 요청입니다."),
 
 	ORDER_INVALID_STORE(HttpStatus.BAD_REQUEST, "마감했거나 폐업한 가게입니다."),
-	ORDER_INVALID_MIN_PRICE(HttpStatus.BAD_REQUEST, "");
+	ORDER_INVALID_MIN_PRICE(HttpStatus.BAD_REQUEST, "최소주문금액을 넘겨야 합니다.");
 
 	private final HttpStatus httpStatus;
 	private final String message;
