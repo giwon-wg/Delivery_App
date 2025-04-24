@@ -16,12 +16,5 @@ public interface MenuService {
 
 	DeleteResponseDto deleteMenu(Long storeId, Long menuId);
 
-	/**
-	 * JPQL 확인을 위한 임시 메서드
-	 * @param storeId
-	 * @return
-	 */
-	List<MenuResponseDto> findAll(Long storeId);
-
 	List<MenuResponseDto> search(Long storeId, String word);
 }

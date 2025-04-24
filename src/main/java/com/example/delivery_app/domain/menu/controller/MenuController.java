@@ -101,23 +101,6 @@ public class MenuController {
 	}
 
 	/**
-	 * JPQL 확인을 위한 임시 메서드
-	 * @param storeId
-	 * @return
-	 */
-	@GetMapping
-	public ResponseEntity<CommonResponseDto<List<MenuResponseDto>>> findAll(
-		@PathVariable Long storeId
-	) {
-		return ResponseEntity.ok(
-			CommonResponseDto.of(
-				MenuSuccessCode.MENU_GET_SUCCESS,
-				menuService.findAll(storeId)
-			)
-		);
-	}
-
-	/**
 	 * 검색 기능 구현을 위해 추가
 	 * 일부 단어만 입력하여도 그와 관련된 메뉴들이 출력
 	 * @param storeId
@@ -125,7 +108,7 @@ public class MenuController {
 	 * @return
 	 */
 	@PreAuthorize("hasRole('OWNER') or hasRole('ADMIN')")
-	@GetMapping("/search")
+	@GetMapping
 	public ResponseEntity<CommonResponseDto<List<MenuResponseDto>>> search(
 		@PathVariable Long storeId,
 		@RequestParam String word

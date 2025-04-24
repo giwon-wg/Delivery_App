@@ -79,21 +79,6 @@ public class MenuServiceImpl implements MenuService {
 	}
 
 	/**
-	 * JPQL 확인을 위한 임시 메서드
-	 * @param storeId
-	 * @return
-	 */
-	@Override
-	public List<MenuResponseDto> findAll(Long storeId) {
-
-		if (storeRepository.findById(storeId).isEmpty()) {
-			throw new CustomException(ErrorCode.MENU_NOT_FOUND); // 사실 STORE_NOT_FOUND가 맞는 거 같음
-		}
-
-		return menuRepository.findByIdAndStatus(storeId, true).stream().map(MenuResponseDto::toDto).toList();
-	}
-
-	/**
 	 * 검색 기능 구현을 위해 추가
 	 * 일부 단어만 입력하여도 그와 관련된 메뉴들이 출력
 	 * @param storeId
