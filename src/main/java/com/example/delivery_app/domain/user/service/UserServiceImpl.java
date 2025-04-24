@@ -2,6 +2,7 @@ package com.example.delivery_app.domain.user.service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -303,6 +304,24 @@ public class UserServiceImpl implements UserService {
 		log.info("사업자 신청: {}, 등록번호: {}", request.getOwnerName(), request.getRegistrationNumber());
 
 		user.changeRole(UserRole.OWNER);
+	}
+
+	@Override
+	public User registerIfNeed(String email) {
+		return userRepository.findByEmail(email)
+			.orElseGet(() -> {
+				// 없으면 새로 등록
+				User newUser = User.builder()
+					.email(email)
+					.password("SOCIAL2025!")
+					.nickname("구글유저_" + UUID.randomUUID().toString().substring(0, 8))
+					.address("소셜 로그인 유저")
+					.role(UserRole.USER)
+					.isDeleted(false)
+					.build();
+
+				return userRepository.save(newUser);
+			});
 	}
 
 	private boolean isAdminEmail(String email) {
