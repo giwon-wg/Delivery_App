@@ -2,6 +2,7 @@ package com.example.delivery_app.common.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 
 @Configuration
 @RequiredArgsConstructor
+@EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
 	private final JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -27,7 +29,8 @@ public class SecurityConfig {
 					"/v3/api-docs/**",
 					"/webjars/**",
 					"/**/api/auth/signup",
-					"/**/api/auth/login"
+					"/**/api/auth/login",
+					"/**/api/auth/reissue"
 				).permitAll()
 				.anyRequest().authenticated()
 			)

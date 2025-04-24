@@ -1,6 +1,7 @@
 package com.example.delivery_app.domain.store.entity;
 
 import com.example.delivery_app.common.entity.BaseEntity;
+import com.example.delivery_app.domain.store.dto.request.StoreRequestDto;
 import com.example.delivery_app.domain.store.enums.IsOpen;
 import com.example.delivery_app.domain.store.enums.StoreStatus;
 
@@ -12,7 +13,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -42,16 +42,16 @@ public class Store extends BaseEntity {
 	private String storeIntro;
 
 	@Column(nullable = false)
-	private String minDeliveryPrice;
+	private int minDeliveryPrice;
 
 	@Column(nullable = false)
-	private String deliveryTip;
+	private int deliveryTip;
 
 	@Column(nullable = false)
-	private String rating;
+	private double rating;
 
 	@Column(nullable = false)
-	private String reviewCount;
+	private int reviewCount;
 
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
@@ -61,9 +61,10 @@ public class Store extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	private StoreStatus status;
 
+	//추후 테스트에 사용 가능성이 있어 남겨두었습니다!
 	@Builder
 	public Store(String storeName, String storeAddress, String storeIntro, String storePhone, String foodCategory,
-		String minDeliveryPrice, String deliveryTip) {
+		int minDeliveryPrice, int deliveryTip) {
 		this.storeName = storeName;
 		this.storeAddress = storeAddress;
 		this.storeIntro = storeIntro;
@@ -71,10 +72,24 @@ public class Store extends BaseEntity {
 		this.foodCategory = foodCategory;
 		this.minDeliveryPrice = minDeliveryPrice;
 		this.deliveryTip = deliveryTip;
-		this.rating = "0.0";
-		this.reviewCount = "0";
+		this.rating = 0.0;
+		this.reviewCount = 0;
 		this.isOpen = IsOpen.OPEN;
 		this.status = StoreStatus.ACTIVE;
+	}
+
+	public void updateStoreInfo(StoreRequestDto storeRequestDto) {
+		this.storeName = storeRequestDto.getStoreName();
+		this.foodCategory = storeRequestDto.getFoodCategory();
+		this.storeAddress = storeRequestDto.getStoreAddress();
+		this.storePhone = storeRequestDto.getStorePhone();
+		this.storeIntro = storeRequestDto.getStoreIntro();
+		this.minDeliveryPrice = storeRequestDto.getMinDeliveryPrice();
+		this.deliveryTip = storeRequestDto.getDeliveryTip();
+	}
+
+	public void markAsInactive() {
+		this.status = StoreStatus.INACTIVE;
 	}
 }
 

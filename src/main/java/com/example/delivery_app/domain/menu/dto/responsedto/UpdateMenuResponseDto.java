@@ -5,7 +5,7 @@ import com.example.delivery_app.domain.menu.entity.Menu;
 import lombok.Getter;
 
 @Getter
-public class MenuResponseDto {
+public class UpdateMenuResponseDto {
 
 	private final String category;
 
@@ -13,11 +13,11 @@ public class MenuResponseDto {
 
 	private final String menuName;
 
-	private final int price;
+	private final Integer price;
 
 	private final String menuContent;
 
-	public MenuResponseDto(Menu menu) {
+	public UpdateMenuResponseDto(Menu menu) {
 		this.category = menu.getCategory();
 		this.menuPicture = menu.getMenuPicture();
 		this.menuName = menu.getMenuName();

@@ -10,13 +10,9 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public class MenuRequestDto {
+public class UpdateMenuRequestDto {
 
-	@NotBlank(message = "카테고리를 입력해주세요")
-	@JsonProperty("category")
-	private final String category;
-
-	@JsonProperty("menuPicture")
+	@JsonProperty(value = "menuPicture")
 	private final String menuPicture;
 
 	@NotBlank(message = "메뉴명을 입력해주세요")
