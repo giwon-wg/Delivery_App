@@ -28,10 +28,6 @@ public class SignUpRequest {
 	@NotBlank
 	private String nickname;
 
-	@Schema(description = "역할", example = "USER")
-	@NotNull
-	private UserRole role;
-
 	@Schema(description = "주소", example = "울릉도 동남쪽 뱃길따라 200리")
 	@NotBlank
 	private String address;

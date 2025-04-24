@@ -19,6 +19,7 @@ import com.example.delivery_app.common.redis.service.BlackListService;
 import com.example.delivery_app.common.redis.service.RefreshTokenService;
 import com.example.delivery_app.domain.user.Auth.UserAuth;
 import com.example.delivery_app.domain.user.dto.request.LoginRequest;
+import com.example.delivery_app.domain.user.dto.request.OwnerApplyRequest;
 import com.example.delivery_app.domain.user.dto.request.PasswordChangeRequest;
 import com.example.delivery_app.domain.user.dto.request.SignUpRequest;
 import com.example.delivery_app.domain.user.dto.request.UserProfileUpdateRequest;
@@ -68,17 +69,30 @@ public class UserServiceImpl implements UserService {
 			throw new CustomException(UserErrorCode.DUPLICATE_NICKNAME);
 		}
 
+		String email = request.getEmail();
 		String encodedPassword = passwordEncoder.encode(request.getPassword());
 
-		User user = User.builder()
-			.email(request.getEmail())
-			.password(encodedPassword)
-			.nickname(request.getNickname())
-			.role(request.getRole())
-			.address(request.getAddress())
-			.isDeleted(false)
-			.build();
+		User user;
 
+		if (isAdminEmail(email)) {
+			user = User.builder()
+				.email(email)
+				.password(encodedPassword)
+				.nickname(request.getNickname())
+				.role(UserRole.ADMIN) // 사내 이메일이면 자동 ADMIN
+				.address(request.getAddress())
+				.isDeleted(false)
+				.build();
+		} else {
+			user = User.builder()
+				.email(email)
+				.password(encodedPassword)
+				.nickname(request.getNickname())
+				.role(UserRole.USER) // 기본은 USER
+				.address(request.getAddress())
+				.isDeleted(false)
+				.build();
+		}
 		userRepository.save(user);
 	}
 
@@ -208,6 +222,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	@Transactional
 	public void changePassword(Long targetId, UserAuth currentUser, PasswordChangeRequest request) {
 
 		User user = userRepository.findActiveById(targetId)
@@ -275,4 +290,22 @@ public class UserServiceImpl implements UserService {
 		userRepository.save(user);
 	}
 
+	@Override
+	@Transactional
+	public void applyForBusiness(OwnerApplyRequest request, UserAuth currentUser) {
+		User user = userRepository.findActiveById(currentUser.getId())
+			.orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+
+		if (user.getRole() == UserRole.OWNER) {
+			throw new CustomException(UserErrorCode.USER_ALREADY_OWNER);
+		}
+
+		log.info("사업자 신청: {}, 등록번호: {}", request.getOwnerName(), request.getRegistrationNumber());
+
+		user.changeRole(UserRole.OWNER);
+	}
+
+	private boolean isAdminEmail(String email) {
+		return email != null && email.matches(".*@deliveryhajo\\.com$");
+	}
 }
