@@ -1,27 +1,19 @@
 package com.example.delivery_app.domain.order.dto.response;
 
-import com.example.delivery_app.domain.menu.entity.Menu;
 import com.example.delivery_app.domain.order.entity.OrderStatus;
-import com.example.delivery_app.domain.store.entity.Store;
-import com.example.delivery_app.domain.user.entity.User;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import lombok.Builder;
-import lombok.RequiredArgsConstructor;
+import lombok.Getter;
 
-@RequiredArgsConstructor
+@Getter
+@JsonPropertyOrder({"orderId", "userId", "storeId", "menuId", "status", "totalPrice"})
+@Builder
 public class OrderResponseDto {
-	private final User user;
-	private final Store store;
-	private final Menu menu;
+	private final Long orderId;
+	private final Long userId;
+	private final Long storeId;
+	private final Long menuId;
 	private final OrderStatus status;
-	private final int totalPrice;
-
-	@Builder
-	public OrderResponseDto(User user, Store store, Menu menu, OrderStatus status) {
-		this.user = user;
-		this.store = store;
-		this.menu = menu;
-		this.status = status;
-		this.totalPrice = menu.getPrice();
-	}
+	private final Integer totalPrice;
 }
