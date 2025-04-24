@@ -30,9 +30,16 @@ public class SecurityConfig {
 					"/webjars/**",
 					"/**/api/auth/signup",
 					"/**/api/auth/login",
-					"/**/api/auth/reissue"
+					"/**/api/auth/reissue",
+					"/oauth2/**",
+					"/login/oauth2/**",
+					"/oauth2/authorization/**"
 				).permitAll()
 				.anyRequest().authenticated()
+			)
+			.oauth2Login(oauth2 -> oauth2
+				.loginPage("/oauth2/authorization/google")
+				.defaultSuccessUrl("/login/success", true)
 			)
 			.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
 			.formLogin(login -> login.disable())

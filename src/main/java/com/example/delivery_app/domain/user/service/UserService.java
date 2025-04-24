@@ -10,6 +10,7 @@ import com.example.delivery_app.domain.user.dto.request.SignUpRequest;
 import com.example.delivery_app.domain.user.dto.request.UserProfileUpdateRequest;
 import com.example.delivery_app.domain.user.dto.response.LoginResponse;
 import com.example.delivery_app.domain.user.dto.response.UserProfileDto;
+import com.example.delivery_app.domain.user.entity.User;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -36,5 +37,7 @@ public interface UserService {
 	void deleteAccountByAdmin(Long targetId, UserAuth currentUser);
 
 	void applyForBusiness(OwnerApplyRequest request, UserAuth currentUser);
+
+	User registerIfNeed(String email);
 
 }
