@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.delivery_app.common.dto.CommonResponseDto;
@@ -28,7 +29,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/store/{storeId}/menus")
+@RequestMapping("/api/stores/{storeId}/menus")
 public class MenuController {
 
 	private final MenuService menuService;
@@ -112,6 +113,26 @@ public class MenuController {
 			CommonResponseDto.of(
 				MenuSuccessCode.MENU_GET_SUCCESS,
 				menuService.findAll(storeId)
+			)
+		);
+	}
+
+	/**
+	 * 검색 기능 구현을 위해 추가
+	 * 일부 단어만 입력하여도 그와 관련된 메뉴들이 출력
+	 * @param storeId
+	 * @param word
+	 * @return
+	 */
+	@GetMapping("/search")
+	public ResponseEntity<CommonResponseDto<List<MenuResponseDto>>> search(
+		@PathVariable Long storeId,
+		@RequestParam String word
+	) {
+		return ResponseEntity.ok(
+			CommonResponseDto.of(
+				MenuSuccessCode.MENU_GET_SUCCESS,
+				menuService.search(storeId, word)
 			)
 		);
 	}
