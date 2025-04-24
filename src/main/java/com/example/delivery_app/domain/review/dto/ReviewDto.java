@@ -11,10 +11,9 @@ public class ReviewDto {
 
     boolean status;
 
-    private String ReviewDto(int rating, String content, boolean status){
+    public ReviewDto (int rating, String content, boolean status){
         this.rating = rating;
         this.content = content;
         this.status = status;
     }
-
 }
