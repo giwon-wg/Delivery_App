@@ -99,7 +99,7 @@ public class OrderController {
 	}
 
 	/**
-	 * [Controller/관리자] 주문 완료하는 메서드
+	 * [Controller] 주문 완료하는 메서드
 	 * @param orderId 주문 id
 	 * @param auth 로그인 객체
 	 * @return 배달완료한 주문 응답 객체를 반환
