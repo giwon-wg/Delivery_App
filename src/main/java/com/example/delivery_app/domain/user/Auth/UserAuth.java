@@ -32,4 +32,5 @@ public class UserAuth {
 		return roles.stream()
 			.anyMatch(role -> role.name().equalsIgnoreCase(roleName));
 	}
+
 }

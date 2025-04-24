@@ -9,6 +9,8 @@ import com.example.delivery_app.domain.user.dto.response.UserProfileDto;
 
 import jakarta.servlet.http.HttpServletRequest;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 public interface UserService {
 
 	void signUp(SignUpRequest request);
@@ -20,4 +22,5 @@ public interface UserService {
 	void logout(Long userId, String accessToken);
 
 	UserProfileDto getProfile(Long id, boolean isPrivate);
+
 }

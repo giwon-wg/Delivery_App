@@ -181,4 +181,5 @@ public class UserServiceImpl implements UserService {
 			return UserProfileDto.fromPublic(user);
 		}
 	}
+
 }
