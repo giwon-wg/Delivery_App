@@ -9,6 +9,7 @@ import com.example.delivery_app.domain.menu.entity.Menu;
 import com.example.delivery_app.domain.store.dto.request.StoreRequestDto;
 import com.example.delivery_app.domain.store.enums.IsOpen;
 import com.example.delivery_app.domain.store.enums.StoreStatus;
+import com.example.delivery_app.domain.user.entity.User;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -18,6 +19,8 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Builder;
@@ -77,9 +80,13 @@ public class Store extends BaseEntity {
 	@OneToMany(mappedBy = "store", fetch = FetchType.LAZY)
 	private List<Menu> menus = new ArrayList<>();
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id", nullable = false)
+	private User user;
+
 	@Builder
 	public Store(String storeName, String storeAddress, String storeIntro, String storePhone, String foodCategory,
-		int minDeliveryPrice, int deliveryTip, LocalTime openTime, LocalTime closeTime) {
+		int minDeliveryPrice, int deliveryTip, LocalTime openTime, LocalTime closeTime, User user) {
 		this.storeName = storeName;
 		this.storeAddress = storeAddress;
 		this.storeIntro = storeIntro;
@@ -91,6 +98,7 @@ public class Store extends BaseEntity {
 		this.closeTime = closeTime;
 		this.rating = 0.0;
 		this.reviewCount = 0;
+		this.user = user;
 		this.status = StoreStatus.ACTIVE;
 		LocalTime now = LocalTime.now();
 		this.isOpen = (now.isAfter(openTime) && now.isBefore(closeTime)) ? IsOpen.OPEN : IsOpen.CLOSED;
