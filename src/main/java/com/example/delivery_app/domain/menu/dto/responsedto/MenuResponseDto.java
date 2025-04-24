@@ -2,9 +2,11 @@ package com.example.delivery_app.domain.menu.dto.responsedto;
 
 import com.example.delivery_app.domain.menu.entity.Menu;
 
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
+@Builder
 public class MenuResponseDto {
 
 	private final String category;
@@ -25,7 +27,13 @@ public class MenuResponseDto {
 		this.menuContent = menu.getMenuContent();
 	}
 
-	public static MenuResponseDto toDto(Menu menu) {
-		return new MenuResponseDto(menu);
+	public static MenuResponseDto fromMenu(Menu menu) {
+		return MenuResponseDto.builder()
+			.category(menu.getCategory())
+			.menuPicture(menu.getMenuPicture())
+			.menuName(menu.getMenuName())
+			.price(menu.getPrice())
+			.menuContent(menu.getMenuContent())
+			.build();
 	}
 }

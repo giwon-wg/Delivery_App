@@ -92,6 +92,6 @@ public class MenuServiceImpl implements MenuService {
 
 		List<Menu> findMenus = menuRepository.findAllByStoreStoreIdAndMenuNameContainingAndStatus(storeId, word, true);
 
-		return findMenus.stream().map(MenuResponseDto::toDto).toList();
+		return findMenus.stream().map(MenuResponseDto::fromMenu).toList();
 	}
 }
