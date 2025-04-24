@@ -86,7 +86,7 @@ public class MenuServiceImpl implements MenuService {
 	 * @return
 	 */
 	@Override
-	public List<MenuResponseDto> search(Long storeId, String word) {
+	public List<MenuResponseDto> findMenu(Long storeId, String word) {
 
 		if (word != null) {
 			List<Menu> findMenus = menuRepository.findAllByStore_StoreIdAndMenuNameContainingAndIsDeleted(storeId, word,

@@ -16,5 +16,5 @@ public interface MenuService {
 
 	DeleteResponseDto deleteMenu(Long storeId, Long menuId);
 
-	List<MenuResponseDto> search(Long storeId, String word);
+	List<MenuResponseDto> findMenu(Long storeId, String word);
 }

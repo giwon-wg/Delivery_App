@@ -116,7 +116,7 @@ public class MenuController {
 		return ResponseEntity.ok(
 			CommonResponseDto.of(
 				MenuSuccessCode.MENU_GET_SUCCESS,
-				menuService.search(storeId, word)
+				menuService.findMenu(storeId, word)
 			)
 		);
 	}
