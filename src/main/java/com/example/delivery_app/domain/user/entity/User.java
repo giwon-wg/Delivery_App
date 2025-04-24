@@ -52,4 +52,19 @@ public class User extends BaseEntity {
 		this.address = address;
 		this.isDeleted = isDeleted;
 	}
+
+	public void updateProfile(String nickname, String address) {
+		this.nickname = nickname;
+		if (address != null && !address.isBlank()) {
+			this.address = address;
+		}
+	}
+
+	public void changePassword(String encodedPassword) {
+		this.password = encodedPassword;
+	}
+
+	public void delete() {
+		this.isDeleted = true;
+	}
 }
