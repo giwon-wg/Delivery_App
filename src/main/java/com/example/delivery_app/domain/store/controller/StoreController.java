@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.delivery_app.domain.store.dto.request.StoreOperatingTimeRequestDto;
 import com.example.delivery_app.domain.store.dto.request.StoreRequestDto;
 import com.example.delivery_app.domain.store.dto.response.StoreDeleteResponseDto;
 import com.example.delivery_app.domain.store.dto.response.StoreResponseDto;
@@ -67,4 +68,14 @@ public class StoreController {
 		StoreDeleteResponseDto deletedStore = storeService.deleteStore(storeId);
 		return ResponseEntity.ok(deletedStore);
 	}
+
+	@PutMapping("/{storeId}/operating-time")
+	public ResponseEntity<StoreResponseDto> updateOperatingTime(
+		@PathVariable Long storeId,
+		@RequestBody StoreOperatingTimeRequestDto dto
+	) {
+		StoreResponseDto updatedDto = storeService.updateOperatingTime(storeId, dto);
+		return ResponseEntity.ok(updatedDto);
+	}
+
 }
