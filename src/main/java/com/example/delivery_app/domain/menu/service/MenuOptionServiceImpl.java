@@ -1,5 +1,7 @@
 package com.example.delivery_app.domain.menu.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.example.delivery_app.domain.menu.dto.requestdto.MenuOptionRequestDto;
@@ -54,5 +56,29 @@ public class MenuOptionServiceImpl implements MenuOptionService {
 		menuOptionRepository.save(menuOption);
 
 		return MenuOptionResponseDto.fromMenu(menuOption);
+	}
+
+	/**
+	 * 메뉴 옵션 조회 기능
+	 * @param storeId
+	 * @param menuId
+	 * @return
+	 */
+	@Transactional
+	@Override
+	public List<MenuOptionResponseDto> findAllOption(Long storeId, Long menuId) {
+
+		Store findStore = storeRepository.findById(storeId)
+			.orElseThrow(() -> new IllegalArgumentException("해당 가게가 존재하지 않습니다. id=" + storeId));
+
+		Menu findMenu = menuRepository.findByIdOrElseThrow(menuId);
+
+		if (!findMenu.getStore().getStoreId().equals(findStore.getStoreId())) {
+			throw new CustomException(ErrorCode.MISMATCH_ERROR);
+		}
+
+		List<MenuOption> findAllOption = menuOptionRepository.findAllByMenu_Id(menuId);
+
+		return findAllOption.stream().map(MenuOptionResponseDto::fromMenu).toList();
 	}
 }

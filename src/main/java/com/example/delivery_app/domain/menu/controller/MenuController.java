@@ -132,7 +132,8 @@ public class MenuController {
 	 * @param dto
 	 * @return
 	 */
-	@PostMapping("/{menuId}/option")
+	@PreAuthorize("hasRole('OWNER') or hasRole('ADMIN')")
+	@PostMapping("/{menuId}/options")
 	public ResponseEntity<CommonResponseDto<MenuOptionResponseDto>> optionSave(
 		@PathVariable Long storeId,
 		@PathVariable Long menuId,
@@ -146,5 +147,26 @@ public class MenuController {
 					menuOptionService.optionSave(storeId, menuId, dto)
 				)
 			);
+	}
+
+	/**
+	 * 옵션 조회 기능
+	 * @param storeId
+	 * @param menuId
+	 * @return
+	 */
+	@PreAuthorize("hasRole('OWNER') or hasRole('ADMIN') or hasRosle('USER')")
+	@GetMapping("/{menuId}/options")
+	public ResponseEntity<CommonResponseDto<List<MenuOptionResponseDto>>> findAllOption(
+		@PathVariable Long storeId,
+		@PathVariable Long menuId
+	) {
+
+		return ResponseEntity.ok(
+			CommonResponseDto.of(
+				MenuSuccessCode.MENU_OPTION_GET_SUCCESS,
+				menuOptionService.findAllOption(storeId, menuId)
+			)
+		);
 	}
 }
