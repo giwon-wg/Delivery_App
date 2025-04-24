@@ -16,12 +16,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.delivery_app.common.dto.CommonResponseDto;
+import com.example.delivery_app.domain.menu.dto.requestdto.MenuOptionRequestDto;
 import com.example.delivery_app.domain.menu.dto.requestdto.MenuRequestDto;
 import com.example.delivery_app.domain.menu.dto.requestdto.UpdateMenuRequestDto;
 import com.example.delivery_app.domain.menu.dto.responsedto.DeleteResponseDto;
+import com.example.delivery_app.domain.menu.dto.responsedto.MenuOptionResponseDto;
 import com.example.delivery_app.domain.menu.dto.responsedto.MenuResponseDto;
 import com.example.delivery_app.domain.menu.dto.responsedto.MenuSuccessCode;
 import com.example.delivery_app.domain.menu.dto.responsedto.UpdateMenuResponseDto;
+import com.example.delivery_app.domain.menu.service.MenuOptionService;
 import com.example.delivery_app.domain.menu.service.MenuService;
 
 import jakarta.validation.Valid;
@@ -33,6 +36,7 @@ import lombok.RequiredArgsConstructor;
 public class MenuController {
 
 	private final MenuService menuService;
+	private final MenuOptionService menuOptionService;
 
 	/**
 	 * 메뉴 저장
@@ -119,5 +123,28 @@ public class MenuController {
 				menuService.findMenu(storeId, word)
 			)
 		);
+	}
+
+	/**
+	 * 옵션 저장 기능
+	 * @param storeId
+	 * @param menuId
+	 * @param dto
+	 * @return
+	 */
+	@PostMapping("/{menuId}/option")
+	public ResponseEntity<CommonResponseDto<MenuOptionResponseDto>> optionSave(
+		@PathVariable Long storeId,
+		@PathVariable Long menuId,
+		@RequestBody MenuOptionRequestDto dto
+	) {
+
+		return ResponseEntity.status(HttpStatus.CREATED)
+			.body(
+				CommonResponseDto.of(
+					MenuSuccessCode.MENU_CREATE_SUCCESS,
+					menuOptionService.optionSave(storeId, menuId, dto)
+				)
+			);
 	}
 }
