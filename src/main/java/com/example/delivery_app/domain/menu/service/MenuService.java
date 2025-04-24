@@ -1,5 +1,7 @@
 package com.example.delivery_app.domain.menu.service;
 
+import java.util.List;
+
 import com.example.delivery_app.domain.menu.dto.requestdto.MenuRequestDto;
 import com.example.delivery_app.domain.menu.dto.requestdto.UpdateMenuRequestDto;
 import com.example.delivery_app.domain.menu.dto.responsedto.DeleteResponseDto;
@@ -13,4 +15,6 @@ public interface MenuService {
 	UpdateMenuResponseDto updateMenu(Long storeId, Long menuId, UpdateMenuRequestDto dto);
 
 	DeleteResponseDto deleteMenu(Long storeId, Long menuId);
+
+	List<MenuResponseDto> findMenu(Long storeId, String word);
 }

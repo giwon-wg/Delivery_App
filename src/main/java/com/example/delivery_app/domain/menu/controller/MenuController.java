@@ -1,14 +1,18 @@
 package com.example.delivery_app.domain.menu.controller;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.delivery_app.common.dto.CommonResponseDto;
@@ -25,7 +29,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/store/{storeId}/menus")
+@RequestMapping("/api/stores/{storeId}/menus")
 public class MenuController {
 
 	private final MenuService menuService;
@@ -36,7 +40,7 @@ public class MenuController {
 	 * @param dto
 	 * @return
 	 */
-	@PreAuthorize("hasRole('OWNER')")
+	@PreAuthorize("hasRole('OWNER') or hasRole('ADMIN')")
 	@PostMapping
 	public ResponseEntity<CommonResponseDto<MenuResponseDto>> saveMenu(
 		@PathVariable Long storeId,
@@ -58,7 +62,7 @@ public class MenuController {
 	 * @param dto
 	 * @return
 	 */
-	@PreAuthorize("hasRole('OWNER')")
+	@PreAuthorize("hasRole('OWNER') or hasRole('ADMIN')")
 	@PatchMapping("/{menuId}")
 	public ResponseEntity<CommonResponseDto<UpdateMenuResponseDto>> updateMenu(
 		@PathVariable Long storeId,
@@ -81,7 +85,7 @@ public class MenuController {
 	 * @param menuId
 	 * @return
 	 */
-	@PreAuthorize("hasRole('OWNER')")
+	@PreAuthorize("hasRole('OWNER') or hasRole('ADMIN')")
 	@DeleteMapping("/{menuId}")
 	public ResponseEntity<CommonResponseDto<DeleteResponseDto>> deleteMenu(
 		@PathVariable Long storeId,
@@ -92,6 +96,27 @@ public class MenuController {
 			CommonResponseDto.of(
 				MenuSuccessCode.MENU_DELETE_SUCCESS,
 				menuService.deleteMenu(storeId, menuId)
+			)
+		);
+	}
+
+	/**
+	 * 검색 기능 구현을 위해 추가
+	 * 일부 단어만 입력하여도 그와 관련된 메뉴들이 출력
+	 * @param storeId
+	 * @param word
+	 * @return
+	 */
+	@PreAuthorize("hasRole('OWNER') or hasRole('ADMIN')")
+	@GetMapping
+	public ResponseEntity<CommonResponseDto<List<MenuResponseDto>>> search(
+		@PathVariable Long storeId,
+		@RequestParam(required = false) String word
+	) {
+		return ResponseEntity.ok(
+			CommonResponseDto.of(
+				MenuSuccessCode.MENU_GET_SUCCESS,
+				menuService.findMenu(storeId, word)
 			)
 		);
 	}

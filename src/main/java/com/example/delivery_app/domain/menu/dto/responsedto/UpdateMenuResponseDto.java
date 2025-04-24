@@ -6,6 +6,8 @@ import lombok.Getter;
 
 @Getter
 public class UpdateMenuResponseDto {
+	
+	private final Long id;
 
 	private final String category;
 
@@ -18,6 +20,7 @@ public class UpdateMenuResponseDto {
 	private final String menuContent;
 
 	public UpdateMenuResponseDto(Menu menu) {
+		this.id = menu.getId();
 		this.category = menu.getCategory();
 		this.menuPicture = menu.getMenuPicture();
 		this.menuName = menu.getMenuName();
