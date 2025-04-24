@@ -8,6 +8,7 @@ import com.example.delivery_app.common.exception.CustomException;
 import com.example.delivery_app.domain.store.dto.request.StoreOperatingTimeRequestDto;
 import com.example.delivery_app.domain.store.dto.request.StoreRequestDto;
 import com.example.delivery_app.domain.store.dto.response.StoreDeleteResponseDto;
+import com.example.delivery_app.domain.store.dto.response.StoreGetAllResponseDto;
 import com.example.delivery_app.domain.store.dto.response.StoreResponseDto;
 import com.example.delivery_app.domain.store.entity.Store;
 import com.example.delivery_app.domain.store.enums.StoreStatus;
@@ -68,8 +69,8 @@ public class StoreServiceImpl implements StoreService {
 	}
 
 	@Override
-	public Page<StoreResponseDto> getAllStoreList(Pageable pageable) {
-		return storeRepository.findAllByStatus(StoreStatus.ACTIVE, pageable).map(StoreResponseDto::fromStore);
+	public Page<StoreGetAllResponseDto> getAllStoreList(Pageable pageable) {
+		return storeRepository.findAllByStatus(StoreStatus.ACTIVE, pageable).map(StoreGetAllResponseDto::fromStore);
 	}
 
 	@Transactional

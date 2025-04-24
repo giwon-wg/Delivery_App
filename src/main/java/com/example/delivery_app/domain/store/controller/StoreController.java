@@ -22,6 +22,7 @@ import com.example.delivery_app.common.dto.CommonResponseDto;
 import com.example.delivery_app.domain.store.dto.request.StoreOperatingTimeRequestDto;
 import com.example.delivery_app.domain.store.dto.request.StoreRequestDto;
 import com.example.delivery_app.domain.store.dto.response.StoreDeleteResponseDto;
+import com.example.delivery_app.domain.store.dto.response.StoreGetAllResponseDto;
 import com.example.delivery_app.domain.store.dto.response.StoreResponseDto;
 import com.example.delivery_app.domain.store.dto.response.StoreSuccessCode;
 import com.example.delivery_app.domain.store.service.StoreService;
@@ -56,9 +57,9 @@ public class StoreController {
 	}
 
 	@GetMapping
-	public ResponseEntity<CommonResponseDto<Page<StoreResponseDto>>> getAllStores(
+	public ResponseEntity<CommonResponseDto<Page<StoreGetAllResponseDto>>> getAllStores(
 		@PageableDefault(size = 10, direction = DESC) Pageable pageable) {
-		Page<StoreResponseDto> stores = storeService.getAllStoreList(pageable);
+		Page<StoreGetAllResponseDto> stores = storeService.getAllStoreList(pageable);
 		return ResponseEntity.ok(CommonResponseDto.of(StoreSuccessCode.STORE_GET_ALL_SUCCESS, stores));
 	}
 
