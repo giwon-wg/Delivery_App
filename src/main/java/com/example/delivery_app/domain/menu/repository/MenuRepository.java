@@ -14,11 +14,11 @@ import io.lettuce.core.dynamic.annotation.Param;
 
 public interface MenuRepository extends JpaRepository<Menu, Long> {
 
-	@Query("SELECT m FROM Menu m WHERE m.id = :menuId AND m.status = :status")
-	Optional<Menu> findByIdAndStatus(@Param("menuId") Long menuId, @Param("status") boolean status);
+	@Query("SELECT m FROM Menu m WHERE m.store.storeId = :storeId AND m.status = :status")
+	Optional<Menu> findByIdAndStatus(@Param("storeId") Long storeId, @Param("status") boolean status);
 
-	default Menu findByIdOrElseThrow(Long menuId, boolean status) {
-		return findByIdAndStatus(menuId, status).orElseThrow(() -> new CustomException(ErrorCode.MENU_NOT_FOUND));
+	default Menu findByIdOrElseThrow(Long storeId, boolean status) {
+		return findByIdAndStatus(storeId, status).orElseThrow(() -> new CustomException(ErrorCode.MENU_NOT_FOUND));
 	}
 
 	/**
