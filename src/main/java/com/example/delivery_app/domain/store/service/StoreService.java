@@ -20,5 +20,5 @@ public interface StoreService {
 
 	StoreDeleteResponseDto deleteStore(Long storeId);
 
-	void updateOperatingTime(Long storeId, StoreOperatingTimeRequestDto dto);
+	StoreResponseDto updateOperatingTime(Long storeId, StoreOperatingTimeRequestDto dto);
 }

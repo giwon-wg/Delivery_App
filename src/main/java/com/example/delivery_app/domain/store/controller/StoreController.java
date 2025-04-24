@@ -70,12 +70,12 @@ public class StoreController {
 	}
 
 	@PutMapping("/{storeId}/operating-time")
-	public ResponseEntity<Void> updateOperatingTime(
+	public ResponseEntity<StoreResponseDto> updateOperatingTime(
 		@PathVariable Long storeId,
 		@RequestBody StoreOperatingTimeRequestDto dto
 	) {
-		storeService.updateOperatingTime(storeId, dto);
-		return ResponseEntity.ok().build();
+		StoreResponseDto updatedDto = storeService.updateOperatingTime(storeId, dto);
+		return ResponseEntity.ok(updatedDto);
 	}
 
 }

@@ -35,6 +35,10 @@ public class StoreResponseDto {
 
 	private String isOpen;
 
+	private String openTime;
+
+	private String closeTime;
+
 	private List<MenuResponseDto> menus;
 
 	public static StoreResponseDto fromStore(Store store) {
@@ -49,6 +53,8 @@ public class StoreResponseDto {
 			.rating(store.getRating())
 			.reviewCount(store.getReviewCount())
 			.isOpen(store.getIsOpen().toString())
+			.openTime(store.getOpenTime().toString())
+			.closeTime(store.getCloseTime().toString())
 			.menus(store.getMenus().stream()
 				.filter(menu -> menu.isStatus())
 				.map(MenuResponseDto::new)

@@ -91,8 +91,9 @@ public class Store extends BaseEntity {
 		this.closeTime = closeTime;
 		this.rating = 0.0;
 		this.reviewCount = 0;
-		this.isOpen = IsOpen.OPEN;
 		this.status = StoreStatus.ACTIVE;
+		LocalTime now = LocalTime.now();
+		this.isOpen = (now.isAfter(openTime) && now.isBefore(closeTime)) ? IsOpen.OPEN : IsOpen.CLOSED;
 	}
 
 	public void updateStoreInfo(StoreRequestDto storeRequestDto) {

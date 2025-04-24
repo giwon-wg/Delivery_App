@@ -1,6 +1,7 @@
 package com.example.delivery_app.domain.store.service;
 
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -21,19 +22,28 @@ public class StoreScheduler {
 
 	private final StoreRepository storeRepository;
 
-	@Scheduled(cron = "0 */1 * * * *")
+	@Scheduled(cron = "0 */5 * * * *")
 	public void updateStoreOpenStatus() {
 		LocalTime now = LocalTime.now();
 		Page<Store> storePage = storeRepository.findAllByStatus(StoreStatus.ACTIVE, Pageable.unpaged());
 		List<Store> stores = storePage.getContent();
 
+		List<Store> storesToUpdate = new ArrayList<>();
+
 		for (Store store : stores) {
-			if (now.isAfter(store.getOpenTime()) && now.isBefore(store.getCloseTime())) {
-				store.updateOpenStatus(IsOpen.OPEN);
-			} else {
-				store.updateOpenStatus(IsOpen.CLOSED);
+			IsOpen currentStatus = store.getIsOpen();
+			IsOpen newStatus = (now.isAfter(store.getOpenTime()) && now.isBefore(store.getCloseTime()))
+				? IsOpen.OPEN
+				: IsOpen.CLOSED;
+
+			if (currentStatus != newStatus) {
+				store.updateOpenStatus(newStatus);
+				storesToUpdate.add(store);
 			}
 		}
-		storeRepository.saveAll(stores);
+
+		if (!storesToUpdate.isEmpty()) {
+			storeRepository.saveAll(storesToUpdate);
+		}
 	}
 }

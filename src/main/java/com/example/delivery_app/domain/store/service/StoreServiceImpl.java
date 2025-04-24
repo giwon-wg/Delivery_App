@@ -75,12 +75,12 @@ public class StoreServiceImpl implements StoreService {
 
 	@Transactional
 	@Override
-	public void updateOperatingTime(Long storeId, StoreOperatingTimeRequestDto dto) {
+	public StoreResponseDto updateOperatingTime(Long storeId, StoreOperatingTimeRequestDto dto) {
 		Store store = storeRepository.findByIdAndStatusWithMenus(storeId, StoreStatus.ACTIVE)
 			.orElseThrow(() -> new IllegalArgumentException("가게가 없습니다"));
-		log.info(">> DTO openTime = {}", dto.getOpenTime());    // 꼭 찍어보세요
-		log.info(">> DTO closeTime = {}", dto.getCloseTime());  // 여기가 null이면 DTO 바인딩 문제
 
 		store.updateOperatingTime(dto.getOpenTime(), dto.getCloseTime());
+		return StoreResponseDto.fromStore(store);
+
 	}
 }
