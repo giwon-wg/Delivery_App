@@ -18,6 +18,7 @@ import com.example.delivery_app.common.redis.service.RefreshTokenService;
 import com.example.delivery_app.domain.user.dto.request.LoginRequest;
 import com.example.delivery_app.domain.user.dto.request.SignUpRequest;
 import com.example.delivery_app.domain.user.dto.response.LoginResponse;
+import com.example.delivery_app.domain.user.dto.response.UserProfileDto;
 import com.example.delivery_app.domain.user.entity.User;
 import com.example.delivery_app.domain.user.entity.UserRole;
 import com.example.delivery_app.domain.user.repository.UserRepository;
@@ -167,5 +168,17 @@ public class UserServiceImpl implements UserService {
 			blackListService.addToBlacklist(accessToken, remainingTime);
 		}
 
+	}
+
+	@Override
+	public UserProfileDto getProfile(Long id, boolean isPrivate) {
+		User user = userRepository.findById(id)
+			.orElseThrow(() -> new IllegalArgumentException("유저 정보 없음"));
+
+		if (isPrivate) {
+			return UserProfileDto.fromPrivate(user); // 전체 정보 조회
+		} else {
+			return UserProfileDto.fromPublic(user);
+		}
 	}
 }
