@@ -26,4 +26,8 @@ public class UserAuth {
 			.map(role -> new SimpleGrantedAuthority("ROLE_" + role.name()))
 			.toList();
 	}
+
+	public boolean hasRole(UserRole role) {
+		return roles.contains(role);
+	}
 }
