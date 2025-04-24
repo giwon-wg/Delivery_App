@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.delivery_app.domain.menu.dto.requestdto.MenuRequestDto;
 import com.example.delivery_app.domain.menu.dto.requestdto.UpdateMenuRequestDto;
+import com.example.delivery_app.domain.menu.dto.responsedto.DeleteResponseDto;
 import com.example.delivery_app.domain.menu.dto.responsedto.MenuResponseDto;
 import com.example.delivery_app.domain.menu.dto.responsedto.UpdateMenuResponseDto;
 import com.example.delivery_app.domain.menu.entity.Menu;
@@ -48,10 +49,12 @@ public class MenuServiceImpl implements MenuService {
 
 	@Transactional
 	@Override
-	public void deleteMenu(Long storeId, Long menuId) {
+	public DeleteResponseDto deleteMenu(Long storeId, Long menuId) {
 		Menu findMenu = menuRepository.findByIdOrElseThrow(menuId);
 
 		findMenu.updateStatus();
 		menuRepository.save(findMenu);
+
+		return new DeleteResponseDto(findMenu);
 	}
 }
