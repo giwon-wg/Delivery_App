@@ -11,6 +11,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MenuResponseDto {
 
+	private final Long storeId;
+
+	private final Long id;
+
 	private final String category;
 
 	private final String menuPicture;
@@ -23,6 +27,8 @@ public class MenuResponseDto {
 
 	public static MenuResponseDto fromMenu(Menu menu) {
 		return MenuResponseDto.builder()
+			.storeId(menu.getStore().getStoreId())
+			.id(menu.getId())
 			.category(menu.getCategory())
 			.menuPicture(menu.getMenuPicture())
 			.menuName(menu.getMenuName())
