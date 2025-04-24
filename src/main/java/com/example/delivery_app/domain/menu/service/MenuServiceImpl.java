@@ -10,6 +10,8 @@ import com.example.delivery_app.domain.menu.dto.responsedto.DeleteResponseDto;
 import com.example.delivery_app.domain.menu.dto.responsedto.MenuResponseDto;
 import com.example.delivery_app.domain.menu.dto.responsedto.UpdateMenuResponseDto;
 import com.example.delivery_app.domain.menu.entity.Menu;
+import com.example.delivery_app.domain.menu.exception.CustomException;
+import com.example.delivery_app.domain.menu.exception.ErrorCode;
 import com.example.delivery_app.domain.menu.repository.MenuRepository;
 import com.example.delivery_app.domain.store.entity.Store;
 import com.example.delivery_app.domain.store.repository.StoreRepository;
@@ -42,22 +44,33 @@ public class MenuServiceImpl implements MenuService {
 	@Override
 	public UpdateMenuResponseDto updateMenu(Long storeId, Long menuId, UpdateMenuRequestDto dto) {
 
-		Menu findMenu = menuRepository.findByIdOrElseThrow(menuId, true);
+		List<Menu> findMenus = menuRepository.findByIdOrElseThrow(storeId, true);
 
-		findMenu.update(dto);
+		for (Menu menu : findMenus) {
+			if (menuId.equals(menu.getId())) {
+				menu.update(dto);
+				menuRepository.save(menu);
+				return new UpdateMenuResponseDto(menu);
+			}
+		}
 
-		return new UpdateMenuResponseDto(findMenu);
+		throw new CustomException(ErrorCode.MENU_NOT_FOUND);
 	}
 
 	@Transactional
 	@Override
 	public DeleteResponseDto deleteMenu(Long storeId, Long menuId) {
-		Menu findMenu = menuRepository.findByIdOrElseThrow(menuId, true);
+		List<Menu> findMenus = menuRepository.findByIdOrElseThrow(storeId, true);
 
-		findMenu.deleteMenu();
-		menuRepository.save(findMenu);
+		for (Menu menu : findMenus) {
+			if (menuId.equals(menu.getId())) {
+				menu.deleteMenu();
+				menuRepository.save(menu);
+				return new DeleteResponseDto(menu);
+			}
+		}
 
-		return new DeleteResponseDto(findMenu);
+		throw new CustomException(ErrorCode.MENU_NOT_FOUND);
 	}
 
 	/**
@@ -69,5 +82,19 @@ public class MenuServiceImpl implements MenuService {
 	public List<MenuResponseDto> findAll(Long storeId) {
 
 		return menuRepository.findAll(true).stream().map(MenuResponseDto::toDto).toList();
+	}
+
+	/**
+	 * 검색 기능 구현을 위해 추가
+	 * @param storeId
+	 * @param menuName
+	 * @return
+	 */
+	@Override
+	public List<MenuResponseDto> search(Long storeId, String menuName) {
+
+		menuRepository.findByIdOrElseThrow(storeId, true);
+
+		return List.of();
 	}
 }
