@@ -44,12 +44,11 @@ public class MenuOptionServiceImpl implements MenuOptionService {
 			throw new CustomException(ErrorCode.MISMATCH_ERROR);
 		}
 
-		MenuOption.MenuOptionBuilder builder = MenuOption.builder();
-		builder.optionName(dto.getOptionName());
-		builder.price(dto.getPrice());
-		builder.content(dto.getContent());
-		builder.menu(findMenu);
-		MenuOption menuOption = builder
+		MenuOption menuOption = MenuOption.builder()
+			.optionName((dto.getOptionName()))
+			.price((dto.getPrice()))
+			.content((dto.getContent()))
+			.menu(findMenu)
 			.build();
 
 		menuOptionRepository.save(menuOption);
