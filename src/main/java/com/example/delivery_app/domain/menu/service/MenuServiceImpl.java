@@ -44,7 +44,7 @@ public class MenuServiceImpl implements MenuService {
 
 		Menu savedMenu = menuRepository.save(menu);
 
-		return new MenuResponseDto(savedMenu);
+		return MenuResponseDto.fromMenu(savedMenu);
 	}
 
 	@Transactional
