@@ -1,4 +1,6 @@
 package com.example.delivery_app.domain.review.repository;
 
-public class ReviewRepository {
+import com.example.delivery_app.domain.review.entity.Review;
+
+public interface ReviewRepository extends JpaRipository<Review, Long> {
 }
