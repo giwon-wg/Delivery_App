@@ -222,6 +222,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	@Transactional
 	public void changePassword(Long targetId, UserAuth currentUser, PasswordChangeRequest request) {
 
 		User user = userRepository.findActiveById(targetId)
