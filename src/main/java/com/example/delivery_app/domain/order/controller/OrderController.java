@@ -93,14 +93,13 @@ public class OrderController {
 		return ResponseEntity.ok(
 			CommonResponseDto.of(
 				OrderSuccessCode.ORDER_ACCEPT_SUCCESS,
-				orderService.requestOrder(orderId, OrderStatus.ACCEPTED, auth)
+				orderService.requestAdminOrder(orderId, OrderStatus.ACCEPTED, auth)
 			)
 		);
 	}
 
 	/**
 	 * [Controller/관리자] 주문 완료하는 메서드
-	 * FIXME: 주문상태 검증 로직 필요
 	 * @param orderId 주문 id
 	 * @param auth 로그인 객체
 	 * @return 배달완료한 주문 응답 객체를 반환
@@ -112,7 +111,7 @@ public class OrderController {
 		return ResponseEntity.ok(
 			CommonResponseDto.of(
 				OrderSuccessCode.ORDER_COMPLETE_SUCCESS,
-				orderService.requestOrder(orderId, OrderStatus.DELIVERED, auth)
+				orderService.requestUserOrder(orderId, OrderStatus.DELIVERED, auth)
 			)
 		);
 	}
@@ -130,7 +129,7 @@ public class OrderController {
 		return ResponseEntity.ok(
 			CommonResponseDto.of(
 				OrderSuccessCode.ORDER_REJECT_SUCCESS,
-				orderService.requestOrder(storeId, OrderStatus.CANCELLED, auth)
+				orderService.requestAdminOrder(storeId, OrderStatus.CANCELLED, auth)
 			)
 		);
 	}

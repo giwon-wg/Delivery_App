@@ -16,9 +16,15 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	@Query("SELECT u FROM User u WHERE u.email = :email AND u.isDeleted = false")
 	Optional<User> findByEmail(String email); // 이메일 로그인
 
+
 	boolean existsByNicknameAndIsDeletedFalse(String nickname); // 닉네임 중복 체크
 
 	@Query("SELECT u FROM User u WHERE u.id = :id AND u.isDeleted = false")
 	Optional<User> findActiveById(Long id);
+
+	default User findByIdOrElseThrow(Long id) {
+		return findById(id)
+			.orElseThrow(() -> new RuntimeException("추후 수정해야 합니다."));
+	}
 
 }
