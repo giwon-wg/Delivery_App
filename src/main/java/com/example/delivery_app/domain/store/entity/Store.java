@@ -1,8 +1,11 @@
 package com.example.delivery_app.domain.store.entity;
 
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.example.delivery_app.common.entity.BaseEntity;
+import com.example.delivery_app.domain.menu.entity.Menu;
 import com.example.delivery_app.domain.store.dto.request.StoreRequestDto;
 import com.example.delivery_app.domain.store.enums.IsOpen;
 import com.example.delivery_app.domain.store.enums.StoreStatus;
@@ -11,9 +14,11 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Builder;
 import lombok.Getter;
@@ -68,6 +73,9 @@ public class Store extends BaseEntity {
 
 	@Column(nullable = false)
 	private LocalTime closeTime;
+
+	@OneToMany(mappedBy = "store", fetch = FetchType.LAZY)
+	private List<Menu> menus = new ArrayList<>();
 
 	@Builder
 	public Store(String storeName, String storeAddress, String storeIntro, String storePhone, String foodCategory,

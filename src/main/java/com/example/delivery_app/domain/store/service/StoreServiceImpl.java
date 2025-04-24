@@ -43,7 +43,7 @@ public class StoreServiceImpl implements StoreService {
 
 	@Override
 	public StoreResponseDto getPostById(Long storeId) {
-		Store store = storeRepository.findByIdAndStatus(storeId, StoreStatus.ACTIVE)
+		Store store = storeRepository.findByIdAndStatusWithMenus(storeId, StoreStatus.ACTIVE)
 			.orElseThrow(() -> new IllegalArgumentException("해당 가게가 존재하지 않습니다. id=" + storeId));
 
 		return StoreResponseDto.fromStore(store);
@@ -57,7 +57,7 @@ public class StoreServiceImpl implements StoreService {
 	@Transactional
 	@Override
 	public StoreResponseDto updateStore(Long storeId, StoreRequestDto storeRequestDto) {
-		Store store = storeRepository.findByIdAndStatus(storeId, StoreStatus.ACTIVE)
+		Store store = storeRepository.findByIdAndStatusWithMenus(storeId, StoreStatus.ACTIVE)
 			.orElseThrow(() -> new IllegalArgumentException("가게가 없습니다."));
 		store.updateStoreInfo(storeRequestDto);
 		return StoreResponseDto.fromStore(store);
@@ -65,7 +65,7 @@ public class StoreServiceImpl implements StoreService {
 
 	@Override
 	public StoreDeleteResponseDto deleteStore(Long storeId) {
-		Store store = storeRepository.findByIdAndStatus(storeId, StoreStatus.ACTIVE)
+		Store store = storeRepository.findByIdAndStatusWithMenus(storeId, StoreStatus.ACTIVE)
 			.orElseThrow(() -> new IllegalArgumentException("가게가 없습니다."));
 
 		store.markAsInactive();
@@ -76,7 +76,7 @@ public class StoreServiceImpl implements StoreService {
 	@Transactional
 	@Override
 	public void updateOperatingTime(Long storeId, StoreOperatingTimeRequestDto dto) {
-		Store store = storeRepository.findByIdAndStatus(storeId, StoreStatus.ACTIVE)
+		Store store = storeRepository.findByIdAndStatusWithMenus(storeId, StoreStatus.ACTIVE)
 			.orElseThrow(() -> new IllegalArgumentException("가게가 없습니다"));
 		log.info(">> DTO openTime = {}", dto.getOpenTime());    // 꼭 찍어보세요
 		log.info(">> DTO closeTime = {}", dto.getCloseTime());  // 여기가 null이면 DTO 바인딩 문제
