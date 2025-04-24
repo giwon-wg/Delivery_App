@@ -1,6 +1,6 @@
 package com.example.delivery_app.domain.store.dto.request;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import java.time.LocalTime;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -53,5 +53,16 @@ public class StoreRequestDto {
 	 */
 	@JsonProperty("deliveryTip")
 	private final int deliveryTip;
+	/**
+	 * 가게의 오픈 시간입니다.
+	 */
+	@JsonProperty("openTime")
+	private final LocalTime openTime;
+
+	/**
+	 * 가게의 영업 종료 시간입니다
+	 */
+	@JsonProperty("closeTime")
+	private final LocalTime closeTime;
 
 }
