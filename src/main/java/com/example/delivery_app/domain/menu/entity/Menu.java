@@ -54,16 +54,16 @@ public class Menu extends BaseEntity {
 	private Order order;
 
 	/**
-	 * 기본값 true
-	 * 삭제 시 updateStatus를 통해 false로 바뀝니다
+	 * 기본값 false
+	 * 삭제 시 updateStatus를 통해 true로 바뀝니다
 	 */
-	private boolean status = true;
+	private boolean isDeleted;
 
 	/**
 	 * deleteMenu 시 status 상태 변경 메서드
 	 */
 	public void deleteMenu() {
-		this.status = false;
+		this.isDeleted = true;
 	}
 
 	/**

@@ -51,7 +51,7 @@ public class MenuServiceImpl implements MenuService {
 	@Override
 	public UpdateMenuResponseDto updateMenu(Long storeId, Long menuId, UpdateMenuRequestDto dto) {
 
-		List<Menu> findMenus = menuRepository.findAllByStore_StoreIdAndStatus(storeId, true);
+		List<Menu> findMenus = menuRepository.findAllByStore_StoreIdAndIsDeleted(storeId, false);
 
 		for (Menu menu : findMenus) {
 			if (menuId.equals(menu.getId())) {
@@ -66,7 +66,7 @@ public class MenuServiceImpl implements MenuService {
 	@Transactional
 	@Override
 	public DeleteResponseDto deleteMenu(Long storeId, Long menuId) {
-		List<Menu> findMenus = menuRepository.findAllByStore_StoreIdAndStatus(storeId, true);
+		List<Menu> findMenus = menuRepository.findAllByStore_StoreIdAndIsDeleted(storeId, false);
 
 		for (Menu menu : findMenus) {
 			if (menuId.equals(menu.getId())) {
@@ -90,8 +90,13 @@ public class MenuServiceImpl implements MenuService {
 
 		// List<Menu> findMenus = menuRepository.findAllByIdByWord(storeId, word, true);
 
-		List<Menu> findMenus = menuRepository.findAllByStore_StoreIdAndMenuNameContainingAndStatus(storeId, word, true);
+		if (word != null) {
+			List<Menu> findMenus = menuRepository.findAllByStore_StoreIdAndMenuNameContainingAndIsDeleted(storeId, word,
+				false);
+			return findMenus.stream().map(MenuResponseDto::fromMenu).toList();
+		}
 
+		List<Menu> findMenus = menuRepository.findAllByStore_StoreId(storeId);
 		return findMenus.stream().map(MenuResponseDto::fromMenu).toList();
 	}
 }
