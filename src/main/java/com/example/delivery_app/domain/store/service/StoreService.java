@@ -7,18 +7,19 @@ import com.example.delivery_app.domain.store.dto.request.StoreOperatingTimeReque
 import com.example.delivery_app.domain.store.dto.request.StoreRequestDto;
 import com.example.delivery_app.domain.store.dto.response.StoreDeleteResponseDto;
 import com.example.delivery_app.domain.store.dto.response.StoreResponseDto;
+import com.example.delivery_app.domain.user.Auth.UserAuth;
 
 public interface StoreService {
 
-	StoreResponseDto saveStore(StoreRequestDto storeRequestDto);
+	StoreResponseDto saveStore(StoreRequestDto storeRequestDto, UserAuth userAuth);
 
 	StoreResponseDto getPostById(Long storeId);
 
 	Page<StoreResponseDto> getAllStoreList(Pageable pageable);
 
-	StoreResponseDto updateStore(Long storeId, StoreRequestDto storeRequestDto);
+	StoreResponseDto updateStore(Long storeId, StoreRequestDto storeRequestDto, UserAuth userAuth);
 
-	StoreDeleteResponseDto deleteStore(Long storeId);
+	StoreDeleteResponseDto deleteStore(Long storeId, UserAuth userAuth);
 
-	StoreResponseDto updateOperatingTime(Long storeId, StoreOperatingTimeRequestDto dto);
+	StoreResponseDto updateOperatingTime(Long storeId, StoreOperatingTimeRequestDto dto, UserAuth userAuth);
 }
