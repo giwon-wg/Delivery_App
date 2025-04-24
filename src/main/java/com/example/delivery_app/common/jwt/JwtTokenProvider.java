@@ -3,6 +3,7 @@ package com.example.delivery_app.common.jwt;
 import java.security.Key;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
@@ -42,18 +43,19 @@ public class JwtTokenProvider {
 			.setSubject(userId.toString())
 			.claim("roles", roles.stream()
 				.map(UserRole::name)
-				.toList())
+				.collect(Collectors.toList()))
 			.setIssuedAt(now)
 			.setExpiration(expiry)
 			.signWith(key, SignatureAlgorithm.HS256)
 			.compact();
 	}
 
-	public String generateRefreshToken() {
+	public String generateRefreshToken(Long userId) {
 		Date now = new Date();
 		Date expiry = new Date(now.getTime() + refreshTokenExpireTime);
 
 		return Jwts.builder()
+			.setSubject(userId.toString())
 			.setIssuedAt(now)
 			.setExpiration(expiry)
 			.signWith(key, SignatureAlgorithm.HS256)
