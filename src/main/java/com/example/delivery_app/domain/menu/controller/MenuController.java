@@ -111,7 +111,7 @@ public class MenuController {
 	@GetMapping
 	public ResponseEntity<CommonResponseDto<List<MenuResponseDto>>> search(
 		@PathVariable Long storeId,
-		@RequestParam String word
+		@RequestParam(required = false) String word
 	) {
 		return ResponseEntity.ok(
 			CommonResponseDto.of(
