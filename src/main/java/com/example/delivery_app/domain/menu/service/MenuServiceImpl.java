@@ -49,7 +49,6 @@ public class MenuServiceImpl implements MenuService {
 		for (Menu menu : findMenus) {
 			if (menuId.equals(menu.getId())) {
 				menu.update(dto);
-				menuRepository.save(menu);
 				return new UpdateMenuResponseDto(menu);
 			}
 		}
@@ -65,7 +64,6 @@ public class MenuServiceImpl implements MenuService {
 		for (Menu menu : findMenus) {
 			if (menuId.equals(menu.getId())) {
 				menu.deleteMenu();
-				menuRepository.save(menu);
 				return new DeleteResponseDto(menu);
 			}
 		}
