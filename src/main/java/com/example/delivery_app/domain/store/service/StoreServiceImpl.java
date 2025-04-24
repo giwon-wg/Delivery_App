@@ -4,12 +4,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.example.delivery_app.common.exception.CustomException;
 import com.example.delivery_app.domain.store.dto.request.StoreOperatingTimeRequestDto;
 import com.example.delivery_app.domain.store.dto.request.StoreRequestDto;
 import com.example.delivery_app.domain.store.dto.response.StoreDeleteResponseDto;
 import com.example.delivery_app.domain.store.dto.response.StoreResponseDto;
 import com.example.delivery_app.domain.store.entity.Store;
 import com.example.delivery_app.domain.store.enums.StoreStatus;
+import com.example.delivery_app.domain.store.exception.StoreErrorCode;
 import com.example.delivery_app.domain.store.repository.StoreRepository;
 import com.example.delivery_app.domain.user.Auth.UserAuth;
 import com.example.delivery_app.domain.user.entity.User;
@@ -35,11 +37,11 @@ public class StoreServiceImpl implements StoreService {
 
 		long activeStoreCount = storeRepository.countActiveStoresByUserId(userId);
 		if (activeStoreCount >= 3) {
-			throw new IllegalArgumentException("가게는 최대 3개까지만 등록할 수 있습니다.");
+			throw new CustomException(StoreErrorCode.STORE_LIMIT_EXCEEDED);
 		}
 
 		User user = userRepository.findById(userAuth.getId())
-			.orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
+			.orElseThrow(() -> new CustomException(StoreErrorCode.USER_NOT_FOUND));
 
 		Store store = Store.builder()
 			.storeName(storeRequestDto.getStoreName())
@@ -60,7 +62,7 @@ public class StoreServiceImpl implements StoreService {
 	@Override
 	public StoreResponseDto getPostById(Long storeId) {
 		Store store = storeRepository.findByIdAndStatusWithMenus(storeId, StoreStatus.ACTIVE)
-			.orElseThrow(() -> new IllegalArgumentException("해당 가게가 존재하지 않습니다. id=" + storeId));
+			.orElseThrow(() -> new CustomException(StoreErrorCode.STORE_NOT_FOUND));
 
 		return StoreResponseDto.fromStore(store);
 	}
@@ -75,7 +77,8 @@ public class StoreServiceImpl implements StoreService {
 	public StoreResponseDto updateStore(Long storeId, StoreRequestDto storeRequestDto, UserAuth userAuth) {
 		UserRole role = extractHighestPriorityRole(userAuth);
 		Store store = storeRepository.findByIdAndStatusWithMenus(storeId, StoreStatus.ACTIVE)
-			.orElseThrow(() -> new IllegalArgumentException("가게가 없습니다."));
+			.orElseThrow(() -> new CustomException(StoreErrorCode.STORE_NOT_FOUND));
+
 		validateStoreOwner(userAuth.getId(), role, store);
 		store.updateStoreInfo(storeRequestDto);
 		return StoreResponseDto.fromStore(store);
@@ -85,7 +88,7 @@ public class StoreServiceImpl implements StoreService {
 	public StoreDeleteResponseDto deleteStore(Long storeId, UserAuth userAuth) {
 		UserRole role = extractHighestPriorityRole(userAuth);
 		Store store = storeRepository.findByIdAndStatusWithMenus(storeId, StoreStatus.ACTIVE)
-			.orElseThrow(() -> new IllegalArgumentException("가게가 없습니다."));
+			.orElseThrow(() -> new CustomException(StoreErrorCode.STORE_NOT_FOUND));
 		validateStoreOwner(userAuth.getId(), role, store);
 
 		store.markAsInactive();
@@ -98,7 +101,7 @@ public class StoreServiceImpl implements StoreService {
 	public StoreResponseDto updateOperatingTime(Long storeId, StoreOperatingTimeRequestDto dto, UserAuth userAuth) {
 		UserRole role = extractHighestPriorityRole(userAuth);
 		Store store = storeRepository.findByIdAndStatusWithMenus(storeId, StoreStatus.ACTIVE)
-			.orElseThrow(() -> new IllegalArgumentException("가게가 없습니다"));
+			.orElseThrow(() -> new CustomException(StoreErrorCode.STORE_NOT_FOUND));
 		validateStoreOwner(userAuth.getId(), role, store);
 
 		store.updateOperatingTime(dto.getOpenTime(), dto.getCloseTime());
@@ -112,7 +115,7 @@ public class StoreServiceImpl implements StoreService {
 		}
 
 		if (!store.getUser().getId().equals(userId)) {
-			throw new IllegalArgumentException("해당 가게의 소유주가 아닙니다.");
+			throw new CustomException(StoreErrorCode.NOT_STORE_OWNER);
 		}
 	}
 
