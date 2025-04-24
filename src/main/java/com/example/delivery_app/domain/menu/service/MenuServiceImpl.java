@@ -88,15 +88,16 @@ public class MenuServiceImpl implements MenuService {
 
 	/**
 	 * 검색 기능 구현을 위해 추가
+	 * 일부 단어만 입력하여도 그와 관련된 메뉴들이 출력
 	 * @param storeId
-	 * @param menuName
+	 * @param word
 	 * @return
 	 */
 	@Override
-	public List<MenuResponseDto> search(Long storeId, String menuName) {
+	public List<MenuResponseDto> search(Long storeId, String word) {
 
-		List<Menu> findMenus = menuRepository.findByIdOrElseThrow(storeId, true);
+		List<Menu> findMenus = menuRepository.findAllByIdByWord(storeId, word, true);
 
-		return List.of();
+		return findMenus.stream().map(MenuResponseDto::toDto).toList();
 	}
 }

@@ -22,4 +22,6 @@ public interface MenuService {
 	 * @return
 	 */
 	List<MenuResponseDto> findAll(Long storeId);
+
+	List<MenuResponseDto> search(Long storeId, String word);
 }
