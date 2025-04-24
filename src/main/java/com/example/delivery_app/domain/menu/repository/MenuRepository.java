@@ -6,8 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import com.example.delivery_app.domain.menu.entity.Menu;
-import com.example.delivery_app.domain.menu.exception.CustomException;
-import com.example.delivery_app.domain.menu.exception.ErrorCode;
 
 import io.lettuce.core.dynamic.annotation.Param;
 
@@ -17,9 +15,6 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
 	List<Menu> findByIdAndStatus(@Param("storeId") Long storeId, @Param("status") boolean status);
 
 	default List<Menu> findByIdOrElseThrow(Long storeId, boolean status) {
-		if (storeId == null) {
-			throw new CustomException(ErrorCode.MENU_NOT_FOUND);
-		}
 		return findByIdAndStatus(storeId, status);
 	}
 

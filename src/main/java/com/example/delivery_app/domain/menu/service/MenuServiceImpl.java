@@ -79,7 +79,11 @@ public class MenuServiceImpl implements MenuService {
 	@Override
 	public List<MenuResponseDto> findAll(Long storeId) {
 
-		return menuRepository.findAll(true).stream().map(MenuResponseDto::toDto).toList();
+		if (storeRepository.findById(storeId).isEmpty()) {
+			throw new CustomException(ErrorCode.MENU_NOT_FOUND); // 사실 STORE_NOT_FOUND가 맞는 거 같음
+		}
+
+		return menuRepository.findByIdAndStatus(storeId, true).stream().map(MenuResponseDto::toDto).toList();
 	}
 
 	/**
@@ -91,7 +95,7 @@ public class MenuServiceImpl implements MenuService {
 	@Override
 	public List<MenuResponseDto> search(Long storeId, String menuName) {
 
-		menuRepository.findByIdOrElseThrow(storeId, true);
+		List<Menu> findMenus = menuRepository.findByIdOrElseThrow(storeId, true);
 
 		return List.of();
 	}
