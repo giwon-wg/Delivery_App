@@ -16,12 +16,6 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
 	 * @param status
 	 * @return
 	 */
-	// @Query("SELECT m FROM Menu m WHERE m.store.storeId = :storeId AND m.status = :status")
-	// List<Menu> findByIdAndStatus(@Param("storeId") Long storeId, @Param("status") boolean status);
-	//
-	// default List<Menu> findByIdOrElseThrow1(Long storeId, boolean status) {
-	// 	return findByIdAndStatus(storeId, status);
-	// }
 	List<Menu> findAllByStore_StoreIdAndIsDeleted(Long storeStoreId, boolean status);
 
 	List<Menu> findAllByStore_StoreId(Long storeId);
@@ -37,8 +31,6 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
 	 * @param status
 	 * @return
 	 */
-	// @Query("SELECT m FROM Menu m WHERE m.store.storeId = :storeId AND m.menuName LIKE CONCAT('%', :word, '%') AND m.status = :status")
-	// List<Menu> findAllByIdByWord(@Param("storeId") Long storeId, @Param("word") String word, boolean status);
 	List<Menu> findAllByStore_StoreIdAndMenuNameContainingAndIsDeleted(Long storeStoreId, String menuName,
 		boolean status);
 
