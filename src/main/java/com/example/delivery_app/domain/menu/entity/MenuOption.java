@@ -3,6 +3,7 @@ package com.example.delivery_app.domain.menu.entity;
 import com.example.delivery_app.common.entity.BaseEntity;
 import com.example.delivery_app.domain.menu.dto.requestdto.MenuOptionUpdateRequestDto;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -25,10 +26,13 @@ public class MenuOption extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	@Column(nullable = false)
 	private String optionName;
 
+	@Column(nullable = false)
 	private Integer price;
 
+	@Column(nullable = false)
 	private String content;
 
 	/**
@@ -50,12 +54,19 @@ public class MenuOption extends BaseEntity {
 		this.menu = menu;
 	}
 
+	/**
+	 * updateMenuOption을 위한 메서드
+	 * @param dto
+	 */
 	public void updateMenuOption(MenuOptionUpdateRequestDto dto) {
 		this.optionName = dto.getOptionName();
 		this.price = dto.getPrice();
 		this.content = dto.getContent();
 	}
 
+	/**
+	 * deleteMenuOption 시 status 상태 변경 메서드
+	 */
 	public void deleteMenuOption() {
 		this.isDeleted = true;
 	}

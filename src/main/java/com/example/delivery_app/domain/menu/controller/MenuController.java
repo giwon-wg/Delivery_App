@@ -141,7 +141,7 @@ public class MenuController {
 	public ResponseEntity<CommonResponseDto<MenuOptionResponseDto>> optionSave(
 		@PathVariable Long storeId,
 		@PathVariable Long menuId,
-		@RequestBody MenuOptionRequestDto dto
+		@Valid @RequestBody MenuOptionRequestDto dto
 	) {
 
 		return ResponseEntity.status(HttpStatus.CREATED)
@@ -188,7 +188,7 @@ public class MenuController {
 		@PathVariable Long storeId,
 		@PathVariable Long menuId,
 		@PathVariable Long optionId,
-		@RequestBody MenuOptionUpdateRequestDto dto
+		@Valid @RequestBody MenuOptionUpdateRequestDto dto
 	) {
 
 		return ResponseEntity.ok(

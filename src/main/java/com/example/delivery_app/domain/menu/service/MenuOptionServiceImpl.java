@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.example.delivery_app.common.exception.CustomException;
 import com.example.delivery_app.domain.menu.dto.requestdto.MenuOptionRequestDto;
 import com.example.delivery_app.domain.menu.dto.requestdto.MenuOptionUpdateRequestDto;
 import com.example.delivery_app.domain.menu.dto.responsedto.MenuOptionDeleteResponseDto;
@@ -11,7 +12,6 @@ import com.example.delivery_app.domain.menu.dto.responsedto.MenuOptionResponseDt
 import com.example.delivery_app.domain.menu.dto.responsedto.MenuOptionUpdateResponseDto;
 import com.example.delivery_app.domain.menu.entity.Menu;
 import com.example.delivery_app.domain.menu.entity.MenuOption;
-import com.example.delivery_app.domain.menu.exception.CustomException;
 import com.example.delivery_app.domain.menu.exception.ErrorCode;
 import com.example.delivery_app.domain.menu.repository.MenuOptionRepository;
 import com.example.delivery_app.domain.menu.repository.MenuRepository;
