@@ -133,14 +133,11 @@ public class MenuOptionServiceImpl implements MenuOptionService {
 	private void checkMismatchError(Long storeId, Long menuId) {
 		Store findStore = storeRepository.findByIdOrElseThrow(storeId);
 
-		Menu findMenu = findStore.getMenus()
+		findStore.getMenus()
 			.stream()
 			.filter(abc -> abc.getId().equals(menuId))
 			.findFirst()
 			.orElseThrow(() -> new CustomException(ErrorCode.MISMATCH_ERROR));
-
-		if (findMenu.isDeleted()) {
-			throw new CustomException(ErrorCode.MENU_ALREADY_DELETED);
-		}
+		
 	}
 }
