@@ -14,7 +14,6 @@ import com.example.delivery_app.domain.menu.entity.Menu;
 import com.example.delivery_app.domain.menu.entity.MenuOption;
 import com.example.delivery_app.domain.menu.exception.ErrorCode;
 import com.example.delivery_app.domain.menu.repository.MenuOptionRepository;
-import com.example.delivery_app.domain.menu.repository.MenuRepository;
 import com.example.delivery_app.domain.store.entity.Store;
 import com.example.delivery_app.domain.store.repository.StoreRepository;
 
@@ -26,7 +25,6 @@ import lombok.RequiredArgsConstructor;
 public class MenuOptionServiceImpl implements MenuOptionService {
 
 	private final StoreRepository storeRepository;
-	private final MenuRepository menuRepository;
 	private final MenuOptionRepository menuOptionRepository;
 
 	/**
@@ -43,11 +41,11 @@ public class MenuOptionServiceImpl implements MenuOptionService {
 		Store findStore = storeRepository.findById(storeId)
 			.orElseThrow(() -> new IllegalArgumentException("해당 가게가 존재하지 않습니다. id=" + storeId));
 
-		Menu findMenu = menuRepository.findByIdOrElseThrow(menuId);
-
-		if (!findMenu.getStore().getStoreId().equals(findStore.getStoreId())) {
-			throw new CustomException(ErrorCode.MISMATCH_ERROR);
-		}
+		Menu findMenu = findStore.getMenus()
+			.stream()
+			.filter(abc -> abc.getId().equals(menuId))
+			.findFirst()
+			.orElseThrow(() -> new CustomException(ErrorCode.MISMATCH_ERROR));
 
 		MenuOption menuOption = MenuOption.builder()
 			.optionName((dto.getOptionName()))
@@ -71,14 +69,7 @@ public class MenuOptionServiceImpl implements MenuOptionService {
 	@Override
 	public List<MenuOptionResponseDto> findAllOption(Long storeId, Long menuId) {
 
-		Store findStore = storeRepository.findById(storeId)
-			.orElseThrow(() -> new IllegalArgumentException("해당 가게가 존재하지 않습니다. id=" + storeId));
-
-		Menu findMenu = menuRepository.findByIdOrElseThrow(menuId);
-
-		if (!findMenu.getStore().getStoreId().equals(findStore.getStoreId())) {
-			throw new CustomException(ErrorCode.MISMATCH_ERROR);
-		}
+		checkMismatchError(storeId, menuId);
 
 		List<MenuOption> findAllOption = menuOptionRepository.findAllByMenu_IdAndIsDeleted(menuId, false);
 
@@ -98,14 +89,7 @@ public class MenuOptionServiceImpl implements MenuOptionService {
 	public MenuOptionUpdateResponseDto updateMenuOption(Long storeId, Long menuId, Long optionId,
 		MenuOptionUpdateRequestDto dto) {
 
-		Store findStore = storeRepository.findById(storeId)
-			.orElseThrow(() -> new IllegalArgumentException("해당 가게가 존재하지 않습니다. id=" + storeId));
-
-		Menu findMenu = menuRepository.findByIdOrElseThrow(menuId);
-
-		if (!findMenu.getStore().getStoreId().equals(findStore.getStoreId())) {
-			throw new CustomException(ErrorCode.MISMATCH_ERROR);
-		}
+		checkMismatchError(storeId, menuId);
 
 		MenuOption findMenuOption = menuOptionRepository.findByIdOrElseThrow(optionId);
 
@@ -129,14 +113,7 @@ public class MenuOptionServiceImpl implements MenuOptionService {
 	@Override
 	public MenuOptionDeleteResponseDto deleteMenuOption(Long storeId, Long menuId, Long optionId) {
 
-		Store findStore = storeRepository.findById(storeId)
-			.orElseThrow(() -> new IllegalArgumentException("해당 가게가 존재하지 않습니다. id=" + storeId));
-
-		Menu findMenu = menuRepository.findByIdOrElseThrow(menuId);
-
-		if (!findMenu.getStore().getStoreId().equals(findStore.getStoreId())) {
-			throw new CustomException(ErrorCode.MISMATCH_ERROR);
-		}
+		checkMismatchError(storeId, menuId);
 
 		MenuOption findMenuOption = menuOptionRepository.findByIdOrElseThrow(optionId);
 
@@ -145,4 +122,19 @@ public class MenuOptionServiceImpl implements MenuOptionService {
 		return MenuOptionDeleteResponseDto.fromMenuOption(findMenuOption);
 	}
 
+	/**
+	 * 검증 메서드
+	 * @param storeId
+	 * @param menuId
+	 */
+	private void checkMismatchError(Long storeId, Long menuId) {
+		Store findStore = storeRepository.findById(storeId)
+			.orElseThrow(() -> new IllegalArgumentException("해당 가게가 존재하지 않습니다. id=" + storeId));
+
+		findStore.getMenus()
+			.stream()
+			.filter(abc -> abc.getId().equals(menuId))
+			.findFirst()
+			.orElseThrow(() -> new CustomException(ErrorCode.MISMATCH_ERROR));
+	}
 }
