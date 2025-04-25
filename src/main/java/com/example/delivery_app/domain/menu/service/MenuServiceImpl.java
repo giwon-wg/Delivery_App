@@ -64,17 +64,20 @@ public class MenuServiceImpl implements MenuService {
 	@Override
 	public UpdateMenuResponseDto updateMenu(Long storeId, Long menuId, UpdateMenuRequestDto dto) {
 
+		storeRepository.findByIdOrElseThrow(storeId);
+
 		List<Menu> findMenus = menuRepository.findAllByStore_StoreIdAndIsDeleted(storeId, false);
 
 		for (Menu menu : findMenus) {
-			if (menuId.equals(menu.getId()) && !menu.getMenuName().equals(dto.getMenuName())) {
-				menu.update(dto);
-				return new UpdateMenuResponseDto(menu);
-			} else {
-				throw new CustomException(ErrorCode.INVALID_MENU_NAME);
+			if (menuId.equals(menu.getId())) {
+				if (!menu.getMenuName().equals(dto.getMenuName())) {
+					menu.update(dto);
+					return new UpdateMenuResponseDto(menu);
+				} else {
+					throw new CustomException(ErrorCode.INVALID_MENU_NAME);
+				}
 			}
 		}
-
 		throw new CustomException(ErrorCode.MENU_NOT_FOUND);
 	}
 
@@ -87,6 +90,9 @@ public class MenuServiceImpl implements MenuService {
 	@Transactional
 	@Override
 	public DeleteResponseDto deleteMenu(Long storeId, Long menuId) {
+
+		storeRepository.findByIdOrElseThrow(storeId);
+
 		List<Menu> findMenus = menuRepository.findAllByStore_StoreIdAndIsDeleted(storeId, false);
 
 		for (Menu menu : findMenus) {
@@ -110,8 +116,11 @@ public class MenuServiceImpl implements MenuService {
 	@Override
 	public List<MenuResponseDto> findMenu(Long storeId, String word) {
 
+		storeRepository.findByIdOrElseThrow(storeId);
+
 		if (word != null) {
-			List<Menu> findMenus = menuRepository.findAllByStore_StoreIdAndMenuNameContainingAndIsDeleted(storeId, word,
+			List<Menu> findMenus = menuRepository.findAllByStore_StoreIdAndMenuNameContainingAndIsDeleted(storeId,
+				word,
 				false);
 			return findMenus.stream().map(MenuResponseDto::fromMenu).toList();
 		}
