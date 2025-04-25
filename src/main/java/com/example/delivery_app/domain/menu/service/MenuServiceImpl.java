@@ -37,8 +37,7 @@ public class MenuServiceImpl implements MenuService {
 	@Override
 	public MenuCreateResponseDto saveMenu(Long storeId, MenuRequestDto dto) {
 
-		Store findStore = storeRepository.findById(storeId)
-			.orElseThrow(() -> new IllegalArgumentException("해당 가게가 존재하지 않습니다. id=" + storeId));
+		Store findStore = storeRepository.findByIdOrElseThrow(storeId);
 
 		Menu menu = Menu.builder()
 			.store(findStore)

@@ -38,8 +38,7 @@ public class MenuOptionServiceImpl implements MenuOptionService {
 	@Override
 	public MenuOptionResponseDto optionSave(Long storeId, Long menuId, MenuOptionRequestDto dto) {
 
-		Store findStore = storeRepository.findById(storeId)
-			.orElseThrow(() -> new IllegalArgumentException("해당 가게가 존재하지 않습니다. id=" + storeId));
+		Store findStore = storeRepository.findByIdOrElseThrow(storeId);
 
 		Menu findMenu = findStore.getMenus()
 			.stream()
@@ -128,8 +127,7 @@ public class MenuOptionServiceImpl implements MenuOptionService {
 	 * @param menuId
 	 */
 	private void checkMismatchError(Long storeId, Long menuId) {
-		Store findStore = storeRepository.findById(storeId)
-			.orElseThrow(() -> new IllegalArgumentException("해당 가게가 존재하지 않습니다. id=" + storeId));
+		Store findStore = storeRepository.findByIdOrElseThrow(storeId);
 
 		findStore.getMenus()
 			.stream()
