@@ -7,6 +7,10 @@ import com.example.delivery_app.common.dto.ResponseCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * 가게(Store) 관련 API 요청이 성공했을 때 반환할 응답 코드(Enum)입니다.
+ * 각 응답은 {@link HttpStatus}와 사용자에게 전달될 메시지를 포함합니다.
+ */
 @RequiredArgsConstructor
 @Getter
 public enum StoreSuccessCode implements ResponseCode {
