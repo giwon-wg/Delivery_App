@@ -90,7 +90,7 @@ public class StoreResponseDto {
 	 * @param store Store 엔티티 객체
 	 * @return StoreResponseDto 변환 객체
 	 */
-	public static StoreResponseDto fromStore(Store store, long reviewCount) {
+	public static StoreResponseDto fromStore(Store store) {
 		return StoreResponseDto.builder()
 			.storeId(store.getStoreId())
 			.storeName(store.getStoreName())

@@ -5,7 +5,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.example.delivery_app.common.exception.CustomException;
-import com.example.delivery_app.domain.review.repository.ReviewRepository;
 import com.example.delivery_app.domain.store.dto.request.StoreOperatingTimeRequestDto;
 import com.example.delivery_app.domain.store.dto.request.StoreRequestDto;
 import com.example.delivery_app.domain.store.dto.response.StoreDeleteResponseDto;
@@ -35,7 +34,6 @@ public class StoreServiceImpl implements StoreService {
 
 	private final StoreRepository storeRepository;
 	private final UserRepository userRepository;
-	private ReviewRepository reviewRepository;
 
 	/**
 	 * 새로운 가게를 등록합니다.
@@ -67,7 +65,7 @@ public class StoreServiceImpl implements StoreService {
 			.user(user)
 			.build();
 		Store savedStore = storeRepository.save(store);
-		return StoreResponseDto.fromStore(savedStore, 0);
+		return StoreResponseDto.fromStore(savedStore);
 	}
 
 	/**
@@ -80,9 +78,7 @@ public class StoreServiceImpl implements StoreService {
 		Store store = storeRepository.findByIdAndStatusWithMenus(storeId, StoreStatus.ACTIVE)
 			.orElseThrow(() -> new CustomException(StoreErrorCode.STORE_NOT_FOUND));
 
-		long reviewCount = reviewRepository.countByStoreId(storeId);
-
-		return StoreResponseDto.fromStore(store, reviewCount);
+		return StoreResponseDto.fromStore(store);
 	}
 
 	/**
@@ -90,11 +86,7 @@ public class StoreServiceImpl implements StoreService {
 	 */
 	@Override
 	public Page<StoreGetAllResponseDto> getAllStoreList(Pageable pageable) {
-		return storeRepository.findAllByStatus(StoreStatus.ACTIVE, pageable)
-			.map(store -> {
-				long reviewCount = reviewRepository.countByStoreId(store.getStoreId());
-				return StoreGetAllResponseDto.fromStore(store, reviewCount);
-			});
+		return storeRepository.findAllByStatus(StoreStatus.ACTIVE, pageable).map(StoreGetAllResponseDto::fromStore);
 	}
 
 	/**
@@ -110,9 +102,7 @@ public class StoreServiceImpl implements StoreService {
 
 		validateStoreOwner(userAuth.getId(), role, store);
 		store.updateStoreInfo(storeRequestDto);
-
-		long reviewCount = reviewRepository.countByStoreId(storeId);
-		return StoreResponseDto.fromStore(store, reviewCount);
+		return StoreResponseDto.fromStore(store);
 	}
 
 	/**
@@ -144,8 +134,7 @@ public class StoreServiceImpl implements StoreService {
 		validateStoreOwner(userAuth.getId(), role, store);
 
 		store.updateOperatingTime(dto.getOpenTime(), dto.getCloseTime());
-		long reviewCount = reviewRepository.countByStoreId(storeId);
-		return StoreResponseDto.fromStore(store, reviewCount);
+		return StoreResponseDto.fromStore(store);
 
 	}
 

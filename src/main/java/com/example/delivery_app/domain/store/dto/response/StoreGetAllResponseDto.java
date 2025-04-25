@@ -83,7 +83,7 @@ public class StoreGetAllResponseDto {
 	 * @param store Store 엔티티
 	 * @return StoreGetAllResponseDto 객체
 	 */
-	public static StoreGetAllResponseDto fromStore(Store store, long reviewCount) {
+	public static StoreGetAllResponseDto fromStore(Store store) {
 		return StoreGetAllResponseDto.builder()
 			.storeId(store.getStoreId())
 			.storeName(store.getStoreName())
@@ -98,7 +98,6 @@ public class StoreGetAllResponseDto {
 			.isOpen(store.getIsOpen().toString())
 			.openTime(store.getOpenTime().toString())
 			.closeTime(store.getCloseTime().toString())
-			.reviewCount((int)reviewCount)
 			.build();
 	}
 }
