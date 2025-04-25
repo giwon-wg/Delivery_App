@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>소셜 로그인 처리중...</title>
+</head>
+<body>
+<p>🔁 로그인 처리 중입니다...</p>
+
+<script>
+    const params = new URLSearchParams(window.location.search);
+    const accessToken = params.get("accessToken");
+    const refreshToken = params.get("refreshToken");
+
+    console.log("🧪 accessToken =", accessToken); // ✅ 콘솔 확인용
+
+    if (accessToken && refreshToken) {
+        localStorage.setItem("accessToken", accessToken);
+        localStorage.setItem("refreshToken", refreshToken);
+        window.location.href = "/home.html";
+    } else {
+        alert("⚠️ 토큰이 존재하지 않습니다. 다시 로그인해주세요.");
+        window.location.href = "/index.html";
+    }
+</script>
+</body>
+</html>

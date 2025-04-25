@@ -8,6 +8,7 @@ import com.example.delivery_app.common.exception.CustomException;
 import com.example.delivery_app.domain.store.dto.request.StoreOperatingTimeRequestDto;
 import com.example.delivery_app.domain.store.dto.request.StoreRequestDto;
 import com.example.delivery_app.domain.store.dto.response.StoreDeleteResponseDto;
+import com.example.delivery_app.domain.store.dto.response.StoreGetAllResponseDto;
 import com.example.delivery_app.domain.store.dto.response.StoreResponseDto;
 import com.example.delivery_app.domain.store.entity.Store;
 import com.example.delivery_app.domain.store.enums.StoreStatus;
@@ -59,8 +60,9 @@ public class StoreServiceImpl implements StoreService {
 		return StoreResponseDto.fromStore(savedStore);
 	}
 
+	@Transactional
 	@Override
-	public StoreResponseDto getPostById(Long storeId) {
+	public StoreResponseDto getStoreById(Long storeId) {
 		Store store = storeRepository.findByIdAndStatusWithMenus(storeId, StoreStatus.ACTIVE)
 			.orElseThrow(() -> new CustomException(StoreErrorCode.STORE_NOT_FOUND));
 
@@ -68,8 +70,8 @@ public class StoreServiceImpl implements StoreService {
 	}
 
 	@Override
-	public Page<StoreResponseDto> getAllStoreList(Pageable pageable) {
-		return storeRepository.findAllByStatus(StoreStatus.ACTIVE, pageable).map(StoreResponseDto::fromStore);
+	public Page<StoreGetAllResponseDto> getAllStoreList(Pageable pageable) {
+		return storeRepository.findAllByStatus(StoreStatus.ACTIVE, pageable).map(StoreGetAllResponseDto::fromStore);
 	}
 
 	@Transactional

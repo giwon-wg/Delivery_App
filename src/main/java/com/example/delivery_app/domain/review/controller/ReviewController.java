@@ -18,6 +18,7 @@ public class ReviewController {
             @RequestBody ReviewRequestDto reviewRequestDto,
             @PathVariable(name = "storeId") Long storeId){
 
+
         return reviewService.saveReview(reviewRequestDto, storeId);
     }
 
@@ -26,7 +27,7 @@ public class ReviewController {
             @PathVariable(name = "storeId") Long storeId,
             @PathVariable(name = "reviewId") Long reviewId
     ){
-
         return reviewService.findReview(storeId, reviewId);
+
     }
 }

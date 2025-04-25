@@ -55,6 +55,8 @@ dependencies {
 
     // oauth2
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
+    implementation 'org.json:json:20230227'
 }
 
 tasks.named('test') {
