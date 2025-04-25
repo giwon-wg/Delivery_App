@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import com.example.delivery_app.common.exception.CustomException;
 import com.example.delivery_app.domain.menu.entity.MenuOption;
-import com.example.delivery_app.domain.menu.exception.CustomException;
 import com.example.delivery_app.domain.menu.exception.ErrorCode;
 
 public interface MenuOptionRepository extends JpaRepository<MenuOption, Long> {

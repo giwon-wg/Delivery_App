@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.example.delivery_app.common.exception.CustomException;
 import com.example.delivery_app.domain.menu.dto.requestdto.MenuRequestDto;
 import com.example.delivery_app.domain.menu.dto.requestdto.UpdateMenuRequestDto;
 import com.example.delivery_app.domain.menu.dto.responsedto.DeleteResponseDto;
@@ -11,7 +12,6 @@ import com.example.delivery_app.domain.menu.dto.responsedto.MenuCreateResponseDt
 import com.example.delivery_app.domain.menu.dto.responsedto.MenuResponseDto;
 import com.example.delivery_app.domain.menu.dto.responsedto.UpdateMenuResponseDto;
 import com.example.delivery_app.domain.menu.entity.Menu;
-import com.example.delivery_app.domain.menu.exception.CustomException;
 import com.example.delivery_app.domain.menu.exception.ErrorCode;
 import com.example.delivery_app.domain.menu.repository.MenuRepository;
 import com.example.delivery_app.domain.store.entity.Store;
@@ -27,12 +27,17 @@ public class MenuServiceImpl implements MenuService {
 	private final MenuRepository menuRepository;
 	private final StoreRepository storeRepository;
 
+	/**
+	 * 메뉴 저장 기능
+	 * @param storeId
+	 * @param dto
+	 * @return
+	 */
 	@Transactional
 	@Override
 	public MenuCreateResponseDto saveMenu(Long storeId, MenuRequestDto dto) {
 
-		Store findStore = storeRepository.findById(storeId)
-			.orElseThrow(() -> new IllegalArgumentException("해당 가게가 존재하지 않습니다. id=" + storeId));
+		Store findStore = storeRepository.findByIdOrElseThrow(storeId);
 
 		Menu menu = Menu.builder()
 			.store(findStore)
@@ -45,9 +50,16 @@ public class MenuServiceImpl implements MenuService {
 
 		Menu savedMenu = menuRepository.save(menu);
 
-		return MenuCreateResponseDto.fromMenu(savedMenu);
+		return MenuCreateResponseDto.menuFrom(savedMenu);
 	}
 
+	/**
+	 * 메뉴 수정 기능
+	 * @param storeId
+	 * @param menuId
+	 * @param dto
+	 * @return
+	 */
 	@Transactional
 	@Override
 	public UpdateMenuResponseDto updateMenu(Long storeId, Long menuId, UpdateMenuRequestDto dto) {
@@ -55,15 +67,23 @@ public class MenuServiceImpl implements MenuService {
 		List<Menu> findMenus = menuRepository.findAllByStore_StoreIdAndIsDeleted(storeId, false);
 
 		for (Menu menu : findMenus) {
-			if (menuId.equals(menu.getId())) {
+			if (menuId.equals(menu.getId()) && !menu.getMenuName().equals(dto.getMenuName())) {
 				menu.update(dto);
 				return new UpdateMenuResponseDto(menu);
+			} else {
+				throw new CustomException(ErrorCode.INVALID_MENU_NAME);
 			}
 		}
 
 		throw new CustomException(ErrorCode.MENU_NOT_FOUND);
 	}
 
+	/**
+	 * 메뉴 삭제 기능
+	 * @param storeId
+	 * @param menuId
+	 * @return
+	 */
 	@Transactional
 	@Override
 	public DeleteResponseDto deleteMenu(Long storeId, Long menuId) {
@@ -96,7 +116,7 @@ public class MenuServiceImpl implements MenuService {
 			return findMenus.stream().map(MenuResponseDto::fromMenu).toList();
 		}
 
-		List<Menu> findMenus = menuRepository.findAllByStore_StoreId(storeId);
+		List<Menu> findMenus = menuRepository.findAllByStore_StoreIdAndIsDeleted(storeId, false);
 		return findMenus.stream().map(MenuResponseDto::fromMenu).toList();
 	}
 }
