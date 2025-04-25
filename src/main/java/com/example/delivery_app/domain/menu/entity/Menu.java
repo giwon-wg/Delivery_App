@@ -59,7 +59,7 @@ public class Menu extends BaseEntity {
 
 	/**
 	 * 기본값 false
-	 * 삭제 시 updateStatus를 통해 true로 바뀝니다
+	 * 삭제 시 deleteMenu를 통해 true로 바뀝니다
 	 */
 	private boolean isDeleted;
 
