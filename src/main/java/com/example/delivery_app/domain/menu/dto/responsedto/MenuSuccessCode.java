@@ -17,7 +17,10 @@ public enum MenuSuccessCode implements ResponseCode {
 	MENU_GET_SUCCESS(HttpStatus.OK, "메뉴가 정상적으로 조회되었습니다."),
 
 	// MenuOption 관련
-	MENU_OPTION_GET_SUCCESS(HttpStatus.OK, "옵션이 정상적으로 추가되었습니다.");
+	MENU_OPTION_CREATE_SUCCESS(HttpStatus.CREATED, "옵션이 정상적으로 추가되었습니다."),
+	MENU_OPTION_GET_SUCCESS(HttpStatus.OK, "옵션이 정상적으로 조회되었습니다."),
+	MENU_OPTION_UPDATE_SUCCESS(HttpStatus.OK, "옵션이 정상적으로 수정되었습니다."),
+	MENU_OPTION_DELETE_SUCCESS(HttpStatus.OK, "옵션이 정상적으로 삭제되었습니다.");
 
 	private final HttpStatus httpStatus;
 	private final String message;
