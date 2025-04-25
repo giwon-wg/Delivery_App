@@ -27,6 +27,12 @@ public class MenuServiceImpl implements MenuService {
 	private final MenuRepository menuRepository;
 	private final StoreRepository storeRepository;
 
+	/**
+	 * 메뉴 저장 기능
+	 * @param storeId
+	 * @param dto
+	 * @return
+	 */
 	@Transactional
 	@Override
 	public MenuCreateResponseDto saveMenu(Long storeId, MenuRequestDto dto) {
@@ -45,9 +51,16 @@ public class MenuServiceImpl implements MenuService {
 
 		Menu savedMenu = menuRepository.save(menu);
 
-		return MenuCreateResponseDto.fromMenu(savedMenu);
+		return MenuCreateResponseDto.menuFrom(savedMenu);
 	}
 
+	/**
+	 * 메뉴 수정 기능
+	 * @param storeId
+	 * @param menuId
+	 * @param dto
+	 * @return
+	 */
 	@Transactional
 	@Override
 	public UpdateMenuResponseDto updateMenu(Long storeId, Long menuId, UpdateMenuRequestDto dto) {
@@ -64,6 +77,12 @@ public class MenuServiceImpl implements MenuService {
 		throw new CustomException(ErrorCode.MENU_NOT_FOUND);
 	}
 
+	/**
+	 * 메뉴 삭제 기능
+	 * @param storeId
+	 * @param menuId
+	 * @return
+	 */
 	@Transactional
 	@Override
 	public DeleteResponseDto deleteMenu(Long storeId, Long menuId) {
