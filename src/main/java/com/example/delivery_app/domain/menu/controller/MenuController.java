@@ -31,6 +31,8 @@ import com.example.delivery_app.domain.menu.dto.responsedto.UpdateMenuResponseDt
 import com.example.delivery_app.domain.menu.service.MenuOptionService;
 import com.example.delivery_app.domain.menu.service.MenuService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -48,7 +50,11 @@ public class MenuController {
 	 * @param dto
 	 * @return
 	 */
-	@PreAuthorize("hasAnyRole('OWNER, ADMIN')")
+	@Operation(
+		summary = "메뉴 추가",
+		description = "카테고리, 사진, 이름, 가격, 설명을 입력받습니다",
+		security = {@SecurityRequirement(name = "bearerAuth")})
+	@PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
 	@PostMapping
 	public ResponseEntity<CommonResponseDto<MenuCreateResponseDto>> saveMenu(
 		@PathVariable Long storeId,
@@ -70,7 +76,11 @@ public class MenuController {
 	 * @param dto
 	 * @return
 	 */
-	@PreAuthorize("hasAnyRole('OWNER, ADMIN')")
+	@Operation(
+		summary = "메뉴 수정",
+		description = "사진, 이름, 가격, 설명을 입력받습니다",
+		security = {@SecurityRequirement(name = "bearerAuth")})
+	@PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
 	@PatchMapping("/{menuId}")
 	public ResponseEntity<CommonResponseDto<UpdateMenuResponseDto>> updateMenu(
 		@PathVariable Long storeId,
@@ -93,7 +103,10 @@ public class MenuController {
 	 * @param menuId
 	 * @return
 	 */
-	@PreAuthorize("hasAnyRole('OWNER, ADMIN')")
+	@Operation(
+		summary = "메뉴 삭제",
+		security = {@SecurityRequirement(name = "bearerAuth")})
+	@PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
 	@DeleteMapping("/{menuId}")
 	public ResponseEntity<CommonResponseDto<DeleteResponseDto>> deleteMenu(
 		@PathVariable Long storeId,
@@ -115,7 +128,11 @@ public class MenuController {
 	 * @param word
 	 * @return
 	 */
-	@PreAuthorize("hasAnyRole('OWNER, ADMIN, USER')")
+	@Operation(
+		summary = "메뉴 검색",
+		description = "word에 일부 단어 입력 시에도 검색가능합니다",
+		security = {@SecurityRequirement(name = "bearerAuth")})
+	@PreAuthorize("hasAnyRole('OWNER', 'ADMIN', 'USER')")
 	@GetMapping
 	public ResponseEntity<CommonResponseDto<List<MenuResponseDto>>> findMenu(
 		@PathVariable Long storeId,
@@ -136,7 +153,11 @@ public class MenuController {
 	 * @param dto
 	 * @return
 	 */
-	@PreAuthorize("hasAnyRole('OWNER, ADMIN')")
+	@Operation(
+		summary = "옵션 추가",
+		description = "옵션 이름, 가격, 설명을 입력받습니다",
+		security = {@SecurityRequirement(name = "bearerAuth")})
+	@PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
 	@PostMapping("/{menuId}/options")
 	public ResponseEntity<CommonResponseDto<MenuOptionResponseDto>> optionSave(
 		@PathVariable Long storeId,
@@ -159,7 +180,10 @@ public class MenuController {
 	 * @param menuId
 	 * @return
 	 */
-	@PreAuthorize("hasAnyRole('OWNER, ADMIN, USER')")
+	@Operation(
+		summary = "옵션 조회",
+		security = {@SecurityRequirement(name = "bearerAuth")})
+	@PreAuthorize("hasAnyRole('OWNER', 'ADMIN', 'USER')")
 	@GetMapping("/{menuId}/options")
 	public ResponseEntity<CommonResponseDto<List<MenuOptionResponseDto>>> findAllOption(
 		@PathVariable Long storeId,
@@ -182,7 +206,11 @@ public class MenuController {
 	 * @param dto
 	 * @return
 	 */
-	@PreAuthorize("hasAnyRole('OWNER, ADMIN')")
+	@Operation(
+		summary = "옵션 수정",
+		description = "옵션 이름, 가격, 설명을 입력받습니다",
+		security = {@SecurityRequirement(name = "bearerAuth")})
+	@PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
 	@PatchMapping("/{menuId}/options/{optionId}")
 	public ResponseEntity<CommonResponseDto<MenuOptionUpdateResponseDto>> updateMenuOption(
 		@PathVariable Long storeId,
@@ -206,7 +234,10 @@ public class MenuController {
 	 * @param optionId
 	 * @return
 	 */
-	@PreAuthorize("hasAnyRole('OWNER, ADMIN')")
+	@Operation(
+		summary = "옵션 삭제",
+		security = {@SecurityRequirement(name = "bearerAuth")})
+	@PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
 	@DeleteMapping("/{menuId}/options/{optionId}")
 	public ResponseEntity<CommonResponseDto<MenuOptionDeleteResponseDto>> deleteMenuOption(
 		@PathVariable Long storeId,
