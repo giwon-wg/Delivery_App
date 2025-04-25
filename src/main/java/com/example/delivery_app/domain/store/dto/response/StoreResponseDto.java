@@ -48,6 +48,7 @@ public class StoreResponseDto {
 			.foodCategory(store.getFoodCategory())
 			.storeAddress(store.getStoreAddress())
 			.storePhone(store.getStorePhone())
+			.storeIntro(store.getStoreIntro())
 			.minDeliveryPrice(store.getMinDeliveryPrice())
 			.deliveryTip(store.getDeliveryTip())
 			.rating(store.getRating())
