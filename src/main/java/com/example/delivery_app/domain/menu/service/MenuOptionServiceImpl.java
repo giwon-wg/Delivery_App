@@ -114,6 +114,13 @@ public class MenuOptionServiceImpl implements MenuOptionService {
 		return MenuOptionUpdateResponseDto.fromMenuOption(findMenuOption);
 	}
 
+	/**
+	 * 메뉴 옵션 삭제 기능
+	 * @param storeId
+	 * @param menuId
+	 * @param optionId
+	 * @return
+	 */
 	@Transactional
 	@Override
 	public MenuOptionDeleteResponseDto deleteMenuOption(Long storeId, Long menuId, Long optionId) {
