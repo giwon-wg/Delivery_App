@@ -1,5 +1,8 @@
 package com.example.delivery_app.domain.menu.dto.responsedto;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.example.delivery_app.domain.menu.entity.Menu;
 
 import lombok.Builder;
@@ -25,6 +28,8 @@ public class MenuResponseDto {
 
 	private final String menuContent;
 
+	private final List<MenuOptionResponseDto> menuOptions;
+
 	public static MenuResponseDto fromMenu(Menu menu) {
 		return MenuResponseDto.builder()
 			.storeId(menu.getStore().getStoreId())
@@ -34,6 +39,10 @@ public class MenuResponseDto {
 			.menuName(menu.getMenuName())
 			.price(menu.getPrice())
 			.menuContent(menu.getMenuContent())
+			.menuOptions(menu.getMenuOptions().stream()
+				.filter(menuOption -> menuOption.isDeleted())
+				.map(MenuOptionResponseDto::fromMenuOption)
+				.collect(Collectors.toList()))
 			.build();
 	}
 }
