@@ -1,5 +1,8 @@
 package com.example.delivery_app.domain.menu.entity;
 
+import com.example.delivery_app.common.entity.BaseEntity;
+import com.example.delivery_app.domain.menu.dto.requestdto.MenuOptionUpdateRequestDto;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -16,7 +19,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @Table(name = "menuoption")
-public class MenuOption {
+public class MenuOption extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,6 +31,10 @@ public class MenuOption {
 
 	private String content;
 
+	/**
+	 * 기본값 false
+	 * 삭제 시 deleteMenuOption를 통해 true로 바뀝니다
+	 */
 	private boolean isDeleted;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -43,4 +50,13 @@ public class MenuOption {
 		this.menu = menu;
 	}
 
+	public void updateMenuOption(MenuOptionUpdateRequestDto dto) {
+		this.optionName = dto.getOptionName();
+		this.price = dto.getPrice();
+		this.content = dto.getContent();
+	}
+
+	public void deleteMenuOption() {
+		this.isDeleted = true;
+	}
 }

@@ -17,10 +17,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.delivery_app.common.dto.CommonResponseDto;
 import com.example.delivery_app.domain.menu.dto.requestdto.MenuOptionRequestDto;
+import com.example.delivery_app.domain.menu.dto.requestdto.MenuOptionUpdateRequestDto;
 import com.example.delivery_app.domain.menu.dto.requestdto.MenuRequestDto;
 import com.example.delivery_app.domain.menu.dto.requestdto.UpdateMenuRequestDto;
 import com.example.delivery_app.domain.menu.dto.responsedto.DeleteResponseDto;
+import com.example.delivery_app.domain.menu.dto.responsedto.MenuOptionDeleteResponseDto;
 import com.example.delivery_app.domain.menu.dto.responsedto.MenuOptionResponseDto;
+import com.example.delivery_app.domain.menu.dto.responsedto.MenuOptionUpdateResponseDto;
 import com.example.delivery_app.domain.menu.dto.responsedto.MenuResponseDto;
 import com.example.delivery_app.domain.menu.dto.responsedto.MenuSuccessCode;
 import com.example.delivery_app.domain.menu.dto.responsedto.UpdateMenuResponseDto;
@@ -143,7 +146,7 @@ public class MenuController {
 		return ResponseEntity.status(HttpStatus.CREATED)
 			.body(
 				CommonResponseDto.of(
-					MenuSuccessCode.MENU_CREATE_SUCCESS,
+					MenuSuccessCode.MENU_OPTION_CREATE_SUCCESS,
 					menuOptionService.optionSave(storeId, menuId, dto)
 				)
 			);
@@ -166,6 +169,54 @@ public class MenuController {
 			CommonResponseDto.of(
 				MenuSuccessCode.MENU_OPTION_GET_SUCCESS,
 				menuOptionService.findAllOption(storeId, menuId)
+			)
+		);
+	}
+
+	/**
+	 * 옵션 수정 기능
+	 * @param storeId
+	 * @param menuId
+	 * @param optionId
+	 * @param dto
+	 * @return
+	 */
+	@PreAuthorize("hasRole('OWNER') or hasRole('ADMIN') or hasRosle('USER')")
+	@PatchMapping("/{menuId}/options/{optionId}")
+	public ResponseEntity<CommonResponseDto<MenuOptionUpdateResponseDto>> updateMenuOption(
+		@PathVariable Long storeId,
+		@PathVariable Long menuId,
+		@PathVariable Long optionId,
+		@RequestBody MenuOptionUpdateRequestDto dto
+	) {
+
+		return ResponseEntity.ok(
+			CommonResponseDto.of(
+				MenuSuccessCode.MENU_OPTION_UPDATE_SUCCESS,
+				menuOptionService.updateMenuOption(storeId, menuId, optionId, dto)
+			)
+		);
+	}
+
+	/**
+	 * 메뉴 옵션 삭제 기능
+	 * @param storeId
+	 * @param menuId
+	 * @param optionId
+	 * @return
+	 */
+	@PreAuthorize("hasRole('OWNER') or hasRole('ADMIN') or hasRosle('USER')")
+	@DeleteMapping("/{menuId}/options/{optionId}")
+	public ResponseEntity<CommonResponseDto<MenuOptionDeleteResponseDto>> deleteMenuOption(
+		@PathVariable Long storeId,
+		@PathVariable Long menuId,
+		@PathVariable Long optionId
+	) {
+
+		return ResponseEntity.ok(
+			CommonResponseDto.of(
+				MenuSuccessCode.MENU_OPTION_DELETE_SUCCESS,
+				menuOptionService.deleteMenuOption(storeId, menuId, optionId)
 			)
 		);
 	}

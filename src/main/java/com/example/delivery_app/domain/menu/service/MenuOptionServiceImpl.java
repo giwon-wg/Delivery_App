@@ -5,7 +5,10 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.example.delivery_app.domain.menu.dto.requestdto.MenuOptionRequestDto;
+import com.example.delivery_app.domain.menu.dto.requestdto.MenuOptionUpdateRequestDto;
+import com.example.delivery_app.domain.menu.dto.responsedto.MenuOptionDeleteResponseDto;
 import com.example.delivery_app.domain.menu.dto.responsedto.MenuOptionResponseDto;
+import com.example.delivery_app.domain.menu.dto.responsedto.MenuOptionUpdateResponseDto;
 import com.example.delivery_app.domain.menu.entity.Menu;
 import com.example.delivery_app.domain.menu.entity.MenuOption;
 import com.example.delivery_app.domain.menu.exception.CustomException;
@@ -55,7 +58,7 @@ public class MenuOptionServiceImpl implements MenuOptionService {
 
 		menuOptionRepository.save(menuOption);
 
-		return MenuOptionResponseDto.fromMenu(menuOption);
+		return MenuOptionResponseDto.fromMenuOption(menuOption);
 	}
 
 	/**
@@ -79,6 +82,56 @@ public class MenuOptionServiceImpl implements MenuOptionService {
 
 		List<MenuOption> findAllOption = menuOptionRepository.findAllByMenu_Id(menuId);
 
-		return findAllOption.stream().map(MenuOptionResponseDto::fromMenu).toList();
+		return findAllOption.stream().map(MenuOptionResponseDto::fromMenuOption).toList();
 	}
+
+	/**
+	 * 메뉴 옵션 수정 기능
+	 * @param storeId
+	 * @param menuId
+	 * @param optionId
+	 * @param dto
+	 * @return
+	 */
+	@Transactional
+	@Override
+	public MenuOptionUpdateResponseDto updateMenuOption(Long storeId, Long menuId, Long optionId,
+		MenuOptionUpdateRequestDto dto) {
+
+		Store findStore = storeRepository.findById(storeId)
+			.orElseThrow(() -> new IllegalArgumentException("해당 가게가 존재하지 않습니다. id=" + storeId));
+
+		Menu findMenu = menuRepository.findByIdOrElseThrow(menuId);
+
+		if (!findMenu.getStore().getStoreId().equals(findStore.getStoreId())) {
+			throw new CustomException(ErrorCode.MISMATCH_ERROR);
+		}
+
+		MenuOption findMenuOption = menuOptionRepository.findByIdOrElseThrow(optionId);
+
+		findMenuOption.updateMenuOption(dto);
+
+		return MenuOptionUpdateResponseDto.fromMenuOption(findMenuOption);
+	}
+
+	@Transactional
+	@Override
+	public MenuOptionDeleteResponseDto deleteMenuOption(Long storeId, Long menuId, Long optionId) {
+
+		Store findStore = storeRepository.findById(storeId)
+			.orElseThrow(() -> new IllegalArgumentException("해당 가게가 존재하지 않습니다. id=" + storeId));
+
+		Menu findMenu = menuRepository.findByIdOrElseThrow(menuId);
+
+		if (!findMenu.getStore().getStoreId().equals(findStore.getStoreId())) {
+			throw new CustomException(ErrorCode.MISMATCH_ERROR);
+		}
+
+		MenuOption findMenuOption = menuOptionRepository.findByIdOrElseThrow(optionId);
+
+		findMenuOption.deleteMenuOption();
+
+		return MenuOptionDeleteResponseDto.fromMenuOption(findMenuOption);
+	}
+
 }

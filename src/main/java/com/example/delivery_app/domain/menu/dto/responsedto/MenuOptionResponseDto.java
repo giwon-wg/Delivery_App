@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 @Builder
 public class MenuOptionResponseDto {
 
+	private final Long storeId;
+
 	private final Long menuId;
 
 	private final Long id;
@@ -21,8 +23,9 @@ public class MenuOptionResponseDto {
 
 	private final String content;
 
-	public static MenuOptionResponseDto fromMenu(MenuOption menuOption) {
+	public static MenuOptionResponseDto fromMenuOption(MenuOption menuOption) {
 		return MenuOptionResponseDto.builder()
+			.storeId(menuOption.getMenu().getStore().getStoreId())
 			.menuId(menuOption.getMenu().getId())
 			.id(menuOption.getId())
 			.optionName(menuOption.getOptionName())
