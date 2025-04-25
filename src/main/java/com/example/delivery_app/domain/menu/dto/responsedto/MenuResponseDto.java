@@ -40,7 +40,7 @@ public class MenuResponseDto {
 			.price(menu.getPrice())
 			.menuContent(menu.getMenuContent())
 			.menuOptions(menu.getMenuOptions().stream()
-				.filter(menuOption -> menuOption.isDeleted())
+				.filter(menuOption -> !menuOption.isDeleted())
 				.map(MenuOptionResponseDto::fromMenuOption)
 				.collect(Collectors.toList()))
 			.build();

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import com.example.delivery_app.domain.menu.dto.requestdto.MenuRequestDto;
 import com.example.delivery_app.domain.menu.dto.requestdto.UpdateMenuRequestDto;
 import com.example.delivery_app.domain.menu.dto.responsedto.DeleteResponseDto;
+import com.example.delivery_app.domain.menu.dto.responsedto.MenuCreateResponseDto;
 import com.example.delivery_app.domain.menu.dto.responsedto.MenuResponseDto;
 import com.example.delivery_app.domain.menu.dto.responsedto.UpdateMenuResponseDto;
 import com.example.delivery_app.domain.menu.entity.Menu;
@@ -28,7 +29,7 @@ public class MenuServiceImpl implements MenuService {
 
 	@Transactional
 	@Override
-	public MenuResponseDto saveMenu(Long storeId, MenuRequestDto dto) {
+	public MenuCreateResponseDto saveMenu(Long storeId, MenuRequestDto dto) {
 
 		Store findStore = storeRepository.findById(storeId)
 			.orElseThrow(() -> new IllegalArgumentException("해당 가게가 존재하지 않습니다. id=" + storeId));
@@ -44,7 +45,7 @@ public class MenuServiceImpl implements MenuService {
 
 		Menu savedMenu = menuRepository.save(menu);
 
-		return MenuResponseDto.fromMenu(savedMenu);
+		return MenuCreateResponseDto.fromMenu(savedMenu);
 	}
 
 	@Transactional

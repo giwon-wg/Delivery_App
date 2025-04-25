@@ -27,7 +27,7 @@ public class MenuOptionDeleteResponseDto {
 			.menuId(menuOption.getMenu().getId())
 			.id(menuOption.getId())
 			.optionName(menuOption.getOptionName())
-			.isDeleted(menuOption.isDeleted())
+			.isDeleted(!menuOption.isDeleted())
 			.build();
 	}
 }

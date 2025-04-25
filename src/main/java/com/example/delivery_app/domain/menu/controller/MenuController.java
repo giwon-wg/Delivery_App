@@ -21,6 +21,7 @@ import com.example.delivery_app.domain.menu.dto.requestdto.MenuOptionUpdateReque
 import com.example.delivery_app.domain.menu.dto.requestdto.MenuRequestDto;
 import com.example.delivery_app.domain.menu.dto.requestdto.UpdateMenuRequestDto;
 import com.example.delivery_app.domain.menu.dto.responsedto.DeleteResponseDto;
+import com.example.delivery_app.domain.menu.dto.responsedto.MenuCreateResponseDto;
 import com.example.delivery_app.domain.menu.dto.responsedto.MenuOptionDeleteResponseDto;
 import com.example.delivery_app.domain.menu.dto.responsedto.MenuOptionResponseDto;
 import com.example.delivery_app.domain.menu.dto.responsedto.MenuOptionUpdateResponseDto;
@@ -49,7 +50,7 @@ public class MenuController {
 	 */
 	@PreAuthorize("hasRole('OWNER') or hasRole('ADMIN')")
 	@PostMapping
-	public ResponseEntity<CommonResponseDto<MenuResponseDto>> saveMenu(
+	public ResponseEntity<CommonResponseDto<MenuCreateResponseDto>> saveMenu(
 		@PathVariable Long storeId,
 		@Valid @RequestBody MenuRequestDto dto
 	) {
@@ -116,7 +117,7 @@ public class MenuController {
 	 */
 	@PreAuthorize("hasRole('OWNER') or hasRole('ADMIN')")
 	@GetMapping
-	public ResponseEntity<CommonResponseDto<List<MenuResponseDto>>> search(
+	public ResponseEntity<CommonResponseDto<List<MenuResponseDto>>> findMenu(
 		@PathVariable Long storeId,
 		@RequestParam(required = false) String word
 	) {
