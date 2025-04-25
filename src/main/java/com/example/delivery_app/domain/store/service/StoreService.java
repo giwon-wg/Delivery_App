@@ -14,7 +14,7 @@ public interface StoreService {
 
 	StoreResponseDto saveStore(StoreRequestDto storeRequestDto, UserAuth userAuth);
 
-	StoreResponseDto getPostById(Long storeId);
+	StoreResponseDto getStoreById(Long storeId);
 
 	Page<StoreGetAllResponseDto> getAllStoreList(Pageable pageable);
 

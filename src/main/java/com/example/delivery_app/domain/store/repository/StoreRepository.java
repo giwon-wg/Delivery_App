@@ -20,7 +20,9 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
 	@Query("SELECT s FROM Store s WHERE s.status = :status")
 	Page<Store> findAllByStatus(@Param("status") StoreStatus status, Pageable pageable);
 
-	@Query("SELECT s FROM Store s LEFT JOIN FETCH s.menus WHERE s.status = :status AND s.storeId = :storeId")
+	@Query("SELECT s FROM Store s "
+		+ "LEFT JOIN FETCH s.menus m "
+		+ "WHERE s.status = :status AND s.storeId = :storeId")
 	Optional<Store> findByIdAndStatusWithMenus(@Param("storeId") Long storeId, @Param("status") StoreStatus status);
 
 	@Query("SELECT COUNT(s) FROM Store s WHERE s.user.id = :userId AND s.status = 'ACTIVE'")

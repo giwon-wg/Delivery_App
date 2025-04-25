@@ -60,8 +60,9 @@ public class StoreServiceImpl implements StoreService {
 		return StoreResponseDto.fromStore(savedStore);
 	}
 
+	@Transactional
 	@Override
-	public StoreResponseDto getPostById(Long storeId) {
+	public StoreResponseDto getStoreById(Long storeId) {
 		Store store = storeRepository.findByIdAndStatusWithMenus(storeId, StoreStatus.ACTIVE)
 			.orElseThrow(() -> new CustomException(StoreErrorCode.STORE_NOT_FOUND));
 

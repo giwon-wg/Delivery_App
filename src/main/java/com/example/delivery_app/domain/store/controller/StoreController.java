@@ -52,7 +52,7 @@ public class StoreController {
 
 	@GetMapping("/{storeId}")
 	public ResponseEntity<CommonResponseDto<StoreResponseDto>> getStoreById(@PathVariable Long storeId) {
-		StoreResponseDto store = storeService.getPostById(storeId);
+		StoreResponseDto store = storeService.getStoreById(storeId);
 		return ResponseEntity.ok(CommonResponseDto.of(StoreSuccessCode.STORE_GET_BY_ID_SUCCESS, store));
 	}
 
