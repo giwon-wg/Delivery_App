@@ -42,9 +42,13 @@ public class MenuOptionServiceImpl implements MenuOptionService {
 
 		Menu findMenu = findStore.getMenus()
 			.stream()
-			.filter(abc -> abc.getId().equals(menuId))
+			.filter(menu -> menu.getId().equals(menuId))
 			.findFirst()
 			.orElseThrow(() -> new CustomException(ErrorCode.MISMATCH_ERROR));
+
+		if (findMenu.isDeleted()) {
+			throw new CustomException(ErrorCode.MENU_ALREADY_DELETED);
+		}
 
 		MenuOption menuOption = MenuOption.builder()
 			.optionName((dto.getOptionName()))
@@ -93,7 +97,7 @@ public class MenuOptionServiceImpl implements MenuOptionService {
 		MenuOption findMenuOption = menuOptionRepository.findByIdOrElseThrow(optionId);
 
 		if (findMenuOption.isDeleted()) {
-			throw new CustomException(ErrorCode.MENU_ALREADY_DELETED);
+			throw new CustomException(ErrorCode.MENU_OPTION_ALREADY_DELETED);
 		}
 
 		findMenuOption.updateMenuOption(dto);
@@ -129,10 +133,14 @@ public class MenuOptionServiceImpl implements MenuOptionService {
 	private void checkMismatchError(Long storeId, Long menuId) {
 		Store findStore = storeRepository.findByIdOrElseThrow(storeId);
 
-		findStore.getMenus()
+		Menu findMenu = findStore.getMenus()
 			.stream()
 			.filter(abc -> abc.getId().equals(menuId))
 			.findFirst()
 			.orElseThrow(() -> new CustomException(ErrorCode.MISMATCH_ERROR));
+
+		if (findMenu.isDeleted()) {
+			throw new CustomException(ErrorCode.MENU_ALREADY_DELETED);
+		}
 	}
 }

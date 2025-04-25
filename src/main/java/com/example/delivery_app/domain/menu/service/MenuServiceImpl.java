@@ -67,9 +67,11 @@ public class MenuServiceImpl implements MenuService {
 		List<Menu> findMenus = menuRepository.findAllByStore_StoreIdAndIsDeleted(storeId, false);
 
 		for (Menu menu : findMenus) {
-			if (menuId.equals(menu.getId())) {
+			if (menuId.equals(menu.getId()) && !menu.getMenuName().equals(dto.getMenuName())) {
 				menu.update(dto);
 				return new UpdateMenuResponseDto(menu);
+			} else {
+				throw new CustomException(ErrorCode.INVALID_MENU_NAME);
 			}
 		}
 
@@ -114,7 +116,7 @@ public class MenuServiceImpl implements MenuService {
 			return findMenus.stream().map(MenuResponseDto::fromMenu).toList();
 		}
 
-		List<Menu> findMenus = menuRepository.findAllByStore_StoreId(storeId);
+		List<Menu> findMenus = menuRepository.findAllByStore_StoreIdAndIsDeleted(storeId, false);
 		return findMenus.stream().map(MenuResponseDto::fromMenu).toList();
 	}
 }
