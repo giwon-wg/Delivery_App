@@ -8,8 +8,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import com.example.delivery_app.common.exception.CustomException;
 import com.example.delivery_app.domain.store.entity.Store;
 import com.example.delivery_app.domain.store.enums.StoreStatus;
+import com.example.delivery_app.domain.store.exception.StoreErrorCode;
 
 import io.lettuce.core.dynamic.annotation.Param;
 
@@ -23,4 +25,9 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
 
 	@Query("SELECT COUNT(s) FROM Store s WHERE s.user.id = :userId AND s.status = 'ACTIVE'")
 	long countActiveStoresByUserId(@Param("userId") Long userId);
+
+	default Store findByIdOrElseThrow(Long storeId) {
+		return findById(storeId)
+			.orElseThrow(() -> new CustomException(StoreErrorCode.STORE_NOT_FOUND));
+	}
 }
