@@ -57,7 +57,7 @@ public class StoreResponseDto {
 			.openTime(store.getOpenTime().toString())
 			.closeTime(store.getCloseTime().toString())
 			.menus(store.getMenus().stream()
-				.filter(menu -> menu.isDeleted())
+				.filter(menu -> !menu.isDeleted())
 				.map(MenuResponseDto::fromMenu)
 				.collect(Collectors.toList()))
 			.build();
