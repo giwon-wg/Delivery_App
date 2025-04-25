@@ -48,7 +48,7 @@ public class MenuController {
 	 * @param dto
 	 * @return
 	 */
-	@PreAuthorize("hasRole('OWNER') or hasRole('ADMIN')")
+	@PreAuthorize("hasAnyRole('OWNER, ADMIN')")
 	@PostMapping
 	public ResponseEntity<CommonResponseDto<MenuCreateResponseDto>> saveMenu(
 		@PathVariable Long storeId,
@@ -70,7 +70,7 @@ public class MenuController {
 	 * @param dto
 	 * @return
 	 */
-	@PreAuthorize("hasRole('OWNER') or hasRole('ADMIN')")
+	@PreAuthorize("hasAnyRole('OWNER, ADMIN')")
 	@PatchMapping("/{menuId}")
 	public ResponseEntity<CommonResponseDto<UpdateMenuResponseDto>> updateMenu(
 		@PathVariable Long storeId,
@@ -93,7 +93,7 @@ public class MenuController {
 	 * @param menuId
 	 * @return
 	 */
-	@PreAuthorize("hasRole('OWNER') or hasRole('ADMIN')")
+	@PreAuthorize("hasAnyRole('OWNER, ADMIN')")
 	@DeleteMapping("/{menuId}")
 	public ResponseEntity<CommonResponseDto<DeleteResponseDto>> deleteMenu(
 		@PathVariable Long storeId,
@@ -115,7 +115,7 @@ public class MenuController {
 	 * @param word
 	 * @return
 	 */
-	@PreAuthorize("hasRole('OWNER') or hasRole('ADMIN')")
+	@PreAuthorize("hasAnyRole('OWNER, ADMIN, USER')")
 	@GetMapping
 	public ResponseEntity<CommonResponseDto<List<MenuResponseDto>>> findMenu(
 		@PathVariable Long storeId,
@@ -136,7 +136,7 @@ public class MenuController {
 	 * @param dto
 	 * @return
 	 */
-	@PreAuthorize("hasRole('OWNER') or hasRole('ADMIN')")
+	@PreAuthorize("hasAnyRole('OWNER, ADMIN')")
 	@PostMapping("/{menuId}/options")
 	public ResponseEntity<CommonResponseDto<MenuOptionResponseDto>> optionSave(
 		@PathVariable Long storeId,
@@ -159,7 +159,7 @@ public class MenuController {
 	 * @param menuId
 	 * @return
 	 */
-	@PreAuthorize("hasRole('OWNER') or hasRole('ADMIN') or hasRosle('USER')")
+	@PreAuthorize("hasAnyRole('OWNER, ADMIN, USER')")
 	@GetMapping("/{menuId}/options")
 	public ResponseEntity<CommonResponseDto<List<MenuOptionResponseDto>>> findAllOption(
 		@PathVariable Long storeId,
@@ -182,7 +182,7 @@ public class MenuController {
 	 * @param dto
 	 * @return
 	 */
-	@PreAuthorize("hasRole('OWNER') or hasRole('ADMIN') or hasRosle('USER')")
+	@PreAuthorize("hasAnyRole('OWNER, ADMIN')")
 	@PatchMapping("/{menuId}/options/{optionId}")
 	public ResponseEntity<CommonResponseDto<MenuOptionUpdateResponseDto>> updateMenuOption(
 		@PathVariable Long storeId,
@@ -206,7 +206,7 @@ public class MenuController {
 	 * @param optionId
 	 * @return
 	 */
-	@PreAuthorize("hasRole('OWNER') or hasRole('ADMIN') or hasRosle('USER')")
+	@PreAuthorize("hasAnyRole('OWNER, ADMIN')")
 	@DeleteMapping("/{menuId}/options/{optionId}")
 	public ResponseEntity<CommonResponseDto<MenuOptionDeleteResponseDto>> deleteMenuOption(
 		@PathVariable Long storeId,
