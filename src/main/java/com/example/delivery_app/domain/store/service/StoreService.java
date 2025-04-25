@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import com.example.delivery_app.domain.store.dto.request.StoreOperatingTimeRequestDto;
 import com.example.delivery_app.domain.store.dto.request.StoreRequestDto;
 import com.example.delivery_app.domain.store.dto.response.StoreDeleteResponseDto;
+import com.example.delivery_app.domain.store.dto.response.StoreGetAllResponseDto;
 import com.example.delivery_app.domain.store.dto.response.StoreResponseDto;
 import com.example.delivery_app.domain.user.Auth.UserAuth;
 
@@ -15,7 +16,7 @@ public interface StoreService {
 
 	StoreResponseDto getPostById(Long storeId);
 
-	Page<StoreResponseDto> getAllStoreList(Pageable pageable);
+	Page<StoreGetAllResponseDto> getAllStoreList(Pageable pageable);
 
 	StoreResponseDto updateStore(Long storeId, StoreRequestDto storeRequestDto, UserAuth userAuth);
 
