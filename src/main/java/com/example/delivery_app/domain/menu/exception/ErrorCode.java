@@ -12,7 +12,8 @@ public enum ErrorCode {
 	MISMATCH_ERROR(400, "Bad Request", "M002", "가게와 메뉴가 일치하지 않습니다."),
 
 	// MenuOption 관련
-	MENU_OPTION_NOT_FOUND(404, "Not Found", "O001", "찾는 옵션이 없습니다.");
+	MENU_OPTION_NOT_FOUND(404, "Not Found", "O001", "찾는 옵션이 없습니다."),
+	MENU_ALREADY_DELETED(400, "Bad Request", "O002", "이미 삭제된 옵션입니다.");
 
 	private final int status;
 	private final String error;
