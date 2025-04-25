@@ -18,15 +18,15 @@ public class ReviewController {
             @RequestBody ReviewRequestDto reviewRequestDto,
             @PathVariable(name = "storeId") Long storeId){
 
-        return reviewService.reviewsave(reviewRequestDto, storeId);
+        return reviewService.saveReview(reviewRequestDto, storeId);
     }
 
     @GetMapping("/{reviewId}")
-    public ReviewRequestDto reviewfind(
+    public ReviewRequestDto reviewFind(
             @PathVariable(name = "storeId") Long storeId,
             @PathVariable(name = "reviewId") Long reviewId
     ){
 
-        return reviewService.reviewfind(storeId, reviewId);
+        return reviewService.findReview(storeId, reviewId);
     }
 }
