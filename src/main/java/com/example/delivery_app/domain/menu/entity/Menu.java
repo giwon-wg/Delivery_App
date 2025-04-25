@@ -55,7 +55,7 @@ public class Menu extends BaseEntity {
 	private Order order;
 
 	@OneToMany(mappedBy = "menu", cascade = CascadeType.ALL)
-	private List<MenuOption> menuOption;
+	private List<MenuOption> menuOptions;
 
 	/**
 	 * 기본값 false
