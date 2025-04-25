@@ -100,6 +100,10 @@ public class MenuOptionServiceImpl implements MenuOptionService {
 			throw new CustomException(ErrorCode.MENU_OPTION_ALREADY_DELETED);
 		}
 
+		if (findMenuOption.getOptionName().equals(dto.getOptionName())) {
+			throw new CustomException(ErrorCode.INVALID_MENU_OPTION_NAME);
+		}
+
 		findMenuOption.updateMenuOption(dto);
 
 		return MenuOptionUpdateResponseDto.fromMenuOption(findMenuOption);
@@ -120,6 +124,10 @@ public class MenuOptionServiceImpl implements MenuOptionService {
 
 		MenuOption findMenuOption = menuOptionRepository.findByIdOrElseThrow(optionId);
 
+		if (findMenuOption.isDeleted()) {
+			throw new CustomException(ErrorCode.MENU_OPTION_ALREADY_DELETED);
+		}
+
 		findMenuOption.deleteMenuOption();
 
 		return MenuOptionDeleteResponseDto.fromMenuOption(findMenuOption);
@@ -138,6 +146,6 @@ public class MenuOptionServiceImpl implements MenuOptionService {
 			.filter(abc -> abc.getId().equals(menuId))
 			.findFirst()
 			.orElseThrow(() -> new CustomException(ErrorCode.MISMATCH_ERROR));
-		
+
 	}
 }

@@ -19,7 +19,8 @@ public enum ErrorCode implements ResponseCode {
 
 	// MenuOption 관련
 	MENU_OPTION_NOT_FOUND(HttpStatus.NOT_FOUND, "찾는 옵션이 없습니다."),
-	MENU_OPTION_ALREADY_DELETED(HttpStatus.BAD_REQUEST, "이미 삭제된 옵션입니다.");
+	MENU_OPTION_ALREADY_DELETED(HttpStatus.BAD_REQUEST, "이미 삭제된 옵션입니다."),
+	INVALID_MENU_OPTION_NAME(HttpStatus.BAD_REQUEST, "메뉴 옵션명이 동일합니다.");
 
 	private final HttpStatus httpStatus;
 	private final String message;
