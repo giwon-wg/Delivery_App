@@ -40,6 +40,7 @@ public class StoreRequestDto {
 	/**
 	 * 가게 소개 문구 입니다. 비워 둘 수 있습니다.
 	 */
+	@JsonProperty("storeIntro")
 	private final String storeIntro;
 
 	/**
