@@ -19,7 +19,7 @@ public class MenuOptionDeleteResponseDto {
 
 	private final String optionName;
 
-	private final String isDeleted;
+	private final boolean isDeleted;
 
 	public static MenuOptionDeleteResponseDto fromMenuOption(MenuOption menuOption) {
 		return MenuOptionDeleteResponseDto.builder()
@@ -27,7 +27,7 @@ public class MenuOptionDeleteResponseDto {
 			.menuId(menuOption.getMenu().getId())
 			.id(menuOption.getId())
 			.optionName(menuOption.getOptionName())
-			// .isDeleted(menuOption.getIs)
+			.isDeleted(menuOption.isDeleted())
 			.build();
 	}
 }

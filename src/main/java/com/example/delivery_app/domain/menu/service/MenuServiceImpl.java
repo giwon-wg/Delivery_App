@@ -85,6 +85,7 @@ public class MenuServiceImpl implements MenuService {
 	 * @param word
 	 * @return
 	 */
+	@Transactional
 	@Override
 	public List<MenuResponseDto> findMenu(Long storeId, String word) {
 
