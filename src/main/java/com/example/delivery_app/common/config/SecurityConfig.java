@@ -52,10 +52,10 @@ public class SecurityConfig {
 				.loginPage("/oauth2/authorization/google")
 				.defaultSuccessUrl("/login/success", true)
 			)
-			// ✅ JWT 필터는 그대로 유지
+			// JWT 필터는 그대로 유지
 			.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
 
-			// ✅ REST 예외 응답 처리 (핵심)
+			// REST 예외 응답 처리 (핵심)
 			.exceptionHandling(exception -> exception
 				.authenticationEntryPoint((request, response, authException) -> {
 					response.setContentType("application/json;charset=UTF-8");
