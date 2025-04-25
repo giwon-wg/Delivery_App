@@ -15,5 +15,7 @@ public interface MenuOptionRepository extends JpaRepository<MenuOption, Long> {
 		return findById(optionId).orElseThrow(() -> new CustomException(ErrorCode.MENU_OPTION_NOT_FOUND));
 	}
 
+	List<MenuOption> findAllByMenu_IdAndIsDeleted(Long menuId, boolean status);
+
 	;
 }

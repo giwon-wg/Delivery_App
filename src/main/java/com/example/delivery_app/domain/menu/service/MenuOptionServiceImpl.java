@@ -80,7 +80,7 @@ public class MenuOptionServiceImpl implements MenuOptionService {
 			throw new CustomException(ErrorCode.MISMATCH_ERROR);
 		}
 
-		List<MenuOption> findAllOption = menuOptionRepository.findAllByMenu_Id(menuId);
+		List<MenuOption> findAllOption = menuOptionRepository.findAllByMenu_IdAndIsDeleted(menuId, false);
 
 		return findAllOption.stream().map(MenuOptionResponseDto::fromMenuOption).toList();
 	}
@@ -108,6 +108,10 @@ public class MenuOptionServiceImpl implements MenuOptionService {
 		}
 
 		MenuOption findMenuOption = menuOptionRepository.findByIdOrElseThrow(optionId);
+
+		if (findMenuOption.isDeleted()) {
+			throw new CustomException(ErrorCode.MENU_ALREADY_DELETED);
+		}
 
 		findMenuOption.updateMenuOption(dto);
 
