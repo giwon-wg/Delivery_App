@@ -88,6 +88,29 @@ class OrderControllerTest {
 
 	}
 
+	@WithMockUser(username = "wannabeing")
+	@DisplayName("가게정보를 갖고 주문내역을 조회합니다.")
+	@Test
+	void getAllOrdersByStoreId() throws Exception {
+		// given
+		OrderResponseDto dto = OrderResponseDto.builder()
+			.orderId(1L)
+			.userId(1L)
+			.menuId(1L)
+			.storeId(1L)
+			.status(OrderStatus.REQUESTED)
+			.totalPrice(6000)
+			.build();
+		given(orderService.findAllOrdersByStoreId(anyLong(), any(UserAuth.class))).willReturn(List.of(dto));
+
+		// when & then
+		mockMvc.perform(MockMvcRequestBuilders
+				.get("/api/orders/store/{storeId}", 1L)
+				.with(csrf()))
+			.andDo(print())
+			.andExpect(status().isOk());
+	}
+
 	@DisplayName("단일 주문을 조회합니다.")
 	@Test
 	@WithMockUser(username = "wannabeing")

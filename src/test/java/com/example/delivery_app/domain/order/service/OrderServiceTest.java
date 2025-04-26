@@ -23,6 +23,7 @@ import com.example.delivery_app.domain.order.repository.OrderRepository;
 import com.example.delivery_app.domain.store.entity.Store;
 import com.example.delivery_app.domain.store.enums.IsOpen;
 import com.example.delivery_app.domain.store.enums.StoreStatus;
+import com.example.delivery_app.domain.store.repository.StoreRepository;
 import com.example.delivery_app.domain.user.Auth.UserAuth;
 import com.example.delivery_app.domain.user.entity.User;
 import com.example.delivery_app.domain.user.entity.UserRole;
@@ -32,12 +33,10 @@ import com.example.delivery_app.domain.user.repository.UserRepository;
 @ActiveProfiles("test")
 class OrderServiceTest {
 
-	@Mock
-	private OrderRepository orderRepository;
-	@Mock
-	private MenuRepository menuRepository;
-	@Mock
-	private UserRepository userRepository;
+	@Mock	private OrderRepository orderRepository;
+	@Mock	private MenuRepository menuRepository;
+	@Mock	private UserRepository userRepository;
+	@Mock	private StoreRepository storeRepository;
 
 	@InjectMocks
 	private OrderService orderService;
@@ -73,6 +72,50 @@ class OrderServiceTest {
 
 		// when
 		List<OrderResponseDto> result = orderService.findAllOrders(userAuth);
+
+		// then
+		assertThat(result).hasSize(1);
+		OrderResponseDto dto = result.get(0);
+		assertThat(dto.getOrderId()).isEqualTo(2L);
+		assertThat(dto.getUserId()).isEqualTo(3L);
+		assertThat(dto.getMenuId()).isEqualTo(4L);
+		assertThat(dto.getStoreId()).isEqualTo(5L);
+	}
+
+	@DisplayName("가게정보를 갖고 주문내역을 조회합니다.")
+	@Test
+	void findAllOrdersByStoreId() {
+		// given
+		UserAuth userAuth = mock(UserAuth.class);
+		Order order = mock(Order.class);
+		User user = mock(User.class);
+		Menu menu = mock(Menu.class);
+		Store store = mock(Store.class);
+
+		// forbidOrderIfHasRole 메서드
+		when(userAuth.hasRole(UserRole.USER.name())).thenReturn(false);
+
+		// existStore 메서드
+		when(storeRepository.existsById(5L)).thenReturn(true);
+
+		// repository 접근
+		when(orderRepository
+			.findAllByStoreIdAndRole(5L, userAuth.getRoles()))
+			.thenReturn(List.of(order));
+
+		// buildOrderResponseDto 메서드
+		when(order.getId()).thenReturn(2L);
+		when(order.getUser()).thenReturn(user);
+		when(order.getMenu()).thenReturn(menu);
+		when(order.getStore()).thenReturn(store);
+		when(order.getStatus()).thenReturn(OrderStatus.REQUESTED);
+
+		when(user.getId()).thenReturn(3L);
+		when(menu.getId()).thenReturn(4L);
+		when(store.getStoreId()).thenReturn(5L);
+
+		// when
+		List<OrderResponseDto> result = orderService.findAllOrdersByStoreId(5L, userAuth);
 
 		// then
 		assertThat(result).hasSize(1);

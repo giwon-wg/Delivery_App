@@ -16,6 +16,7 @@ import com.example.delivery_app.domain.order.repository.OrderRepository;
 import com.example.delivery_app.domain.store.entity.Store;
 import com.example.delivery_app.domain.store.enums.IsOpen;
 import com.example.delivery_app.domain.store.enums.StoreStatus;
+import com.example.delivery_app.domain.store.repository.StoreRepository;
 import com.example.delivery_app.domain.user.Auth.UserAuth;
 import com.example.delivery_app.domain.user.entity.User;
 import com.example.delivery_app.domain.user.entity.UserRole;
@@ -29,6 +30,24 @@ public class OrderService {
 	private final OrderRepository orderRepository;
 	private final MenuRepository menuRepository;
 	private final UserRepository userRepository;
+	private final StoreRepository storeRepository;
+
+	/**
+	 * [Service] 주문내역 리스트 조회 메서드
+	 * @param userAuth 로그인 객체
+	 * @param storeId 가게 id
+	 * @return 주문 응답 DTO 리스트로 반환
+	 */
+	@Transactional(readOnly = true)
+	public List<OrderResponseDto> findAllOrdersByStoreId(Long storeId, UserAuth userAuth) {
+		forbidOrderIfHasRole(userAuth, UserRole.USER);
+		existStore(storeId);
+		return orderRepository.findAllByStoreIdAndRole(
+				storeId, userAuth.getRoles())
+			.stream()
+			.map(this::buildOrderResponseDto)
+			.toList();
+	}
 
 	/**
 	 * [Service] 주문내역 리스트 조회 메서드
@@ -209,6 +228,16 @@ public class OrderService {
 		}
 		if (store.getMinDeliveryPrice() > menuPrice) {
 			throw new CustomException(OrderErrorCode.ORDER_INVALID_MIN_PRICE);
+		}
+	}
+
+	/**
+	 * 가게가 존재하는지 검증하는 메서드
+	 * @param storeId 가게 id
+	 */
+	private void existStore(Long storeId) {
+		if (!storeRepository.existsById(storeId)) {
+			throw new CustomException(OrderErrorCode.ORDER_IN_STORE_NOT_FOUND);
 		}
 	}
 }

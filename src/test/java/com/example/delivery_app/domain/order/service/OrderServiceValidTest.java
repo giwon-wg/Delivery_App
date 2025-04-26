@@ -7,6 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -18,6 +19,7 @@ import com.example.delivery_app.domain.order.exception.OrderErrorCode;
 import com.example.delivery_app.domain.store.entity.Store;
 import com.example.delivery_app.domain.store.enums.IsOpen;
 import com.example.delivery_app.domain.store.enums.StoreStatus;
+import com.example.delivery_app.domain.store.repository.StoreRepository;
 import com.example.delivery_app.domain.user.Auth.UserAuth;
 import com.example.delivery_app.domain.user.entity.User;
 import com.example.delivery_app.domain.user.entity.UserRole;
@@ -26,8 +28,47 @@ import com.example.delivery_app.domain.user.entity.UserRole;
 @ActiveProfiles("test")
 class OrderServiceValidTest {
 
+	@Mock
+	private StoreRepository storeRepository;
 	@InjectMocks
 	private OrderService orderService;
+
+	@DisplayName("가게가 존재하는지 확인합니다.")
+	@Test
+	void existStore_success() {
+		// given
+		Long storeId = 1L;
+		when(storeRepository.existsById(storeId)).thenReturn(true);
+
+		// when & then
+		assertDoesNotThrow(() ->
+			ReflectionTestUtils
+				.invokeMethod(
+					orderService,
+					"existStore", storeId
+				)
+		);
+	}
+
+	@DisplayName("")
+	@Test
+	void existStore_NotExisted() {
+		// given
+		Long storeId = 1L;
+		when(storeRepository.existsById(storeId)).thenReturn(false);
+
+		// when
+		CustomException e = assertThrows(CustomException.class,
+			() -> ReflectionTestUtils
+				.invokeMethod(
+					orderService,
+					"existStore", storeId
+				)
+		);
+
+		// then
+		assertEquals(OrderErrorCode.ORDER_IN_STORE_NOT_FOUND, e.getResponseCode());
+	}
 
 	@DisplayName("가게가 오픈 상태이고, 폐업하지 않았으며 최소주문금액을 넘기는 주문이 들어왔다.")
 	@Test
@@ -75,6 +116,7 @@ class OrderServiceValidTest {
 		Store store = mock(Store.class);
 		when(store.getStatus()).thenReturn(StoreStatus.INACTIVE);
 		when(store.getIsOpen()).thenReturn(IsOpen.OPEN);
+
 		//when
 		CustomException e = assertThrows(CustomException.class,
 			() -> ReflectionTestUtils
@@ -83,6 +125,7 @@ class OrderServiceValidTest {
 					"validateStoreAndMinPrice", store, 12000
 				)
 		);
+
 		//then
 		assertEquals(OrderErrorCode.ORDER_INVALID_STORE, e.getResponseCode());
 	}

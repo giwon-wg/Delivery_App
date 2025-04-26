@@ -46,6 +46,25 @@ public class OrderController {
 	}
 
 	/**
+	 * [Controller] 가게정보를 갖고 주문내역을 조회하는 메서드
+	 * @param storeId 가게 id
+	 * @param auth 로그인 객체
+	 * @return 주문 내역 응답 리스트를 반환
+	 */
+	@GetMapping("/store/{storeId}")
+	public ResponseEntity<CommonResponseDto<List<OrderResponseDto>>> getAllOrdersByStoreId(
+		@PathVariable(name = "storeId") Long storeId,
+		@AuthenticationPrincipal UserAuth auth
+	) {
+		return ResponseEntity.ok(
+			CommonResponseDto.of(
+				OrderSuccessCode.ORDER_GET_ALL_SUCCESS,
+				orderService.findAllOrdersByStoreId(storeId, auth)
+			)
+		);
+	}
+
+	/**
 	 * [Controller] 주문내역 단일 조회하는 메서드
 	 * @param orderId 주문 id
 	 * @param auth 로그인 객체

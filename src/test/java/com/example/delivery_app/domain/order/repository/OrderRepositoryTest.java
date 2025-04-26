@@ -37,10 +37,60 @@ class OrderRepositoryTest {
 	@Autowired
 	private StoreRepository storeRepository;
 
+	@DisplayName("유효한 주문권한과 가게정보로 주문 목록을 가져온다.")
 	@Test
-	@DisplayName("유효한 유저 권한이면 주문목록을 가져옵니다.")
+	void findAllByStoreIdAndRole_success() {
+		// given
+		User owner = User.builder()
+			.email("1234@naver.com")
+			.isDeleted(false)
+			.nickname("user123")
+			.password("dkdk1234!")
+			.role(UserRole.OWNER)
+			.address("address")
+			.build();
+		Store store = Store.builder()
+			.storeName("중국집")
+			.storeAddress("address")
+			.storeIntro("intro")
+			.storePhone("02-2222-2222")
+			.openTime(LocalTime.parse("01:00"))
+			.closeTime(LocalTime.parse("23:00"))
+			.deliveryTip(10)
+			.foodCategory("중식")
+			.minDeliveryPrice(2000)
+			.build();
+		userRepository.save(owner);
+		storeRepository.save(store);
+
+		MenuRequestDto menuRequestDto = new MenuRequestDto("메인", "image", "짜장면", 5000, "content");
+		Menu menu = new Menu(store, menuRequestDto);
+		menuRepository.save(menu);
+
+		Order orderByOwner = Order.builder()
+			.user(owner).store(store).menu(menu).build();
+		orderRepository.save(orderByOwner);
+
+		// when
+		List<Order> result = orderRepository.findAllByStoreIdAndRole(store.getStoreId(),
+			List.of(owner.getRole()));
+
+		// then
+		assertThat(result).hasSize(1)
+			.extracting(
+				order -> order.getUser().getRole(),
+				order -> order.getStore().getStoreName(),
+				order -> order.getMenu().getMenuName(),
+				Order::getTotalPrice
+			)
+			.containsExactlyInAnyOrder(
+				tuple(owner.getRole(), store.getStoreName(), menu.getMenuName(), orderByOwner.getTotalPrice())
+			);
+	}
+
+	@Test
+	@DisplayName("유효한 유저 권한이면 주문목록을 가져온다.")
 	void findAllByUserIdAndRole() {
-		System.out.println();
 		// given
 		User admin = User.builder()
 			.email("123@naver.com")
@@ -116,11 +166,10 @@ class OrderRepositoryTest {
 			.containsExactlyInAnyOrder(
 				tuple(admin.getRole(), store.getStoreName(), menu1.getMenuName(), orderByAdmin.getTotalPrice())
 			);
-
 	}
 
 	@Test
-	@DisplayName("유효한 주문 ID를 가지고 주문정보를 가져옵니다.")
+	@DisplayName("유효한 주문 ID를 가지고 주문정보를 가져온다.")
 	void findByIdOrElseThrow() {
 		// given
 		User user = User.builder()
