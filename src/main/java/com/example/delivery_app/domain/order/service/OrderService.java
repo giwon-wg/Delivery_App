@@ -78,7 +78,6 @@ public class OrderService {
 			.menu(menu)
 			.store(store)
 			.user(user)
-			.status(OrderStatus.REQUESTED)
 			.build();
 		orderRepository.save(newOrder);
 		return buildOrderResponseDto(newOrder);
