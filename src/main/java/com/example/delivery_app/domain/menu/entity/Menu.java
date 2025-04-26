@@ -1,5 +1,6 @@
 package com.example.delivery_app.domain.menu.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.example.delivery_app.common.entity.BaseEntity;
@@ -55,7 +56,7 @@ public class Menu extends BaseEntity {
 	private Order order;
 
 	@OneToMany(mappedBy = "menu", cascade = CascadeType.ALL)
-	private List<MenuOption> menuOptions;
+	private List<MenuOption> menuOptions = new ArrayList<>();
 
 	/**
 	 * 기본값 false
