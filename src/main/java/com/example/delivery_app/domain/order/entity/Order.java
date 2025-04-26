@@ -45,26 +45,36 @@ public class Order extends BaseEntity {
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
-	private OrderStatus status = OrderStatus.REQUESTED;
+	private OrderStatus status;
 
 	@Column(nullable = false, columnDefinition = "INT DEFAULT 0")
-	private Integer totalPrice = 0;
+	private int totalPrice = 0;
 
 	// 생성자
 	@Builder
-	public Order(User user, Store store, Menu menu, OrderStatus status) {
+	public Order(User user, Store store, Menu menu) {
 		this.user = user;
 		this.store = store;
 		this.menu = menu;
-		this.totalPrice = menu.getPrice();
-		this.status = status;
+		this.totalPrice = calculateTotalPrice(store.getDeliveryTip(), menu.getPrice());
+		this.status = OrderStatus.REQUESTED;
 	}
 
 	/**
-	 *🚀 주문정보의 상태를 변경하는 메서드
+	 * 🚀 주문정보의 상태를 변경하는 메서드
 	 * @param status 주문 상태 enum
 	 */
 	public void setOrderStatus(OrderStatus status) {
 		this.status = status;
+	}
+
+	/**
+	 * 🚀총 주문금액을 계산하는 메서드
+	 * @param deliveryTip 배달 팁
+	 * @param menuPrice 메뉴 가격
+	 * @return 총 주문 금액을 반환
+	 */
+	private int calculateTotalPrice(int deliveryTip, int menuPrice) {
+		return deliveryTip + menuPrice;
 	}
 }
