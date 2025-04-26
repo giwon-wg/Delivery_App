@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>주문 내역</title>
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 20px;
+        }
+        h2 {
+            text-align: center;
+        }
+        .order-list {
+            max-width: 600px;
+            margin: 20px auto;
+        }
+        .order-card {
+            background: white;
+            padding: 16px;
+            margin-bottom: 16px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .order-card p {
+            margin: 8px 0;
+        }
+        .review-btn {
+            padding: 8px 16px;
+            margin-top: 8px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        #review-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+        #review-modal-content {
+            background: white;
+            width: 400px;
+            margin: 100px auto;
+            padding: 20px;
+            border-radius: 10px;
+            position: relative;
+        }
+        #review-modal-content textarea {
+            width: 100%;
+            height: 100px;
+            margin-top: 10px;
+        }
+        #stars {
+            margin: 10px 0;
+            text-align: center;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        #review-modal-content button {
+            margin-top: 10px;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .btn-submit { background-color: #28a745; color: white; }
+        .btn-delete { background-color: #dc3545; color: white; margin-left: 10px; }
+    </style>
+</head>
+<body>
+
+<div id="header"></div>
+
+<h2>📋 주문 내역</h2>
+<div class="order-list" id="order-list"></div>
+
+<!-- 리뷰 모달 -->
+<div id="review-modal">
+    <div id="review-modal-content">
+        <span onclick="closeReviewModal()" style="position:absolute; top:10px; right:15px; cursor:pointer;">×</span>
+        <h3 id="review-modal-title">리뷰 작성</h3>
+        <div id="stars"></div>
+        <textarea id="review-content" placeholder="리뷰 내용을 입력하세요"></textarea><br>
+        <button class="btn-submit" onclick="submitReview()">작성 완료</button>
+        <button class="btn-delete" onclick="deleteReview()" id="delete-review-btn" style="display:none;">리뷰 삭제</button>
+    </div>
+</div>
+
+<script>
+    const token = localStorage.getItem("accessToken");
+    const API_BASE = "/api";
+    let selectedStars = 5;
+    let currentOrderId = null;
+    let isEditMode = false;
+
+    (async () => {
+        try {
+            const headerHtml = await fetch('header.html').then(res => res.text());
+            document.getElementById("header").innerHTML = headerHtml;
+        } catch (err) {
+            console.error("헤더 로딩 실패:", err);
+        }
+    })();
+
+    if (!token) {
+        alert("로그인이 필요합니다.");
+        location.href = "/index.html";
+    }
+
+    fetch(`${API_BASE}/orders`, {
+        headers: { Authorization: `Bearer ${token}` }
+    })
+        .then(res => res.json())
+        .then(res => {
+            const orders = res.data;
+            const listDiv = document.getElementById("order-list");
+
+            if (!orders.length) {
+                listDiv.innerHTML = "<p style='text-align:center;'>주문 내역이 없습니다.</p>";
+                return;
+            }
+
+            orders.forEach(order => {
+                const card = document.createElement("div");
+                card.className = "order-card";
+                card.innerHTML = `
+                <p><strong>주문번호:</strong> ${order.order_id}</p>
+                <p><strong>가게 ID:</strong> ${order.store_id}</p>
+                <p><strong>메뉴 ID:</strong> ${order.menu_id}</p>
+                <p><strong>상태:</strong> ${translateStatus(order.status)}</p>
+                <p><strong>총 금액:</strong> ${order.total_price.toLocaleString()}원</p>
+                ${order.status === 'DELIVERED' ?
+                    `<button class="review-btn" onclick="openReviewModal(${order.order_id})">리뷰 작성/수정</button>`
+                    : ''}
+            `;
+                listDiv.appendChild(card);
+            });
+        })
+        .catch(err => {
+            console.error("주문 내역 불러오기 실패", err);
+            alert("주문 내역을 가져올 수 없습니다.");
+        });
+
+    function translateStatus(status) {
+        switch(status) {
+            case "REQUESTED": return "요청됨";
+            case "ACCEPTED": return "배달 중";
+            case "DELIVERED": return "배달 수령";
+            case "CANCELLED": return "거절됨";
+            default: return status;
+        }
+    }
+
+    function openReviewModal(orderId) {
+        currentOrderId = orderId;
+        isEditMode = false;
+        document.getElementById("review-modal-title").innerText = "리뷰 작성";
+        document.getElementById("review-content").value = "";
+        selectedStars = 5;
+        document.getElementById("delete-review-btn").style.display = "none";
+
+        renderStars();
+
+        fetch(`${API_BASE}/reviews/order/${orderId}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        })
+            .then(res => {
+                if (!res.ok) throw new Error("리뷰 없음");
+                return res.json();
+            })
+            .then(data => {
+                const review = data.data;
+                document.getElementById("review-content").value = review.review_content;
+                selectedStars = review.star;
+                isEditMode = true;
+                document.getElementById("review-modal-title").innerText = "리뷰 수정";
+                document.getElementById("delete-review-btn").style.display = "inline-block";
+                renderStars();
+            })
+            .catch(err => {
+                console.log("리뷰 없음, 새로 작성");
+            });
+
+        document.getElementById("review-modal").style.display = "block";
+    }
+
+    function renderStars() {
+        const starDiv = document.getElementById('stars');
+        starDiv.innerHTML = '';
+        for (let i = 1; i <= 5; i++) {
+            const star = document.createElement('span');
+            star.textContent = i <= selectedStars ? '★' : '☆';
+            star.style.cursor = 'pointer';
+            star.onclick = () => {
+                selectedStars = i;
+                renderStars();
+            };
+            starDiv.appendChild(star);
+        }
+    }
+
+    function submitReview() {
+        const content = document.getElementById("review-content").value.trim();
+        if (!content) {
+            alert("리뷰 내용을 입력해주세요.");
+            return;
+        }
+
+        const method = isEditMode ? "PATCH" : "POST";
+        const url = isEditMode ? `${API_BASE}/reviews/order/${currentOrderId}` : `${API_BASE}/reviews`;
+        const body = isEditMode ?
+            JSON.stringify({ reviewContent: content, star: selectedStars }) :
+            JSON.stringify({ orderId: currentOrderId, reviewContent: content, star: selectedStars });
+
+        fetch(url, {
+            method: method,
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            },
+            body: body
+        })
+            .then(res => res.json())
+            .then(() => {
+                alert("리뷰가 저장되었습니다.");
+                closeReviewModal();
+                location.reload();
+            })
+            .catch(err => {
+                console.error("리뷰 저장 실패", err);
+                alert("리뷰 저장에 실패했습니다.");
+            });
+    }
+
+    function deleteReview() {
+        if (!confirm("정말 리뷰를 삭제하시겠습니까?")) return;
+
+        fetch(`${API_BASE}/reviews/order/${currentOrderId}`, {
+            method: "DELETE",
+            headers: { Authorization: `Bearer ${token}` }
+        })
+            .then(res => res.json())
+            .then(() => {
+                alert("리뷰가 삭제되었습니다.");
+                closeReviewModal();
+                location.reload();
+            })
+            .catch(err => {
+                console.error("리뷰 삭제 실패", err);
+                alert("리뷰 삭제에 실패했습니다.");
+            });
+    }
+
+    function closeReviewModal() {
+        document.getElementById("review-modal").style.display = "none";
+    }
+</script>
+
+</body>
+</html>
