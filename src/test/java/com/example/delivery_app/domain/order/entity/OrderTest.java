@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 
-import com.example.delivery_app.domain.menu.dto.requestdto.MenuRequestDto;
 import com.example.delivery_app.domain.menu.entity.Menu;
 import com.example.delivery_app.domain.menu.repository.MenuRepository;
 import com.example.delivery_app.domain.order.repository.OrderRepository;
@@ -57,9 +56,15 @@ class OrderTest {
 			.foodCategory("중식")
 			.minDeliveryPrice(2000)
 			.build());
-
-		Menu menu = menuRepository.save(new Menu(store,
-			new MenuRequestDto("메인", "image.jpg", "짜장면", 5000, "맛있어요")));
+		Menu savedMenu = Menu.builder()
+			.store(store)
+			.category("메인")
+			.menuPicture("image")
+			.menuName("짜장면")
+			.price(5000)
+			.menuContent("content")
+			.build();
+		Menu menu = menuRepository.save(savedMenu);
 
 		// ✅ when
 		Order order = orderRepository.save(Order.builder()
@@ -93,8 +98,15 @@ class OrderTest {
 			.foodCategory("중식")
 			.minDeliveryPrice(2000)
 			.build());
-		Menu menu = menuRepository.save(new Menu(store,
-			new MenuRequestDto("메인", "image.jpg", "짜장면", 5000, "맛있어요")));
+		Menu savedMenu = Menu.builder()
+			.store(store)
+			.category("메인")
+			.menuPicture("image")
+			.menuName("짜장면")
+			.price(5000)
+			.menuContent("content")
+			.build();
+		Menu menu = menuRepository.save(savedMenu);
 		Order order = orderRepository.save(Order.builder()
 			.user(user).store(store).menu(menu).build());
 
@@ -129,8 +141,15 @@ class OrderTest {
 			.foodCategory("중식")
 			.minDeliveryPrice(2000)
 			.build());
-		Menu menu = menuRepository.save(new Menu(store,
-			new MenuRequestDto("메인", "image.jpg", "짜장면", 5000, "맛있어요")));
+		Menu savedMenu = Menu.builder()
+			.store(store)
+			.category("메인")
+			.menuPicture("image")
+			.menuName("짜장면")
+			.price(5000)
+			.menuContent("content")
+			.build();
+		Menu menu = menuRepository.save(savedMenu);
 
 		// ✅ when
 		Order order = orderRepository.save(Order.builder()
