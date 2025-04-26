@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public enum OrderErrorCode implements ResponseCode {
 	ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "주문 정보를 찾을 수 없습니다."),
+	ORDER_IN_STORE_NOT_FOUND(HttpStatus.NOT_FOUND, "가게 정보를 찾을 수 없습니다."),
 	ORDER_FORBIDDEN(HttpStatus.FORBIDDEN, "주문에 권한이 없습니다."),
 
 	ORDER_STATUS_ALREADY_ACCEPTED(HttpStatus.BAD_REQUEST, "이미 배달중인 주문입니다."),
