@@ -4,13 +4,16 @@
     <meta charset="UTF-8">
     <title>여기요! 홈</title>
     <style>
+        #edit-modal button,
+        #store-register-modal button {
+            cursor: pointer;
+        }
         body {
             font-family: 'Noto Sans KR', sans-serif;
             background-color: #f4f4f4;
             margin: 0;
             padding: 0;
         }
-
         header {
             display: flex;
             justify-content: space-between;
@@ -19,16 +22,13 @@
             background-color: #ffffff;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
-
         #logo {
             max-height: 40px;
         }
-
         .profile-info {
             font-size: 0.95rem;
             color: #555;
         }
-
         .btn-profile {
             padding: 8px 12px;
             background-color: #007bff;
@@ -39,24 +39,20 @@
             cursor: pointer;
             margin-left: 10px;
         }
-
         .container {
             padding: 24px;
         }
-
         .store-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 16px;
         }
-
         .store-list {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
             gap: 20px;
         }
-
         .store-card {
             background: white;
             border-radius: 10px;
@@ -65,22 +61,18 @@
             cursor: pointer;
             transition: 0.2s;
         }
-
         .store-card:hover {
             transform: translateY(-4px);
         }
-
         .store-card img {
             width: 100%;
             height: 120px;
             object-fit: cover;
         }
-
         .store-card .info {
             padding: 10px;
             text-align: center;
         }
-
         footer {
             position: fixed;
             bottom: 0;
@@ -91,7 +83,6 @@
             justify-content: space-around;
             box-shadow: 0 -1px 4px rgba(0,0,0,0.1);
         }
-
         footer button {
             padding: 10px 20px;
             border-radius: 8px;
@@ -99,32 +90,26 @@
             font-weight: bold;
             cursor: pointer;
         }
-
         .btn-order { background-color: #00c471; color: white; }
         .btn-logout { background-color: #ff4d4f; color: white; }
+
+        #header {
+            padding: 16px 24px;
+        }
+
     </style>
 </head>
 <body>
 
-<!-- Header -->
-<header>
-    <img id="logo" src="/logos/logo.png" alt="로고 이미지">
-    <div>
-        <span class="profile-info" id="user-info">사용자</span>
-        <button class="btn-profile" onclick="location.href='profile.html'">마이페이지</button>
-        <button id="store-register-btn" class="btn-profile" onclick="openStoreRegisterModal()" style="display:none;">가게 신청</button>
-    </div>
-</header>
+<!-- Header (외부 파일로 가져옴) -->
+<div id="header"></div>
 
 <!-- 메인 컨테이너 -->
 <div class="container">
     <div class="store-header">
         <h2>가게 리스트</h2>
     </div>
-
-    <div class="store-list" id="store-list">
-        <!-- 가게 카드가 JS로 여기에 렌더링됨 -->
-    </div>
+    <div class="store-list" id="store-list"></div>
 </div>
 
 <!-- 하단 메뉴 -->
@@ -135,10 +120,9 @@
 
 <!-- 가게 등록 모달 -->
 <div id="store-register-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); z-index:999;">
-    <div style="background:white; width:400px; margin:100px auto; padding:20px; border-radius:10px; position: relative;">
+    <div style="background:white; width:400px; margin:100px auto; padding:20px; border-radius:10px; position:relative;">
         <span onclick="closeStoreRegisterModal()" style="position:absolute; top:10px; right:15px; font-weight:bold; cursor:pointer;">×</span>
         <h3>🏪 가게 등록</h3>
-
         <input id="store-name" placeholder="가게명" style="width:100%; margin:10px 0; padding:8px;">
         <input id="store-address" placeholder="주소" style="width:100%; margin:10px 0; padding:8px;">
         <input id="food-category" placeholder="카테고리 (예: 한식)" style="width:100%; margin:10px 0; padding:8px;">
@@ -148,79 +132,89 @@
         <input id="delivery-tip" type="number" placeholder="배달팁" style="width:100%; margin:10px 0; padding:8px;">
         <input id="open-time" placeholder="오픈시간 (예: 06:00:00)" style="width:100%; margin:10px 0; padding:8px;">
         <input id="close-time" placeholder="마감시간 (예: 23:00:00)" style="width:100%; margin:10px 0; padding:8px;">
-
         <button onclick="submitStoreRegister()" style="padding:10px 20px; background:#28a745; color:white; border:none; border-radius:6px;">등록하기</button>
     </div>
 </div>
 
 <script>
-    const token = localStorage.getItem("accessToken");
-    let nickname = "";
+    (async () => {
+        try {
+            const headerHtml = await fetch('header.html').then(res => res.text());
+            document.getElementById("header").innerHTML = headerHtml;
 
-    if (!token) {
-        alert("로그인이 필요합니다.");
-        window.location.href = "/index.html";
-    }
+            // header 로딩 완료 후에 실행
+            const token = localStorage.getItem("accessToken");
+            let nickname = "";
 
-    const roles = JSON.parse(atob(token.split('.')[1])).roles || [];
-    const isOwner = roles.includes("OWNER");
-
-    // 사용자 정보 불러오기 (닉네임만 저장)
-    fetch("/api/auth/profiles/me", {
-        method: "GET",
-        headers: { Authorization: "Bearer " + token }
-    })
-        .then(res => res.json())
-        .then(data => {
-            nickname = data.data.nickname;
-            if (isOwner) {
-                document.getElementById("store-register-btn").style.display = "inline-block";
+            if (!token) {
+                alert("로그인이 필요합니다.");
+                window.location.href = "/index.html";
             }
-        });
 
-    navigator.geolocation.getCurrentPosition(
-        (pos) => {
-            const lat = pos.coords.latitude;
-            const lng = pos.coords.longitude;
+            const roles = JSON.parse(atob(token.split('.')[1])).roles || [];
+            const isOwner = roles.includes("OWNER");
 
-            fetch(`/api/region?lat=${lat}&lng=${lng}`)
+            fetch("/api/auth/profiles/me", {
+                method: "GET",
+                headers: { Authorization: "Bearer " + token }
+            })
                 .then(res => res.json())
-                .then(region => {
-                    document.getElementById("user-info").innerText = `${nickname} | ${region.region}`;
+                .then(data => {
+                    nickname = data.data.nickname;
+                    if (isOwner) {
+                        document.getElementById("store-register-btn").style.display = "inline-block";
+                    }
                 });
-        },
-        (err) => {
-            document.getElementById("user-info").innerText = `👋 ${nickname} | 위치 권한 필요`;
+
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    const lat = pos.coords.latitude;
+                    const lng = pos.coords.longitude;
+
+                    fetch(`/api/region?lat=${lat}&lng=${lng}`)
+                        .then(res => res.json())
+                        .then(region => {
+                            document.getElementById("user-info").innerText = `${nickname} | ${region.region}`;
+                        });
+                },
+                (err) => {
+                    document.getElementById("user-info").innerText = `👋 ${nickname} | 위치 권한 필요`;
+                }
+            );
+
+            // 가게 리스트 불러오기
+            fetch("/api/stores", {
+                method: "GET",
+                headers: { Authorization: "Bearer " + token }
+            })
+                .then(res => res.json())
+                .then(res => {
+                    const stores = res.data.content;
+                    const list = document.getElementById("store-list");
+                    list.innerHTML = "";
+
+                    stores.forEach(store => {
+                        const card = document.createElement("div");
+                        card.className = "store-card";
+                        card.onclick = () => location.href = `store-detail.html?storeId=${store.store_id}`;
+
+                        card.innerHTML = `
+                        <img src="/logos/default-store.jpg" alt="대표 이미지">
+                        <div class="info">
+                            <h4>${store.store_name}</h4>
+                            <p>${store.food_category}</p>
+                        </div>
+                    `;
+                        list.appendChild(card);
+                    });
+                });
+
+        } catch (err) {
+            console.error("초기화 실패:", err);
         }
-    );
+    })();
 
-    fetch("/api/stores", {
-        method: "GET",
-        headers: { Authorization: "Bearer " + token }
-    })
-        .then(res => res.json())
-        .then(res => {
-            const stores = res.data.content;
-            const list = document.getElementById("store-list");
-            list.innerHTML = "";
-
-            stores.forEach(store => {
-                const card = document.createElement("div");
-                card.className = "store-card";
-                card.onclick = () => location.href = `store-detail.html?storeId=${store.store_id}`;
-
-                card.innerHTML = `
-                <img src="/logos/default-store.jpg" alt="대표 이미지">
-                <div class="info">
-                    <h4>${store.store_name}</h4>
-                    <p>${store.food_category}</p>
-                </div>
-            `;
-
-                list.appendChild(card);
-            });
-        });
-
+    // 공통 함수들
     function logout() {
         localStorage.clear();
         alert("로그아웃 되었습니다.");
@@ -236,6 +230,7 @@
     }
 
     function submitStoreRegister() {
+        const token = localStorage.getItem("accessToken");
         const body = {
             storeName: document.getElementById("store-name").value.trim(),
             storeAddress: document.getElementById("store-address").value.trim(),

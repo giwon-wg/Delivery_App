@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>주문 목록</title>
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .order-card {
+            background: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .order-card p {
+            margin: 5px 0;
+        }
+        .approve-btn, .reject-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 10px;
+            margin-right: 8px;
+        }
+        .approve-btn { background-color: green; color: white; }
+        .reject-btn { background-color: red; color: white; }
+    </style>
+</head>
+<body>
+<div id="business-header"></div>
+
+<div id="store-name" style="margin-bottom: 20px; font-weight: bold;"></div>
+<div id="order-list"></div>
+
+<script>
+    (async () => {
+        try {
+            const headerHtml = await fetch('business-header.html').then(res => res.text());
+            document.getElementById("business-header").innerHTML = headerHtml;
+        } catch (err) {
+            console.error("사업자 헤더 로딩 실패", err);
+        }
+    })();
+
+    const token = localStorage.getItem("accessToken");
+    if (!token) {
+        alert("로그인이 필요합니다.");
+        window.location.href = "/index.html";
+    }
+
+    const storeId = new URLSearchParams(window.location.search).get("storeId");
+    if (!storeId) {
+        alert("storeId가 없습니다.");
+        window.location.href = "/home.html";
+    }
+
+    let menuMap = {};
+
+    function loadOrderList() {
+        fetch(`/api/orders/store/${storeId}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        })
+            .then(res => res.json())
+            .then(data => {
+                const orders = data.data || [];
+                const orderListDiv = document.getElementById("order-list");
+                orderListDiv.innerHTML = "";
+
+                if (orders.length === 0) {
+                    orderListDiv.innerHTML = "<p>등록된 주문이 없습니다.</p>";
+                    return;
+                }
+
+                orders.forEach(order => {
+                    const card = document.createElement("div");
+                    card.className = "order-card";
+
+                    const totalPrice = order.total_price; // 여기 수정!!
+
+                    card.innerHTML = `
+                        <p><strong>주문 ID:</strong> ${order.order_id}</p>
+                        <p><strong>메뉴:</strong> ${menuMap[order.menu_id] || '메뉴 이름 없음'}</p>
+                        <p><strong>상태:</strong> ${translateStatus(order.status)}</p>
+                        <p><strong>총 금액:</strong> ${totalPrice != null ? totalPrice.toLocaleString() + "원" : "정보 없음"}</p>
+                        ${order.status === 'REQUESTED' ? `
+                            <button class="approve-btn" onclick="updateOrderStatus(${order.order_id}, 'accept')">승인</button>
+                            <button class="reject-btn" onclick="updateOrderStatus(${order.order_id}, 'reject')">거절</button>
+                        ` : ''}
+                    `;
+                    orderListDiv.appendChild(card);
+                });
+            })
+            .catch(err => {
+                console.error("주문 목록 조회 실패", err);
+                alert("주문 목록을 가져올 수 없습니다.");
+            });
+    }
+
+    function loadStoreInfo() {
+        fetch(`/api/stores/${storeId}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        })
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById("store-name").innerText = `🏪 ${data.data.store_name}`;
+
+                // 메뉴 이름 매핑용
+                (data.data.menus || []).forEach(menu => {
+                    menuMap[menu.id] = menu.menu_name;
+                });
+
+                loadOrderList();
+            })
+            .catch(err => {
+                console.error("가게 정보 불러오기 실패", err);
+            });
+    }
+
+    function translateStatus(status) {
+        switch(status) {
+            case "REQUESTED": return "요청됨";
+            case "ACCEPTED": return "수락됨";
+            case "DELIVERED": return "배달완료";
+            default: return status;
+        }
+    }
+
+    function updateOrderStatus(orderId, action) {
+        fetch(`/api/orders/${orderId}/${action}`, {
+            method: "PATCH",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            }
+        })
+            .then(res => res.json())
+            .then(() => {
+                alert(`주문이 ${action === 'accept' ? '승인' : '거절'}되었습니다.`);
+                loadOrderList();
+            })
+            .catch(err => {
+                console.error("주문 상태 변경 실패", err);
+                alert("주문 상태 변경에 실패했습니다.");
+            });
+    }
+
+    window.onload = loadStoreInfo;
+</script>
+
+</body>
+</html>

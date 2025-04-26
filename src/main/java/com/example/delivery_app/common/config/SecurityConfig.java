@@ -44,7 +44,10 @@ public class SecurityConfig {
 					"/oauth2/authorization/**",
 					"/social-handler.html",
 					"store-detail.html",
-					"header.html"
+					"header.html",
+					"order-list.html",
+					"order-history.html",
+					"business-header.html"
 				).permitAll()
 				.anyRequest().authenticated()
 			)
