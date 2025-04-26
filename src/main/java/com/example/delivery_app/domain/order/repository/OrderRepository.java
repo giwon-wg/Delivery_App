@@ -14,8 +14,8 @@ import com.example.delivery_app.domain.user.entity.UserRole;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
-	@Query("SELECT o FROM orders o WHERE o.store.storeId = :storeId AND o.user.role IN (:roles)")
-	List<Order> findAllByStoreIdAndRole(@Param("storeId") Long storeId, @Param("roles") List<UserRole> roles);
+	@Query("SELECT o FROM orders o WHERE o.store.storeId = :storeId")
+	List<Order> findAllByStoreIdAndRole(@Param("storeId") Long storeId);
 
 	@Query("SELECT o FROM orders o WHERE o.user.id = :userId AND o.user.role IN (:roles)")
 	List<Order> findAllByUserIdAndRole(@Param("userId") Long userId, @Param("roles") List<UserRole> roles);

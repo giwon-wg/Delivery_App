@@ -42,8 +42,7 @@ public class OrderService {
 	public List<OrderResponseDto> findAllOrdersByStoreId(Long storeId, UserAuth userAuth) {
 		forbidOrderIfHasRole(userAuth, UserRole.USER);
 		existStore(storeId);
-		return orderRepository.findAllByStoreIdAndRole(
-				storeId, userAuth.getRoles())
+		return orderRepository.findAllByStoreIdAndRole(storeId)
 			.stream()
 			.map(this::buildOrderResponseDto)
 			.toList();

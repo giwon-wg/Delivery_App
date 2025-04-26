@@ -12,7 +12,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import com.example.delivery_app.common.exception.CustomException;
-import com.example.delivery_app.domain.menu.dto.requestdto.MenuRequestDto;
 import com.example.delivery_app.domain.menu.entity.Menu;
 import com.example.delivery_app.domain.menu.repository.MenuRepository;
 import com.example.delivery_app.domain.order.entity.Order;
@@ -63,8 +62,14 @@ class OrderRepositoryTest {
 		userRepository.save(owner);
 		storeRepository.save(store);
 
-		MenuRequestDto menuRequestDto = new MenuRequestDto("메인", "image", "짜장면", 5000, "content");
-		Menu menu = new Menu(store, menuRequestDto);
+		Menu menu = Menu.builder()
+			.store(store)
+			.category("메인")
+			.menuPicture("img")
+			.menuName("짜장면")
+			.price(5000)
+			.menuContent("content")
+			.build();
 		menuRepository.save(menu);
 
 		Order orderByOwner = Order.builder()
@@ -72,8 +77,7 @@ class OrderRepositoryTest {
 		orderRepository.save(orderByOwner);
 
 		// when
-		List<Order> result = orderRepository.findAllByStoreIdAndRole(store.getStoreId(),
-			List.of(owner.getRole()));
+		List<Order> result = orderRepository.findAllByStoreIdAndRole(store.getStoreId());
 
 		// then
 		assertThat(result).hasSize(1)
@@ -122,12 +126,30 @@ class OrderRepositoryTest {
 		userRepository.saveAll(List.of(admin, user));
 		storeRepository.save(store);
 
-		MenuRequestDto menuRequestDto1 = new MenuRequestDto("메인", "image", "짜장면", 5000, "content");
-		MenuRequestDto menuRequestDto2 = new MenuRequestDto("메인", "image", "짬봉", 5000, "content");
-		MenuRequestDto menuRequestDto3 = new MenuRequestDto("사이드", "image", "탕수육", 10000, "content");
-		Menu menu1 = new Menu(store, menuRequestDto1);
-		Menu menu2 = new Menu(store, menuRequestDto2);
-		Menu menu3 = new Menu(store, menuRequestDto3);
+		Menu menu1 = Menu.builder()
+			.store(store)
+			.category("메인")
+			.menuPicture("image")
+			.menuName("짜장면")
+			.price(5000)
+			.menuContent("content")
+			.build();
+		Menu menu2 = Menu.builder()
+			.store(store)
+			.category("메인")
+			.menuPicture("image")
+			.menuName("짬봉")
+			.price(5000)
+			.menuContent("content")
+			.build();
+		Menu menu3 = Menu.builder()
+			.store(store)
+			.category("사이드")
+			.menuPicture("image")
+			.menuName("탕수육")
+			.price(10000)
+			.menuContent("content")
+			.build();
 		menuRepository.saveAll(List.of(menu1, menu2, menu3));
 
 		Order orderByAdmin = Order.builder()
@@ -194,8 +216,14 @@ class OrderRepositoryTest {
 		userRepository.save(user);
 		storeRepository.save(store);
 
-		MenuRequestDto menuRequestDto1 = new MenuRequestDto("메인", "image", "짜장면", 5000, "content");
-		Menu menu = new Menu(store, menuRequestDto1);
+		Menu menu = Menu.builder()
+			.store(store)
+			.category("메인")
+			.menuPicture("image")
+			.menuName("짜장면")
+			.price(5000)
+			.menuContent("content")
+			.build();
 		menuRepository.save(menu);
 
 		Order order = Order.builder()
