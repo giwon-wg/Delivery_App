@@ -1,11 +1,13 @@
 package com.example.delivery_app.domain.menu.entity;
 
+import java.util.List;
+
 import com.example.delivery_app.common.entity.BaseEntity;
-import com.example.delivery_app.domain.menu.dto.requestdto.MenuRequestDto;
 import com.example.delivery_app.domain.menu.dto.requestdto.UpdateMenuRequestDto;
 import com.example.delivery_app.domain.order.entity.Order;
 import com.example.delivery_app.domain.store.entity.Store;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -14,13 +16,17 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
 @NoArgsConstructor
+@Table(name = "menu")
 public class Menu extends BaseEntity {
 
 	@Id
@@ -48,23 +54,30 @@ public class Menu extends BaseEntity {
 	@OneToOne(mappedBy = "menu")
 	private Order order;
 
-	/**
-	 * 기본값 true
-	 * 삭제 시 updateStatus를 통해 false로 바뀝니다
-	 */
-	private boolean status = true;
+	@OneToMany(mappedBy = "menu", cascade = CascadeType.ALL)
+	private List<MenuOption> menuOptions;
 
-	public Menu(Store store, MenuRequestDto dto) {
+	/**
+	 * 기본값 false
+	 * 삭제 시 deleteMenu를 통해 true로 바뀝니다
+	 */
+	private boolean isDeleted;
+
+	@Builder
+	public Menu(Store store, String category, String menuPicture, String menuName, Integer price, String menuContent) {
 		this.store = store;
-		this.category = dto.getCategory();
-		this.menuPicture = dto.getMenuPicture();
-		this.menuName = dto.getMenuName();
-		this.price = dto.getPrice();
-		this.menuContent = dto.getMenuContent();
+		this.category = category;
+		this.menuPicture = menuPicture;
+		this.menuName = menuName;
+		this.price = price;
+		this.menuContent = menuContent;
 	}
 
-	public void updateStatus() {
-		this.status = false;
+	/**
+	 * deleteMenu 시 status 상태 변경 메서드
+	 */
+	public void deleteMenu() {
+		this.isDeleted = true;
 	}
 
 	/**

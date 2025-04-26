@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>여기요! 로컬 맛집</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #fefefe;
+            margin: 0;
+            padding: 40px;
+            text-align: center;
+            color: #333;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            color: #ff4d4f;
+            margin-bottom: 20px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: #fff;
+            padding: 25px 30px;
+            border-radius: 16px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            max-width: 420px;
+            margin: 0 auto;
+        }
+
+        .card img {
+            max-width: 150px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+        }
+
+        #slogan {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        #menu {
+            font-size: 1rem;
+            color: #666;
+        }
+
+        .login-box input {
+            width: 90%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+
+        .login-box button {
+            width: 90%;
+            padding: 10px;
+            margin: 10px 0;
+            background-color: #ff4d4f;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .login-box .sub-buttons {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .login-box .sub-buttons button {
+            width: 48%;
+            font-size: 0.9rem;
+            background-color: #ddd;
+            color: #333;
+        }
+
+        .button-group {
+            margin-top: 20px;
+        }
+
+        .button-group button {
+            margin: 5px;
+            padding: 10px 16px;
+            border-radius: 20px;
+            border: 1px solid #ff4d4f;
+            color: #ff4d4f;
+            background-color: #fff;
+            cursor: pointer;
+        }
+
+        .button-group button:hover {
+            background-color: #ff4d4f;
+            color: #fff;
+        }
+
+        /* 모달 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 12px;
+            width: 300px;
+            text-align: center;
+        }
+
+        .modal-content input {
+            width: 90%;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+
+        .modal-content button {
+            padding: 10px 16px;
+            background-color: #ff4d4f;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            margin-top: 10px;
+        }
+
+        .close {
+            float: right;
+            font-size: 22px;
+            cursor: pointer;
+            color: #aaa;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        @media (max-width: 500px) {
+            .card, .modal-content {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- 지역 추천 박스 -->
+<div class="section">
+    <h1>여기요!</h1>
+    <div class="card">
+        <p id="region">지역: 불러오는 중...</p>
+        <img id="logo" src="" alt="로고 이미지" style="display: none;">
+        <p id="slogan"></p>
+        <p id="menu"></p>
+    </div>
+</div>
+
+<!-- 로그인 박스 -->
+<div class="section login-box card">
+    <input type="text" id="login-email" placeholder="이메일">
+    <input type="password" id="login-password" placeholder="비밀번호">
+    <button onclick="submitLogin()">로그인</button>
+
+    <div class="sub-buttons">
+        <button onclick="location.href='/oauth2/authorization/google'">소셜 로그인</button>
+        <button onclick="openSignupModal()">회원가입</button>
+    </div>
+</div>
+
+<!-- 지역 테스트 버튼 -->
+<div class="section">
+    <h3>🧪 테스트 지역 선택</h3>
+
+    <div style="margin-bottom: 10px; font-weight: bold;">광역시 / 특별시</div>
+    <div class="button-group">
+        <button onclick="testRegion(37.5665, 126.9780)">서울</button>
+        <button onclick="testRegion(35.1796, 129.0756)">부산</button>
+        <button onclick="testRegion(35.8722, 128.6025)">대구</button>
+        <button onclick="testRegion(37.4563, 126.7052)">인천</button>
+        <button onclick="testRegion(35.1595, 126.8526)">광주</button>
+        <button onclick="testRegion(36.3504, 127.3845)">대전</button>
+        <button onclick="testRegion(35.5384, 129.3114)">울산</button>
+        <button onclick="testRegion(36.4800, 127.2890)">세종</button>
+    </div>
+
+    <div style="margin: 20px 0 10px; font-weight: bold;">도 지역</div>
+    <div class="button-group">
+        <button onclick="testRegion(37.4138, 127.5183)">경기</button>
+        <button onclick="testRegion(37.8228, 128.1555)">강원</button>
+        <button onclick="testRegion(36.6358, 127.4917)">충북</button>
+        <button onclick="testRegion(36.5184, 126.8000)">충남</button>
+        <button onclick="testRegion(35.7175, 127.1530)">전북</button>
+        <button onclick="testRegion(34.8161, 126.4630)">전남</button>
+        <button onclick="testRegion(36.4919, 128.8889)">경북</button>
+        <button onclick="testRegion(35.4606, 128.2132)">경남</button>
+        <button onclick="testRegion(33.4996, 126.5312)">제주</button>
+    </div>
+</div>
+
+<!-- 회원가입 모달 -->
+<div id="signupModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeSignupModal()">&times;</span>
+        <h3>회원가입</h3>
+        <input type="text" id="signup-email" placeholder="이메일">
+        <input type="password" id="signup-password" placeholder="비밀번호">
+        <input type="text" id="signup-nickname" placeholder="닉네임">
+        <input type="text" id="signup-address" placeholder="주소">
+        <button onclick="submitSignup()">가입하기</button>
+    </div>
+</div>
+
+<script>
+    function updateUI(data, test = false) {
+        document.getElementById("region").innerText = `지역: ${data.region}`;
+        document.getElementById("logo").src = data.logo_url;
+        document.getElementById("logo").style.display = "block";
+        document.getElementById("slogan").innerText = data.slogan;
+        document.getElementById("menu").innerText = `추천메뉴: ${data.recommended_menu}`;
+    }
+
+    function testRegion(lat, lng) {
+        fetch(`/api/region?lat=${lat}&lng=${lng}`)
+            .then(res => res.json())
+            .then(data => updateUI(data, true))
+            .catch(() => {
+                document.getElementById("region").innerText = "지역 정보 불러오기 실패";
+            });
+    }
+
+    navigator.geolocation.getCurrentPosition(
+        (pos) => {
+            fetch(`/api/region?lat=${pos.coords.latitude}&lng=${pos.coords.longitude}`)
+                .then(res => res.json())
+                .then(data => updateUI(data))
+                .catch(() => {
+                    document.getElementById("region").innerText = "지역 정보 실패";
+                });
+        },
+        () => {
+            document.getElementById("region").innerText = "위치 권한이 필요합니다.";
+        }
+    );
+
+    function submitLogin() {
+        const email = document.getElementById('login-email').value;
+        const password = document.getElementById('login-password').value;
+
+        fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        })
+            .then(res => {
+                if (!res.ok) return res.json().then(err => { throw new Error(err.message); });
+                return res.json();
+            })
+            .then(data => {
+                const tokenData = data.data;
+                localStorage.setItem('accessToken', tokenData.access_token);
+                localStorage.setItem('refreshToken', tokenData.refresh_token);
+                window.location.href = "/home.html";
+            })
+            .catch(err => {
+                alert("로그인 실패: " + err.message);
+            });
+    }
+
+    function openSignupModal() {
+        document.getElementById('signupModal').style.display = 'block';
+    }
+
+    function closeSignupModal() {
+        document.getElementById('signupModal').style.display = 'none';
+    }
+
+    function submitSignup() {
+        const email = document.getElementById('signup-email').value;
+        const password = document.getElementById('signup-password').value;
+        const nickname = document.getElementById('signup-nickname').value;
+        const address = document.getElementById('signup-address').value;
+
+        fetch('/api/auth/signup', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password, nickname, address })
+        })
+            .then(res => {
+                if (res.ok) {
+                    alert('회원가입 성공! 로그인해주세요.');
+                    closeSignupModal();
+                } else {
+                    return res.json().then(err => { throw new Error(err.message); });
+                }
+            })
+            .catch(err => {
+                alert('❌ 회원가입 실패: ' + err.message);
+            });
+    }
+
+</script>
+
+</body>
+</html>

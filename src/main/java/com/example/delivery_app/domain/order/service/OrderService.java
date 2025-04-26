@@ -114,8 +114,6 @@ public class OrderService {
 		forbidOrderIfHasRole(userAuth, UserRole.USER);
 
 		Order order = orderRepository.findByIdOrElseThrow(orderId);
-		validateOrderAccess(userAuth, order);
-
 		validateOrderStatus(order, status);
 		order.setOrderStatus(status);
 
@@ -131,8 +129,6 @@ public class OrderService {
 	 */
 	@Transactional
 	public OrderResponseDto requestUserOrder(Long orderId, OrderStatus status, UserAuth userAuth) {
-		forbidOrderIfHasRole(userAuth, UserRole.OWNER);
-
 		Order order = orderRepository.findByIdOrElseThrow(orderId);
 		validateOrderAccess(userAuth, order);
 
@@ -182,7 +178,7 @@ public class OrderService {
 		if (userAuth.hasRole(UserRole.ADMIN.name()))
 			return;
 
-		// 사장님은 모든 주문에 접근 불가능
+		// 사장님은 주문에 권한 없음
 		forbidOrderIfHasRole(userAuth, UserRole.OWNER);
 
 		// 유저의 경우, 본인 주문이 아니면 예외 처리

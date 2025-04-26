@@ -1,11 +1,22 @@
 package com.example.delivery_app.domain.menu.dto.responsedto;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.example.delivery_app.domain.menu.entity.Menu;
 
+import lombok.Builder;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Getter
+@Builder
+@RequiredArgsConstructor
 public class MenuResponseDto {
+
+	private final Long storeId;
+
+	private final Long id;
 
 	private final String category;
 
@@ -17,11 +28,21 @@ public class MenuResponseDto {
 
 	private final String menuContent;
 
-	public MenuResponseDto(Menu menu) {
-		this.category = menu.getCategory();
-		this.menuPicture = menu.getMenuPicture();
-		this.menuName = menu.getMenuName();
-		this.price = menu.getPrice();
-		this.menuContent = menu.getMenuContent();
+	private final List<MenuOptionResponseDto> menuOptions;
+
+	public static MenuResponseDto fromMenu(Menu menu) {
+		return MenuResponseDto.builder()
+			.storeId(menu.getStore().getStoreId())
+			.id(menu.getId())
+			.category(menu.getCategory())
+			.menuPicture(menu.getMenuPicture())
+			.menuName(menu.getMenuName())
+			.price(menu.getPrice())
+			.menuContent(menu.getMenuContent())
+			.menuOptions(menu.getMenuOptions().stream()
+				.filter(menuOption -> !menuOption.isDeleted())
+				.map(MenuOptionResponseDto::fromMenuOption)
+				.collect(Collectors.toList()))
+			.build();
 	}
 }

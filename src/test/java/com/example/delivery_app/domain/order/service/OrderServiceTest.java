@@ -33,14 +33,10 @@ import com.example.delivery_app.domain.user.repository.UserRepository;
 @ActiveProfiles("test")
 class OrderServiceTest {
 
-	@Mock
-	private OrderRepository orderRepository;
-	@Mock
-	private MenuRepository menuRepository;
-	@Mock
-	private UserRepository userRepository;
-	@Mock
-	private StoreRepository storeRepository;
+	@Mock	private OrderRepository orderRepository;
+	@Mock	private MenuRepository menuRepository;
+	@Mock	private UserRepository userRepository;
+	@Mock	private StoreRepository storeRepository;
 
 	@InjectMocks
 	private OrderService orderService;

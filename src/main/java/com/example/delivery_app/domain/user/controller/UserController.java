@@ -20,6 +20,7 @@ import com.example.delivery_app.common.redis.dto.TokenRefreshRequest;
 import com.example.delivery_app.common.redis.dto.TokenRefreshResponse;
 import com.example.delivery_app.domain.user.Auth.UserAuth;
 import com.example.delivery_app.domain.user.dto.request.LoginRequest;
+import com.example.delivery_app.domain.user.dto.request.OwnerApplyRequest;
 import com.example.delivery_app.domain.user.dto.request.PasswordChangeRequest;
 import com.example.delivery_app.domain.user.dto.request.SignUpRequest;
 import com.example.delivery_app.domain.user.dto.request.UserProfileUpdateRequest;
@@ -56,7 +57,6 @@ public class UserController {
 	@Operation(summary = "로그인", description = "email, password 로 로그인 후 토큰 발급")
 	@PostMapping("/login")
 	public ResponseEntity<CommonResponseDto<LoginResponse>> login(@RequestBody @Valid LoginRequest request) {
-
 		return ResponseEntity.ok(CommonResponseDto.of(UserSuccessCode.SUCCESS, userService.login(request)));
 	}
 
@@ -151,6 +151,16 @@ public class UserController {
 	public ResponseEntity<CommonResponseDto<Void>> deleteUserByAdmin(@PathVariable Long id, @AuthenticationPrincipal UserAuth user) {
 		userService.deleteAccountByAdmin(id, user);
 		return ResponseEntity.ok(CommonResponseDto.of(UserSuccessCode.DELETED));
+	}
+
+	@Operation(summary = "사업자 권한 신청", security = {@SecurityRequirement(name = "bearerAuth")})
+	@PostMapping("/business/apply")
+	public ResponseEntity<CommonResponseDto<Void>> applyForBusiness(
+		@RequestBody @Valid OwnerApplyRequest request,
+		@AuthenticationPrincipal UserAuth user
+	) {
+		userService.applyForBusiness(request, user);
+		return ResponseEntity.ok(CommonResponseDto.of(UserSuccessCode.OWNER_GRANTED));
 	}
 
 }

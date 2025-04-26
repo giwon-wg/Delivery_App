@@ -16,6 +16,7 @@ public enum UserErrorCode implements ResponseCode {
 	DUPLICATE_NICKNAME(HttpStatus.BAD_REQUEST, "이미 사용 중인 닉네임입니다."),
 	PASSWORD_MISMATCH(HttpStatus.BAD_REQUEST, "현재 비밀번호가 일치하지 않습니다."),
 	PASSWORD_CONFIRM_MISMATCH(HttpStatus.BAD_REQUEST, "새 비밀번호와 비밀번호 확인이 일치하지 않습니다."),
+	USER_ALREADY_OWNER(HttpStatus.BAD_REQUEST, "이미 사업자 권한이 부여된 사용자입니다."),
 
 
 	// 403

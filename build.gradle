@@ -52,6 +52,11 @@ dependencies {
     testImplementation 'com.navercorp.fixturemonkey:fixture-monkey-starter:1.1.11'
     testRuntimeOnly 'com.h2database:h2'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // oauth2
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
+    implementation 'org.json:json:20230227'
 }
 
 tasks.named('test') {

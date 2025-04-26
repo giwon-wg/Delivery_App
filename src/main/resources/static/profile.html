@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>마이페이지</title>
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 50px;
+        }
+        h1 {
+            color: #ff4d4f;
+            margin-bottom: 30px;
+        }
+        .card {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            padding: 30px;
+            width: 400px;
+            text-align: center;
+        }
+        .info {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+        .btn {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .btn-edit {
+            background-color: #ffa500;
+            color: white;
+        }
+        .btn-logout {
+            background-color: #ff4d4f;
+            color: white;
+        }
+        .btn-business {
+            background-color: #007bff;
+            color: white;
+            display: none;
+        }
+        .btn-delete {
+            background-color: #6c757d;
+            color: white;
+        }
+
+    </style>
+</head>
+<body>
+
+<h1>마이페이지</h1>
+
+<div class="card">
+    <div id="user-info" class="info">사용자 정보를 불러오는 중...</div>
+
+    <button class="btn btn-edit" onclick="openEditModal()">⚙ 정보 수정</button>
+    <button class="btn btn-edit" onclick="openPasswordModal()">🔐 비밀번호 변경</button>
+    <button class="btn btn-business" id="open-business-modal" onclick="openBusinessModal()">📦 사업자 등록</button>
+    <button class="btn btn-logout" onclick="logout()">🚪 로그아웃</button>
+
+</div>
+
+<!-- 홈으로 돌아가기 버튼 -->
+<button onclick="location.href='home.html'"
+        style="margin-top: 20px; padding: 10px 20px; background-color: #6c757d; color: white; border: none; border-radius: 6px; cursor: pointer;">
+    ← 홈으로 돌아가기
+</button>
+
+<button class="btn btn-delete" onclick="openWithdrawModal()">💥 회원 탈퇴</button>
+
+<!-- 정보 수정 모달 -->
+<div id="edit-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); z-index: 999;">
+    <div style="background:white; width:300px; margin:100px auto; padding:20px; border-radius:10px; position: relative;">
+        <span onclick="closeEditModal()" style="position:absolute; top:10px; right:15px; font-weight:bold; cursor:pointer;">&times;</span>
+        <h3>정보 수정</h3>
+        <input type="text" id="edit-nickname" placeholder="닉네임" style="width:90%; margin:10px 0; padding:8px;"><br>
+        <input type="text" id="edit-address" placeholder="주소" style="width:90%; margin:10px 0; padding:8px;"><br>
+        <button onclick="submitEdit()" style="padding:8px 16px; background:#28a745; color:white; border:none; border-radius:6px;">수정하기</button>
+    </div>
+</div>
+
+<!-- 비밀번호 변경 모달 -->
+<div id="password-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); z-index: 999;">
+    <div style="background:white; width:300px; margin:100px auto; padding:20px; border-radius:10px; position: relative;">
+        <span onclick="closePasswordModal()" style="position:absolute; top:10px; right:15px; font-weight:bold; cursor:pointer;">&times;</span>
+        <h3>비밀번호 변경</h3>
+
+        <input type="password" id="current-password" placeholder="현재 비밀번호" style="width:90%; margin:10px 0; padding:8px;"><br>
+        <input type="password" id="new-password" placeholder="새 비밀번호" style="width:90%; margin:10px 0; padding:8px;"><br>
+        <input type="password" id="confirm-new-password" placeholder="새 비밀번호 확인" style="width:90%; margin:10px 0; padding:8px;"><br>
+
+        <button onclick="submitPasswordChange()" style="padding:8px 16px; background:#28a745; color:white; border:none; border-radius:6px;">변경하기</button>
+    </div>
+</div>
+
+<!-- 사업자 등록 모달 -->
+<div id="business-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); z-index: 999;">
+    <div style="background:white; width:300px; margin:100px auto; padding:20px; border-radius:10px; position: relative;">
+        <span onclick="closeBusinessModal()" style="position:absolute; top:10px; right:15px; font-weight:bold; cursor:pointer;">&times;</span>
+        <h3>사업자 신청</h3>
+        <input type="text" id="owner-name" placeholder="사업자명" style="width:90%; margin:10px 0; padding:8px;"><br>
+        <input type="text" id="registration-number" placeholder="123-45-67890" style="width:90%; margin:10px 0; padding:8px;"><br>
+        <button onclick="submitBusinessApplication()" style="padding:8px 16px; background:#28a745; color:white; border:none; border-radius:6px;">신청하기</button>
+    </div>
+</div>
+
+<!-- 회원 탈퇴 모달 -->
+<div id="withdraw-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); z-index: 999;">
+    <div style="background:white; width:300px; margin:100px auto; padding:20px; border-radius:10px; position: relative;">
+        <span onclick="closeWithdrawModal()" style="position:absolute; top:10px; right:15px; font-weight:bold; cursor:pointer;">×</span>
+        <h3>비밀번호 입력 후 탈퇴</h3>
+        <input type="password" id="withdraw-password" placeholder="비밀번호 입력" style="width:90%; margin:10px 0; padding:8px;"><br>
+        <button onclick="submitWithdraw()" style="padding:8px 16px; background:#ff4d4f; color:white; border:none; border-radius:6px;">탈퇴하기</button>
+    </div>
+</div>
+
+<script>
+    let memberId;
+
+    const token = localStorage.getItem('accessToken');
+
+    if (!token) {
+        alert("로그인 정보가 없습니다.");
+        window.location.href = "/index.html";
+    } else {
+        fetch('/api/auth/profiles/me', {
+            method: 'GET',
+            headers: { Authorization: 'Bearer ' + token }
+        })
+            .then(res => res.json())
+            .then(data => {
+                const user = data.data;
+                memberId = user.id;
+                document.getElementById("user-info").innerText =
+                    `👤 ${user.nickname} (${user.email})\n📍 ${user.address}\n역할: ${user.role}`;
+
+                if (user.role === "USER") {
+                    document.getElementById("open-business-modal").style.display = "inline-block";
+                }
+            })
+            .catch(err => {
+                alert("사용자 정보 조회 실패: " + err.message);
+            });
+    }
+
+    function logout() {
+        fetch('/api/auth/logout', {
+            method: 'POST',
+            headers: { Authorization: 'Bearer ' + token }
+        })
+            .then(() => {
+                localStorage.clear();
+                alert("로그아웃 완료!");
+                window.location.href = "/index.html";
+            })
+            .catch(() => {
+                localStorage.clear();
+                alert("로그아웃 오류! 하지만 강제 종료합니다.");
+                window.location.href = "/index.html";
+            });
+    }
+
+    function openEditModal() {
+        document.getElementById("edit-modal").style.display = "block";
+    }
+
+    function closeEditModal() {
+        document.getElementById("edit-modal").style.display = "none";
+    }
+
+    function submitEdit() {
+        const nickname = document.getElementById("edit-nickname").value;
+        const address = document.getElementById("edit-address").value;
+
+        if (!nickname || !address) return alert("모든 항목을 입력해주세요.");
+
+        if (!memberId) return alert("사용자 정보를 불러오지 못했습니다.");
+
+        fetch(`/api/auth/profiles/${memberId}`, {
+            method: "PATCH",
+            headers: {
+                "Authorization": "Bearer " + token,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ nickname, address })
+        })
+            .then(res => {
+                if (!res.ok) throw new Error("수정 실패");
+                alert("정보 수정 완료!");
+                closeEditModal();
+                window.location.reload();
+            })
+            .catch(err => alert("수정 오류: " + err.message));
+    }
+
+    function openBusinessModal() {
+        document.getElementById("business-modal").style.display = "block";
+    }
+
+    function closeBusinessModal() {
+        document.getElementById("business-modal").style.display = "none";
+    }
+
+    function submitBusinessApplication() {
+        const ownerName = document.getElementById("owner-name").value.trim();
+        const registrationNumber = document.getElementById("registration-number").value.trim();
+
+        if (!ownerName || !registrationNumber) {
+            alert("모든 항목을 입력해주세요.");
+            return;
+        }
+
+        fetch("/api/auth/business/apply", {
+            method: "POST",
+            headers: {
+                "Authorization": "Bearer " + token,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ ownerName, registrationNumber })
+        })
+            .then(res => res.json())
+            .then(data => {
+                alert("사업자 신청 완료: " + data.message);
+                closeBusinessModal();
+            })
+            .catch(err => alert("신청 실패: " + err.message));
+    }
+
+    function openPasswordModal() {
+        document.getElementById("password-modal").style.display = "block";
+    }
+
+    function closePasswordModal() {
+        document.getElementById("password-modal").style.display = "none";
+    }
+
+    function submitPasswordChange() {
+        const currentPassword = document.getElementById("current-password").value.trim();
+        const newPassword = document.getElementById("new-password").value.trim();
+        const confirmNewPassword = document.getElementById("confirm-new-password").value.trim();
+
+        if (!currentPassword || !newPassword || !confirmNewPassword) {
+            alert("모든 항목을 입력해주세요.");
+            return;
+        }
+
+        if (newPassword !== confirmNewPassword) {
+            alert("새 비밀번호와 확인이 일치하지 않습니다.");
+            return;
+        }
+
+        if (!memberId) {
+            alert("사용자 정보를 불러오지 못했습니다.");
+            return;
+        }
+
+        fetch(`/api/auth/profiles/${memberId}/password`, {
+            method: "PATCH",
+            headers: {
+                "Authorization": "Bearer " + token,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                currentPassword,
+                newPassword,
+                confirmNewPassword
+            })
+        })
+            .then(res => {
+                if (!res.ok) throw new Error("비밀번호 변경 실패");
+                alert("비밀번호가 성공적으로 변경되었습니다.");
+                closePasswordModal();
+            })
+            .catch(err => {
+                alert("비밀번호 변경 오류: " + err.message);
+            });
+    }
+    function openWithdrawModal() {
+        document.getElementById("withdraw-modal").style.display = "block";
+    }
+
+    function closeWithdrawModal() {
+        document.getElementById("withdraw-modal").style.display = "none";
+    }
+
+    function submitWithdraw() {
+        const password = document.getElementById("withdraw-password").value.trim();
+        if (!password) {
+            alert("비밀번호를 입력해주세요.");
+            return;
+        }
+
+        if (!confirm("정말로 탈퇴하시겠습니까?")) return;
+
+        fetch("/api/auth/users/me", {
+            method: "DELETE",
+            headers: {
+                "Authorization": "Bearer " + token
+            }
+        })
+            .then(res => {
+                if (!res.ok) throw new Error("탈퇴 실패");
+                alert("회원 탈퇴가 완료되었습니다.");
+                localStorage.clear();
+                window.location.href = "/index.html";
+            })
+            .catch(err => {
+                alert("탈퇴 오류: " + err.message);
+            });
+    }
+
+</script>
+
+</body>
+</html>
