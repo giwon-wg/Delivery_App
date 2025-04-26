@@ -1,0 +1,26 @@
+# src/test/resources/application-test.yml
+spring:
+  datasource:
+    url: ${MYSQL_URL}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ${MYSQL_USERNAME}
+    password: ${MYSQL_PASSWORD}
+  jwt:
+    token:
+      access:
+        minute: 15
+      refresh:
+        minute: 20160
+    secret: ${SECRET_KEY}
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
