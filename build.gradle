@@ -3,6 +3,11 @@ plugins {
     id 'org.springframework.boot' version '3.4.4'
     id 'io.spring.dependency-management' version '1.1.7'
     id 'checkstyle'
+    id 'jacoco'
+}
+
+jacoco {
+    toolVersion = "0.8.8"
 }
 
 group = 'com.example'
@@ -61,6 +66,17 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+    finalizedBy 'jacocoTestReport'
+    ignoreFailures = true
+}
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        html.required = true
+        xml.required = true
+        csv.required = false
+    }
 }
 
 //컴파일시 UTF-8로 인코딩해 한글 테스트에서 워닝 발생되지 않도록 설정

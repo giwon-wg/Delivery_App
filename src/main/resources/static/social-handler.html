@@ -12,8 +12,6 @@
     const accessToken = params.get("accessToken");
     const refreshToken = params.get("refreshToken");
 
-    console.log("🧪 accessToken =", accessToken); // ✅ 콘솔 확인용
-
     if (accessToken && refreshToken) {
         localStorage.setItem("accessToken", accessToken);
         localStorage.setItem("refreshToken", refreshToken);
