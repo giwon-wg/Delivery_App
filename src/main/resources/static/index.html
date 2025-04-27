@@ -164,18 +164,21 @@
                 width: 90%;
             }
         }
+        #logo {
+            display: block;
+            margin: 0 auto;
+        }
+
     </style>
 </head>
 <body>
 
 <!-- 지역 추천 박스 -->
 <div class="section">
-    <h1>여기요!</h1>
+<!--    <h1>여기요!</h1>-->
     <div class="card">
         <p id="region">지역: 불러오는 중...</p>
         <img id="logo" src="" alt="로고 이미지" style="display: none;">
-        <p id="slogan"></p>
-        <p id="menu"></p>
     </div>
 </div>
 
@@ -193,7 +196,7 @@
 
 <!-- 지역 테스트 버튼 -->
 <div class="section">
-    <h3>🧪 테스트 지역 선택</h3>
+    <h3>테스트 지역 선택</h3>
 
     <div style="margin-bottom: 10px; font-weight: bold;">광역시 / 특별시</div>
     <div class="button-group">
@@ -239,8 +242,6 @@
         document.getElementById("region").innerText = `지역: ${data.region}`;
         document.getElementById("logo").src = data.logo_url;
         document.getElementById("logo").style.display = "block";
-        document.getElementById("slogan").innerText = data.slogan;
-        document.getElementById("menu").innerText = `추천메뉴: ${data.recommended_menu}`;
     }
 
     function testRegion(lat, lng) {
