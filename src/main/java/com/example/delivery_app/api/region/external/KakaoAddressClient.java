@@ -20,7 +20,6 @@ public class KakaoAddressClient {
 			"https://dapi.kakao.com/v2/local/geo/coord2regioncode.json?x=%f&y=%f",
 			lng, lat
 		);
-		System.out.println("🔍 Kakao API 요청: " + url);
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.set("Authorization", apiKey);

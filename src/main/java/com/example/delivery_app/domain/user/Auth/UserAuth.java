@@ -33,4 +33,11 @@ public class UserAuth {
 			.anyMatch(role -> role.name().equalsIgnoreCase(roleName));
 	}
 
+	/**
+	 * 테스트용으로 작성
+	 */
+	public static UserAuth of(Long id, List<UserRole> roles) {
+		return new UserAuth(id, roles);
+	}
+
 }

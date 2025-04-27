@@ -81,7 +81,7 @@
 <h2>📋 주문 내역</h2>
 <div class="order-list" id="order-list"></div>
 
-<!-- 리뷰 모달 -->
+<!-- 리뷰 목여 -->
 <div id="review-modal">
     <div id="review-modal-content">
         <span onclick="closeReviewModal()" style="position:absolute; top:10px; right:15px; cursor:pointer;">×</span>
@@ -98,6 +98,7 @@
     const API_BASE = "/api";
     let selectedStars = 5;
     let currentOrderId = null;
+    let currentStoreId = null;
     let isEditMode = false;
 
     (async () => {
@@ -131,21 +132,20 @@
                 const card = document.createElement("div");
                 card.className = "order-card";
                 card.innerHTML = `
-                <p><strong>주문번호:</strong> ${order.order_id}</p>
-                <p><strong>가게 ID:</strong> ${order.store_id}</p>
-                <p><strong>메뉴 ID:</strong> ${order.menu_id}</p>
-                <p><strong>상태:</strong> ${translateStatus(order.status)}</p>
-                <p><strong>총 금액:</strong> ${order.total_price.toLocaleString()}원</p>
-                ${order.status === 'DELIVERED' ?
-                    `<button class="review-btn" onclick="openReviewModal(${order.order_id})">리뷰 작성/수정</button>`
-                    : ''}
-            `;
+            <p><strong>주문번호:</strong> ${order.order_id}</p>
+            <p><strong>가게 ID:</strong> ${order.store_id}</p>
+            <p><strong>메뉴 ID:</strong> ${order.menu_id}</p>
+            <p><strong>상황:</strong> ${translateStatus(order.status)}</p>
+            <p><strong>청 금액:</strong> ${order.total_price.toLocaleString()}원</p>
+            ${order.status === 'DELIVERED' ?
+                    `<button class="review-btn" onclick="openReviewModal(${order.order_id}, ${order.store_id})">리뷰 작성/수정</button>` : ''}
+        `;
                 listDiv.appendChild(card);
             });
         })
         .catch(err => {
-            console.error("주문 내역 불러오기 실패", err);
-            alert("주문 내역을 가져올 수 없습니다.");
+            console.error("주문 내역 로드 실패", err);
+            alert("주문 내역을 가져오지 못했습니다.");
         });
 
     function translateStatus(status) {
@@ -153,13 +153,14 @@
             case "REQUESTED": return "요청됨";
             case "ACCEPTED": return "배달 중";
             case "DELIVERED": return "배달 수령";
-            case "CANCELLED": return "거절됨";
+            case "CANCELLED": return "가게 거절";
             default: return status;
         }
     }
 
-    function openReviewModal(orderId) {
+    function openReviewModal(orderId, storeId) {
         currentOrderId = orderId;
+        currentStoreId = storeId;
         isEditMode = false;
         document.getElementById("review-modal-title").innerText = "리뷰 작성";
         document.getElementById("review-content").value = "";
@@ -197,7 +198,6 @@
         for (let i = 1; i <= 5; i++) {
             const star = document.createElement('span');
             star.textContent = i <= selectedStars ? '★' : '☆';
-            star.style.cursor = 'pointer';
             star.onclick = () => {
                 selectedStars = i;
                 renderStars();
@@ -214,10 +214,15 @@
         }
 
         const method = isEditMode ? "PATCH" : "POST";
-        const url = isEditMode ? `${API_BASE}/reviews/order/${currentOrderId}` : `${API_BASE}/reviews`;
-        const body = isEditMode ?
-            JSON.stringify({ reviewContent: content, star: selectedStars }) :
-            JSON.stringify({ orderId: currentOrderId, reviewContent: content, star: selectedStars });
+        const storeId = currentStoreId;
+        const url = isEditMode
+            ? `${API_BASE}/reviews/order/${currentOrderId}`
+            : `${API_BASE}/store/${storeId}/reviews`;
+        const body = JSON.stringify({
+            rating: selectedStars,
+            content: content,
+            status: true
+        });
 
         fetch(url, {
             method: method,
@@ -227,7 +232,10 @@
             },
             body: body
         })
-            .then(res => res.json())
+            .then(res => {
+                if (!res.ok) throw new Error("리뷰 저장 실패");
+                return res.json();
+            })
             .then(() => {
                 alert("리뷰가 저장되었습니다.");
                 closeReviewModal();
@@ -238,6 +246,7 @@
                 alert("리뷰 저장에 실패했습니다.");
             });
     }
+
 
     function deleteReview() {
         if (!confirm("정말 리뷰를 삭제하시겠습니까?")) return;

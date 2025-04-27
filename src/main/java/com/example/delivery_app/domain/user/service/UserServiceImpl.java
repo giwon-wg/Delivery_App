@@ -61,7 +61,6 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public void signUp(SignUpRequest request) {
 
-		// 예외처리는 코드 작성 완료 후 예외처리 통일화 진행 예정
 		if (userRepository.existsByEmailAndIsDeletedFalse(request.getEmail())) {
 			throw new CustomException(UserErrorCode.DUPLICATE_EMAIL);
 		}
@@ -328,3 +327,5 @@ public class UserServiceImpl implements UserService {
 		return email != null && email.matches(".*@deliveryhajo\\.com$");
 	}
 }
+
+

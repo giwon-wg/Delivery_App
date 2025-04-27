@@ -6,7 +6,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import com.example.delivery_app.common.exception.CustomException;
 import com.example.delivery_app.domain.user.entity.User;
+import com.example.delivery_app.domain.user.exception.UserErrorCode;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -24,7 +26,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
 	default User findByIdOrElseThrow(Long id) {
 		return findById(id)
-			.orElseThrow(() -> new RuntimeException("추후 수정해야 합니다."));
+			.orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
 	}
 
 }
