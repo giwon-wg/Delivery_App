@@ -2,6 +2,7 @@ package com.example.delivery_app.domain.menu.repository;
 
 import java.util.List;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.example.delivery_app.common.exception.CustomException;
@@ -31,6 +32,7 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
 	 * @param status
 	 * @return
 	 */
+	@EntityGraph(attributePaths = {"store", "menuOptions"})
 	List<Menu> findAllByStore_StoreIdAndMenuNameContainingAndIsDeleted(Long storeStoreId, String menuName,
 		boolean status);
 

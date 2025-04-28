@@ -48,7 +48,7 @@ public class MenuController {
 	 * 메뉴 저장
 	 * @param storeId
 	 * @param dto
-	 * @return
+	 * @return 메뉴 생성 응답 Dto 반환
 	 */
 	@Operation(
 		summary = "메뉴 추가",
@@ -74,7 +74,7 @@ public class MenuController {
 	 * @param storeId
 	 * @param menuId
 	 * @param dto
-	 * @return
+	 * @return 메뉴 수정 응답 Dto 반환
 	 */
 	@Operation(
 		summary = "메뉴 수정",
@@ -101,7 +101,7 @@ public class MenuController {
 	 * Menu Entity의 updateStatus 메서드를 이용하여 soft delete로 구현하였습니다
 	 * @param storeId
 	 * @param menuId
-	 * @return
+	 * @return 메뉴 삭제 응답 Dto 반환
 	 */
 	@Operation(
 		summary = "메뉴 삭제",
@@ -126,7 +126,7 @@ public class MenuController {
 	 * 일부 단어만 입력하여도 그와 관련된 메뉴들이 출력
 	 * @param storeId
 	 * @param word
-	 * @return
+	 * @return 메뉴 검색 응답 List<Dto> 반환
 	 */
 	@Operation(
 		summary = "메뉴 검색",
@@ -151,7 +151,7 @@ public class MenuController {
 	 * @param storeId
 	 * @param menuId
 	 * @param dto
-	 * @return
+	 * @return 메뉴 옵션 저장 응답 Dto 반환
 	 */
 	@Operation(
 		summary = "옵션 추가",
@@ -178,7 +178,7 @@ public class MenuController {
 	 * 옵션 조회 기능
 	 * @param storeId
 	 * @param menuId
-	 * @return
+	 * @return 메뉴 옵션 조회 응답 List<Dto> 반환
 	 */
 	@Operation(
 		summary = "옵션 조회",
@@ -204,7 +204,7 @@ public class MenuController {
 	 * @param menuId
 	 * @param optionId
 	 * @param dto
-	 * @return
+	 * @return 메뉴 옵션 수정 응답 Dto 반환
 	 */
 	@Operation(
 		summary = "옵션 수정",
@@ -232,7 +232,7 @@ public class MenuController {
 	 * @param storeId
 	 * @param menuId
 	 * @param optionId
-	 * @return
+	 * @return 메뉴 옵션 삭제 응답 Dto 반환
 	 */
 	@Operation(
 		summary = "옵션 삭제",

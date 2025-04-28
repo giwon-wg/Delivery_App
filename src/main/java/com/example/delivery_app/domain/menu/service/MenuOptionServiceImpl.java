@@ -32,7 +32,7 @@ public class MenuOptionServiceImpl implements MenuOptionService {
 	 * @param storeId
 	 * @param menuId
 	 * @param dto
-	 * @return
+	 * @return MenuOptionResponseDto 반환
 	 */
 	@Transactional
 	@Override
@@ -66,7 +66,7 @@ public class MenuOptionServiceImpl implements MenuOptionService {
 	 * 메뉴 옵션 조회 기능
 	 * @param storeId
 	 * @param menuId
-	 * @return
+	 * @return List<MenuOptionResponseDto> 반환
 	 */
 	@Transactional
 	@Override
@@ -85,7 +85,7 @@ public class MenuOptionServiceImpl implements MenuOptionService {
 	 * @param menuId
 	 * @param optionId
 	 * @param dto
-	 * @return
+	 * @return MenuOptionUpdateResponseDto 반환
 	 */
 	@Transactional
 	@Override
@@ -114,7 +114,7 @@ public class MenuOptionServiceImpl implements MenuOptionService {
 	 * @param storeId
 	 * @param menuId
 	 * @param optionId
-	 * @return
+	 * @return MenuOptionDeleteResponseDto 반환
 	 */
 	@Transactional
 	@Override

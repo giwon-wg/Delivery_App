@@ -6,12 +6,14 @@ import java.util.stream.Collectors;
 import com.example.delivery_app.domain.menu.entity.Menu;
 
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @Getter
 @Builder
 @RequiredArgsConstructor
+@EqualsAndHashCode // 객체의 주소값이 아닌 값들을 비교할 수 있게 해주는 어노테이션
 public class MenuResponseDto {
 
 	private final Long storeId;
