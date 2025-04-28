@@ -3,6 +3,7 @@ package com.example.delivery_app.domain.menu.service;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -17,6 +18,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import com.example.delivery_app.domain.menu.dto.requestdto.MenuRequestDto;
 import com.example.delivery_app.domain.menu.dto.requestdto.UpdateMenuRequestDto;
 import com.example.delivery_app.domain.menu.dto.responsedto.MenuCreateResponseDto;
+import com.example.delivery_app.domain.menu.dto.responsedto.MenuResponseDto;
 import com.example.delivery_app.domain.menu.dto.responsedto.UpdateMenuResponseDto;
 import com.example.delivery_app.domain.menu.entity.Menu;
 import com.example.delivery_app.domain.menu.repository.MenuRepository;
@@ -90,12 +92,12 @@ class MenuServiceImplTest {
 		// when(mockStore.getUser()).thenReturn(mockUser);
 		//
 		// mockMenu 관련
-		when(mockMenu.getId()).thenReturn(1L);
-		when(mockMenu.getStore()).thenReturn(mockStore);
-		when(mockMenu.getCategory()).thenReturn("testCategory");
-		when(mockMenu.getMenuName()).thenReturn("testMenuName");
-		when(mockMenu.getPrice()).thenReturn(1000);
-		when(mockMenu.getMenuContent()).thenReturn("testContent");
+		// when(mockMenu.getId()).thenReturn(1L);
+		// when(mockMenu.getStore()).thenReturn(mockStore);
+		// when(mockMenu.getCategory()).thenReturn("testCategory");
+		// when(mockMenu.getMenuName()).thenReturn("testMenuName");
+		// when(mockMenu.getPrice()).thenReturn(1000);
+		// when(mockMenu.getMenuContent()).thenReturn("testContent");
 		// when(mockMenu.isDeleted()).thenReturn(false);
 	}
 
@@ -106,10 +108,21 @@ class MenuServiceImplTest {
 		// 미리 세팅해놓은 setUp() 함수를 통해 store, user를 생성
 		// 근데 여기서 쓸모없는 stubbing이 있다는 에러가 떴다
 		// -> 클래스 레벨에 @MockitoSettings(strictness = LENIENT) 를 사용하여 쓸모없는 stubbing 있어도 테스트 코드를 진행할 수 있도록 하였다
-		setUp();
+		// 근데 다시 보니까 setUp은 mockMenu 등에 대한 것이므로 필요가 없을 것 같다..
+		// setUp();
 
 		Store store = new Store();
 		ReflectionTestUtils.setField(store, "storeId", 1L);
+
+		Menu menu = Menu.builder()
+			.store(store)
+			.category("testCategory")
+			.menuPicture("")
+			.menuName("testMenuName")
+			.price(1000)
+			.menuContent("testContent")
+			.build();
+		ReflectionTestUtils.setField(menu, "id", 1L);
 
 		// MenuRequestDto 관련
 		MenuRequestDto dto = new MenuRequestDto(
@@ -121,8 +134,8 @@ class MenuServiceImplTest {
 
 		// 실제 MenuServiceImpl 에서 saveMenu 안에는 findStore 로직과 save 로직이 있다
 		// 테스트 코드에서도 이것들을 실행할것인데 테스트 코드에선 실제 DB에 저장하는게 아니므로 여기에 그에 대한 조치를 해줘야한다
-		when(storeRepository.findByIdOrElseThrow(anyLong())).thenReturn(mockStore);
-		when(menuRepository.save(any(Menu.class))).thenReturn(mockMenu);
+		when(storeRepository.findByIdOrElseThrow(anyLong())).thenReturn(store);
+		when(menuRepository.save(any(Menu.class))).thenReturn(menu);
 
 		// when - 실행
 		MenuCreateResponseDto savedMenu = menuServiceImpl.saveMenu(1L, dto);
@@ -132,6 +145,7 @@ class MenuServiceImplTest {
 		assertThat(savedMenu.getStoreId()).isEqualTo(1L);
 		assertThat(savedMenu.getId()).isEqualTo(1L);
 		assertThat(savedMenu.getCategory()).isEqualTo("testCategory");
+		assertThat(savedMenu.getMenuPicture()).isEqualTo("");
 		assertThat(savedMenu.getMenuName()).isEqualTo("testMenuName");
 		assertThat(savedMenu.getPrice()).isEqualTo(1000);
 		assertThat(savedMenu.getMenuContent()).isEqualTo("testContent");
@@ -185,9 +199,69 @@ class MenuServiceImplTest {
 
 	@Test
 	void deleteMenu_test() {
+		// given
+		Store store = new Store();
+
+		Menu menu = new Menu();
+		ReflectionTestUtils.setField(menu, "id", 1L);
+		ReflectionTestUtils.setField(menu, "isDeleted", false);
+
+		when(storeRepository.findByIdOrElseThrow(anyLong())).thenReturn(store);
+		when(menuRepository.findAllByStore_StoreIdAndIsDeleted(anyLong(), eq(false))).thenReturn(List.of(menu));
+
+		// when
+		menuServiceImpl.deleteMenu(1L, 1L);
+
+		// then
+		assertThat(menu.isDeleted()).isTrue();
 	}
 
 	@Test
 	void findMenu_test() {
+		// given
+		Store store = new Store();
+		ReflectionTestUtils.setField(store, "storeId", 1L);
+
+		Menu menu1 = Menu.builder()
+			.store(store)
+			.category("testCategory1")
+			.menuPicture("")
+			.menuName("testMenuName1")
+			.price(1000)
+			.menuContent("testContent1")
+			.build();
+		ReflectionTestUtils.setField(menu1, "id", 1L);
+
+		Menu menu2 = Menu.builder()
+			.store(store)
+			.category("testCategory2")
+			.menuPicture("")
+			.menuName("testMenuName2")
+			.price(2000)
+			.menuContent("testContent2")
+			.build();
+		ReflectionTestUtils.setField(menu2, "id", 2L);
+
+		List<Menu> menus = new ArrayList<>();
+		menus.add(menu1);
+		menus.add(menu2);
+
+		MenuResponseDto dto1 = MenuResponseDto.fromMenu(menu1);
+		MenuResponseDto dto2 = MenuResponseDto.fromMenu(menu2);
+
+		List<MenuResponseDto> dtos = new ArrayList<>();
+
+		dtos.add(dto1);
+		dtos.add(dto2);
+
+		when(storeRepository.findByIdOrElseThrow(anyLong())).thenReturn(store);
+		when(menuRepository.findAllByStore_StoreIdAndMenuNameContainingAndIsDeleted(anyLong(), anyString(),
+			eq(false))).thenReturn(menus);
+
+		// when
+		List<MenuResponseDto> testList = menuServiceImpl.findMenu(1L, "test");
+
+		// then
+		assertThat(testList).containsAnyElementsOf(dtos);
 	}
 }
