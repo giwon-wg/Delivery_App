@@ -31,7 +31,7 @@ public class MenuServiceImpl implements MenuService {
 	 * 메뉴 저장 기능
 	 * @param storeId
 	 * @param dto
-	 * @return
+	 * @return MenuCreateResponseDto 반환
 	 */
 	@Transactional
 	@Override
@@ -58,7 +58,7 @@ public class MenuServiceImpl implements MenuService {
 	 * @param storeId
 	 * @param menuId
 	 * @param dto
-	 * @return
+	 * @return UpdateMenuResponseDto 반환
 	 */
 	@Transactional
 	@Override
@@ -85,7 +85,7 @@ public class MenuServiceImpl implements MenuService {
 	 * 메뉴 삭제 기능
 	 * @param storeId
 	 * @param menuId
-	 * @return
+	 * @return DeleteResponseDto 반환
 	 */
 	@Transactional
 	@Override
@@ -110,7 +110,7 @@ public class MenuServiceImpl implements MenuService {
 	 * 일부 단어만 입력하여도 그와 관련된 메뉴들이 출력
 	 * @param storeId
 	 * @param word
-	 * @return
+	 * @return List<MenuResponseDto> 반환
 	 */
 	@Transactional
 	@Override
