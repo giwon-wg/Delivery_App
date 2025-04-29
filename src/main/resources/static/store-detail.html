@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>가게 상세정보</title>
+    <style>
+
+        /* 모달 안 모든 버튼 */
+        #edit-menu-modal button,
+        #store-edit-modal button,
+        #store-time-modal button,
+        #menu-detail-modal button,
+        #edit-option-modal button,
+        #add-option-modal button {
+            cursor: pointer;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .store-info {
+            max-width: 600px;
+            margin: 40px auto;
+            background-color: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .store-info img {
+            width: 100%;
+            max-height: 250px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .store-info h2 {
+            margin: 0;
+            color: #ff4d4f;
+        }
+
+        .store-info p {
+            margin: 8px 0;
+        }
+
+        .back-btn {
+            margin-top: 20px;
+            padding: 10px 16px;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        .menu-wrapper {
+            margin-top: 40px;
+        }
+
+        .menu-card {
+            background-color: #fff;
+            border: 1px solid #eee;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            display: flex;
+            gap: 14px;
+            align-items: center;
+        }
+
+        .menu-card img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .menu-info {
+            flex: 1;
+        }
+
+        .menu-info h4 {
+            margin: 0;
+            font-size: 1rem;
+        }
+
+        .menu-info p {
+            margin: 4px 0 0;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .edit-btn {
+            padding: 6px 10px;
+            background-color: #ffa500;
+            color: white;
+            font-size: 0.8rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        #header {
+            padding: 16px 24px;
+        }
+
+    </style>
+</head>
+<body>
+
+<div id="header"></div>
+
+<div class="store-info" id="store-info"></div>
+
+<div id="menu-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); z-index: 999;">
+    <div style="background:white; width:350px; margin:100px auto; padding:20px; border-radius:10px; position: relative;">
+        <span onclick="closeMenuModal()" style="position:absolute; top:10px; right:15px; font-weight:bold; cursor:pointer;">×</span>
+        <h3>🍱 메뉴 등록</h3>
+        <input type="text" id="menu-name" placeholder="메뉴명" style="width:90%; margin:10px 0; padding:8px;"><br>
+        <input type="number" id="menu-price" placeholder="가격 (원)" style="width:90%; margin:10px 0; padding:8px;"><br>
+        <input type="text" id="menu-category" placeholder="카테고리 (예: 한식)" style="width:90%; margin:10px 0; padding:8px;"><br>
+        <textarea id="menu-content" placeholder="메뉴 설명" style="width:90%; margin:10px 0; padding:8px;"></textarea><br>
+        <input type="text" id="menu-picture" placeholder="이미지 주소 입력 (예: https://example.com/image.jpg)" style="width:90%; margin:10px 0; padding:8px;"><br><br>
+        <button onclick="submitMenu()" style="padding:8px 16px; background:#28a745; color:white; border:none; border-radius:6px;">등록하기</button>
+    </div>
+</div>
+
+<div id="edit-menu-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); z-index: 999;">
+    <div style="background:white; width:350px; margin:100px auto; padding:20px; border-radius:10px; position: relative;">
+        <span onclick="closeEditMenuModal()" style="position:absolute; top:10px; right:15px; font-weight:bold; cursor:pointer;">×</span>
+        <h3>✏️ 메뉴 수정</h3>
+        <input type="hidden" id="edit-menu-id">
+        <input type="text" id="edit-menu-name" placeholder="메뉴명" style="width:90%; margin:10px 0; padding:8px;"><br>
+        <input type="number" id="edit-menu-price" placeholder="가격 (원)" style="width:90%; margin:10px 0; padding:8px;"><br>
+        <!--        <input type="text" id="edit-menu-category" placeholder="카테고리" style="width:90%; margin:10px 0; padding:8px;"><br>-->
+        <textarea id="edit-menu-content" placeholder="메뉴 설명" style="width:90%; margin:10px 0; padding:8px;"></textarea><br>
+        <!--        <input type="text" id="edit-menu-picture" placeholder="이미지 주소" style="width:90%; margin:10px 0; padding:8px;"><br>-->
+        <button onclick="submitMenuEdit()" style="padding:8px 16px; background:#28a745; color:white; border:none; border-radius:6px;">수정하기</button>
+        <button onclick="submitMenuDelete()" style="padding:8px 16px; background:#dc3545; color:white; border:none; border-radius:6px; margin-left: 10px;">삭제하기</button>
+    </div>
+</div>
+
+<!-- 가게 정보 수정 모달 -->
+<div id="store-edit-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); z-index:999;">
+    <div style="background:white; width:600px; margin:100px auto; padding:24px 32px; border-radius:10px; position:relative;">
+    <span onclick="document.getElementById('store-edit-modal').style.display='none'" style="position:absolute; top:10px; right:15px; font-weight:bold; cursor:pointer;">×</span>
+        <h3>🏪 가게 정보 수정</h3>
+        <input id="edit-store-name" placeholder="가게명" style="width:100%; margin:10px 0; padding:8px;">
+        <input id="edit-store-address" placeholder="주소" style="width:100%; margin:10px 0; padding:8px;">
+        <input id="edit-food-category" placeholder="카테고리" style="width:100%; margin:10px 0; padding:8px;">
+        <input id="edit-store-phone" placeholder="전화번호" style="width:100%; margin:10px 0; padding:8px;">
+        <textarea id="edit-store-intro" placeholder="소개" style="width:100%; margin:10px 0; padding:8px;"></textarea>
+        <input id="edit-min-price" type="number" placeholder="최소 배달금액" style="width:100%; margin:10px 0; padding:8px;">
+        <input id="edit-delivery-tip" type="number" placeholder="배달팁" style="width:100%; margin:10px 0; padding:8px;">
+        <button onclick="submitStoreEdit()" style="padding:10px 20px; background:#28a745; color:white; border:none; border-radius:6px;">수정하기</button>
+    </div>
+</div>
+
+<!-- 영업시간 수정 모달 -->
+<div id="store-time-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); z-index:999;">
+    <div style="background:white; width:350px; margin:100px auto; padding:20px; border-radius:10px; position: relative;">
+        <span onclick="document.getElementById('store-time-modal').style.display='none'" style="position:absolute; top:10px; right:15px; font-weight:bold; cursor:pointer;">×</span>
+        <h3>⏰ 영업시간 수정</h3>
+        <input id="edit-open-time" placeholder="오픈시간 (예: 08:00)" style="width:100%; margin:10px 0; padding:8px;">
+        <input id="edit-close-time" placeholder="마감시간 (예: 22:00)" style="width:100%; margin:10px 0; padding:8px;">
+        <button onclick="submitTimeEdit()" style="padding:10px 20px; background:#28a745; color:white; border:none; border-radius:6px;">수정하기</button>
+    </div>
+</div>
+
+<!-- 메뉴 상세 모달 -->
+<div id="menu-detail-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); z-index:999;">
+    <div style="background:white; width:400px; margin:50px auto; padding:20px; border-radius:10px; position:relative;">
+        <span onclick="closeMenuDetailModal()" style="position:absolute; top:10px; right:15px; font-weight:bold; cursor:pointer;">×</span>
+
+        <h3 id="detail-menu-name">🍱 메뉴 상세</h3>
+        <p id="detail-menu-content" style="color:#555;"></p>
+
+        <h4>옵션 목록</h4>
+        <div id="option-list" style="margin-top:10px;"></div>
+
+        <button id="order-button" style="margin-top: 12px; padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 6px; cursor: pointer;">
+            🛒 주문하기
+        </button>
+
+        <!-- OWNER라면 옵션 추가 버튼 표시 -->
+        <div id="option-action" style="margin-top:20px;">
+            <!-- 여기에 추가 버튼이 동적으로 들어감 -->
+        </div>
+
+    </div>
+</div>
+
+<!-- 옵션 수정 모달 -->
+<div id="edit-option-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:999;">
+    <div style="background:white; width:400px; margin:100px auto; padding:20px; border-radius:10px; position:relative;">
+        <span onclick="closeEditOptionModal()" style="position:absolute; top:10px; right:15px; font-weight:bold; cursor:pointer;">×</span>
+        <h3>옵션 수정</h3>
+        <input id="edit-option-name" placeholder="옵션 이름" style="width:100%; margin:10px 0; padding:8px;">
+        <input id="edit-option-price" type="number" placeholder="가격" style="width:100%; margin:10px 0; padding:8px;">
+        <textarea id="edit-option-content" placeholder="설명" style="width:100%; margin:10px 0; padding:8px;"></textarea>
+        <button onclick="submitOptionEdit()" style="margin-top:10px; padding:10px 20px; background:#28a745; color:white; border:none; border-radius:6px;">수정하기</button>
+    </div>
+</div>
+
+<!-- 옵션 추가 모달 -->
+<div id="add-option-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:999;">
+    <div style="background:white; width:500px; margin:100px auto; padding:24px 32px; border-radius:10px; position:relative;">
+        <span onclick="closeAddOptionModal()" style="position:absolute; top:10px; right:15px; font-weight:bold; cursor:pointer;">×</span>
+        <h3>옵션 추가</h3>
+        <input id="add-option-name" placeholder="옵션 이름" style="width:100%; margin:10px 0; padding:8px;">
+        <input id="add-option-price" type="number" placeholder="가격" style="width:100%; margin:10px 0; padding:8px;">
+        <textarea id="add-option-content" placeholder="설명" style="width:100%; margin:10px 0; padding:8px;"></textarea>
+        <button onclick="submitOptionAdd()" style="margin-top:10px; padding:10px 20px; background:#007bff; color:white; border:none; border-radius:6px;">추가하기</button>
+    </div>
+</div>
+
+<script>
+    const params = new URLSearchParams(window.location.search);
+    const storeId = params.get("storeId");
+    const token = localStorage.getItem("accessToken");
+
+    if (!token || !storeId) {
+        alert("잘못된 접근입니다.");
+        window.location.href = "/home.html";
+    }
+
+    function parseJwt(token) {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map(c =>
+            '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+        ).join(''));
+        return JSON.parse(jsonPayload);
+    }
+
+    const roles = parseJwt(token).roles || [];
+    const isOwner = roles.includes("OWNER");
+
+    fetch(`/api/stores/${storeId}`, {
+        method: "GET",
+        headers: { Authorization: "Bearer " + token }
+    })
+        .then(res => res.json())
+        .then(result => {
+            const store = result.data;
+            const div = document.getElementById("store-info");
+
+            let html = `
+            <img src="${store.menus?.[0]?.menu_picture || '/logos/default-store.jpg'}" alt="대표 이미지">
+            <h2>${store.store_name}</h2>
+            <p><strong>카테고리:</strong> ${store.food_category}</p>
+            <p><strong>주소:</strong> ${store.store_address}</p>
+            <p><strong>전화번호:</strong> ${store.store_phone}</p>
+            <p><strong>소개:</strong> ${store.store_intro || '-'}</p>
+            <p><strong>배달 최소 금액:</strong> ${store.min_delivery_price.toLocaleString()}원</p>
+            <p><strong>배달팁:</strong> ${store.delivery_tip.toLocaleString()}원</p>
+            <p><strong>별점:</strong> ${store.rating} ⭐ (${store.review_count}개 리뷰)</p>
+            <p><strong>운영시간:</strong> ${store.open_time} ~ ${store.close_time}</p>
+            ${isOwner ? `
+                <button class="back-btn" onclick="openMenuModal()">메뉴 추가</button>
+                <button class="back-btn" onclick="openStoreEditModal()">가게 정보 수정</button>
+                <button class="back-btn" onclick="openTimeEditModal()">영업시간 수정</button>
+                <button class="back-btn" style="background-color: #dc3545;" onclick="deleteStore()">가게 폐업</button>
+                <button onclick="openOrderListPage()" style="padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 6px;">
+        📝 주문 목록
+    </button>
+            ` : ''}
+            <button class="back-btn" onclick="history.back()">← 돌아가기</button>
+            <div class="menu-wrapper">
+                <h3>📋 메뉴</h3>
+                <div style="margin-bottom: 20px;">
+                    <input id="menu-search" type="text" placeholder="메뉴 검색..."
+                    style="width: 100%; padding: 10px; font-size: 1rem; border-radius: 6px; border: 1px solid #ccc;">
+                </div>
+        `;
+
+            if (store.menus && store.menus.length > 0) {
+                store.menus.forEach(menu => {
+                    html += `
+                <div style="margin-bottom: 20px;">
+                    <div class="menu-card" onclick="openMenuDetailModal(${menu.id}, '${menu.menu_name}', '${menu.menu_content}')" style="cursor: pointer;">
+                        <img src="${menu.menu_picture || '/logos/default-menu.png'}" alt="메뉴 이미지">
+                        <div class="menu-info">
+                            <h4>${menu.menu_name} - ${menu.price.toLocaleString()}원</h4>
+                            <p>${menu.menu_content || '-'}</p>
+                        </div>
+                    </div>
+                    ${isOwner ? `
+                        <div style="margin-top: 8px; text-align: right;">
+                            <button class="edit-btn" onclick="openEditMenuModal(${menu.id}, '${menu.menu_name}', ${menu.price}, '${menu.menu_content}')">
+                                메뉴 수정
+                            </button>
+                        </div>
+                    ` : ''}
+                </div>
+                `;
+                });
+            } else {
+                html += `<p>등록된 메뉴가 없습니다.</p>`;
+            }
+
+            html += `</div>`; // menu-wrapper 닫기
+            div.innerHTML = html;
+
+            const searchInput = document.getElementById('menu-search');
+            searchInput.addEventListener('keyup', function() {
+                const keyword = this.value.toLowerCase();
+                const menuCards = document.querySelectorAll('.menu-card');
+                menuCards.forEach(card => {
+                    const menuName = card.querySelector('h4').innerText.toLowerCase();
+                    if (menuName.includes(keyword)) {
+                        card.parentElement.style.display = '';
+                    } else {
+                        card.parentElement.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+
+
+    // 메뉴 등록 모달 열기/닫기
+    function openMenuModal() {
+        document.getElementById("menu-modal").style.display = "block";
+    }
+
+    function closeMenuModal() {
+        document.getElementById("menu-modal").style.display = "none";
+    }
+
+    function submitMenu() {
+        const token = localStorage.getItem("accessToken");
+        const name = document.getElementById("menu-name").value.trim();
+        const price = parseInt(document.getElementById("menu-price").value.trim(), 10);
+        const category = document.getElementById("menu-category").value.trim();
+        const content = document.getElementById("menu-content").value.trim();
+        const picture = document.getElementById("menu-picture").value.trim();
+
+        if (!name || !price || !category || !content) {
+            alert("모든 항목을 입력해주세요.");
+            return;
+        }
+
+        const requestBody = {
+            menuName: name,
+            price,
+            category,
+            menuContent: content,
+            menuPicture: picture
+        };
+
+        fetch(`/api/stores/${storeId}/menus`, {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(requestBody)
+        })
+            .then(res => {
+                if (!res.ok) throw new Error("본인 소유의 가게만 수정할 수 있습니다.");
+                return res.json();
+            })
+            .then(() => {
+                alert("메뉴가 등록되었습니다.");
+                closeMenuModal();
+                window.location.reload();
+            })
+            .catch(err => alert("오류 발생: " + err.message));
+    }
+
+    function editMenu(menuId) {
+        alert("수정 기능은 아직 구현되지 않았습니다. (menuId: " + menuId + ")");
+        // 나중에 모달 또는 수정 페이지로 연결할 수 있음
+    }
+
+    // 헤더 불러오기
+    (async () => {
+        try {
+            const headerHtml = await fetch('header.html').then(res => res.text());
+            document.getElementById("header").innerHTML = headerHtml;
+        } catch (err) {
+            console.error("헤더 로딩 실패:", err);
+        }
+    })();
+
+    function openEditMenuModal(id, name, price, content) {
+
+
+        document.getElementById("edit-menu-id").value = id;
+        document.getElementById("edit-menu-name").value = name;
+        document.getElementById("edit-menu-price").value = price;
+        // document.getElementById("edit-menu-category").value = category;
+        document.getElementById("edit-menu-content").value = content;
+        // document.getElementById("edit-menu-picture").value = picture;
+        document.getElementById("edit-menu-modal").style.display = "block";
+    }
+
+    function closeEditMenuModal() {
+        document.getElementById("edit-menu-modal").style.display = "none";
+    }
+
+    function submitMenuEdit() {
+        const id = document.getElementById("edit-menu-id").value;
+        const token = localStorage.getItem("accessToken");
+
+        const body = {
+            menuName: document.getElementById("edit-menu-name").value.trim(),
+            price: parseInt(document.getElementById("edit-menu-price").value),
+            menuContent: document.getElementById("edit-menu-content").value.trim()
+        };
+
+        fetch(`/api/stores/${storeId}/menus/${id}`, {
+            method: "PATCH",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(body)
+        })
+            .then(res => {
+                if (!res.ok) throw new Error("본인 소유의 가게만 수정할 수 있습니다.");
+                return res.json();
+            })
+            .then(() => {
+                alert("메뉴가 수정되었습니다.");
+                closeEditMenuModal();
+                window.location.reload();
+            })
+            .catch(err => alert("오류: " + err.message));
+    }
+
+    function submitMenuDelete() {
+        const id = document.getElementById("edit-menu-id").value;
+        const token = localStorage.getItem("accessToken");
+
+        if (!confirm("정말 이 메뉴를 삭제하시겠습니까?")) return;
+
+        fetch(`/api/stores/${storeId}/menus/${id}`, {
+            method: "DELETE",
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        })
+            .then(res => {
+                if (!res.ok) throw new Error("본인 소유의 가게만 수정할 수 있습니다.");
+                alert("메뉴가 삭제되었습니다.");
+                closeEditMenuModal();
+                window.location.reload();
+            })
+            .catch(err => alert("오류: " + err.message));
+    }
+
+    function deleteStore() {
+        if (!confirm("정말 이 가게를 폐업하시겠습니까?")) return;
+
+        fetch(`/api/stores/${storeId}`, {
+            method: "DELETE",
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        })
+            .then(res => {
+                if (!res.ok) throw new Error("본인 소유의 가게만 수정할 수 있습니다.");
+                alert("가게가 폐업되었습니다.");
+                window.location.href = "/home.html"; // 혹은 메인 페이지
+            })
+            .catch(err => alert("오류: " + err.message));
+    }
+
+    function openStoreEditModal() {
+        document.getElementById("store-edit-modal").style.display = "block";
+    }
+
+    function openTimeEditModal() {
+        document.getElementById("store-time-modal").style.display = "block";
+    }
+
+    function submitStoreEdit() {
+        const body = {
+            storeName: document.getElementById("edit-store-name").value.trim(),
+            storeAddress: document.getElementById("edit-store-address").value.trim(),
+            foodCategory: document.getElementById("edit-food-category").value.trim(),
+            storePhone: document.getElementById("edit-store-phone").value.trim(),
+            storeIntro: document.getElementById("edit-store-intro").value.trim(),
+            minDeliveryPrice: parseInt(document.getElementById("edit-min-price").value),
+            deliveryTip: parseInt(document.getElementById("edit-delivery-tip").value)
+        };
+
+        fetch(`/api/stores/${storeId}`, {
+            method: "PUT",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(body)
+        })
+            .then(res => res.json())
+            .then(() => {
+                alert("가게 정보가 수정되었습니다.");
+                document.getElementById("store-edit-modal").style.display = "none";
+                location.reload();
+            })
+            .catch(err => alert("수정 실패: " + err.message));
+    }
+
+    function submitTimeEdit() {
+        const body = {
+            openTime: document.getElementById("edit-open-time").value.trim(),
+            closeTime: document.getElementById("edit-close-time").value.trim()
+        };
+
+        fetch(`/api/stores/${storeId}/operating-time`, {
+            method: "PUT",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(body)
+        })
+            .then(res => res.json())
+            .then(() => {
+                alert("영업시간이 수정되었습니다.");
+                document.getElementById("store-time-modal").style.display = "none";
+                location.reload();
+            })
+            .catch(err => alert("수정 실패: " + err.message));
+    }
+
+    function openMenuDetailModal(menuId, menuName, menuContent) {
+        document.getElementById('detail-menu-name').innerText = menuName;
+        document.getElementById('detail-menu-content').innerText = menuContent;
+        document.getElementById('menu-detail-modal').style.display = 'block';
+
+        // 옵션 목록 불러오기
+        loadMenuOptions(menuId);
+        setupOrderButton(menuId);
+    }
+
+    function closeMenuDetailModal() {
+        document.getElementById('menu-detail-modal').style.display = 'none';
+    }
+
+    function loadMenuOptions(menuId) {
+        const token = localStorage.getItem("accessToken");
+
+        fetch(`/api/stores/${storeId}/menus/${menuId}/options`, {
+            method: "GET",
+            headers: { Authorization: "Bearer " + token }
+        })
+            .then(res => res.json())
+            .then(result => {
+                const options = result.data || [];
+
+                const listDiv = document.getElementById('option-list');
+                listDiv.innerHTML = '';
+
+                if (options.length === 0) {
+                    listDiv.innerHTML = "<p>등록된 옵션이 없습니다.</p>";
+                } else {
+                    options.forEach(option => {
+                        listDiv.innerHTML += `
+                <div style="border:1px solid #eee; border-radius:8px; padding:10px; margin-bottom:10px;">
+                    <strong>${option.option_name}</strong> - ${option.price.toLocaleString()}원
+                    <div style="font-size:0.9em; color:#666;">${option.content}</div>
+                    ${isOwner ? `
+                    <div style="margin-top:5px;">
+                        <button onclick="openEditOptionModal(${menuId}, ${option.id}, '${option.option_name}', ${option.price}, '${option.content}')" style="padding:4px 8px; background:#ffa500; color:white; border:none; border-radius:6px; font-size:0.8rem;">옵션 수정</button>
+                        <button onclick="submitOptionDelete(${menuId}, ${option.id})" style="padding:4px 8px; background:#dc3545; color:white; border:none; border-radius:6px; font-size:0.8rem;">🗑 삭제</button>
+                    </div>` : ''}
+                </div>
+                `;
+                    });
+                }
+
+                const actionDiv = document.getElementById('option-action');
+                if (isOwner) {
+                    actionDiv.innerHTML = `<button onclick="openAddOptionModal(${menuId})" style="padding:8px 12px; background:#007bff; color:white; border:none; border-radius:6px;">➕ 옵션 추가</button>`;
+                } else {
+                    actionDiv.innerHTML = '';
+                }
+            })
+            .catch(err => {
+                console.error("옵션 로드 실패", err);
+                document.getElementById('option-list').innerHTML = '<p>옵션 로드 실패</p>';
+            });
+    }
+
+
+    let currentAddingMenuId = null;
+
+    function openAddOptionModal(menuId) {
+        currentAddingMenuId = menuId;
+        document.getElementById("add-option-name").value = "";
+        document.getElementById("add-option-price").value = "";
+        document.getElementById("add-option-content").value = "";
+        document.getElementById("add-option-modal").style.display = "block";
+    }
+
+    function closeAddOptionModal() {
+        document.getElementById("add-option-modal").style.display = "none";
+    }
+
+    function submitOptionAdd() {
+        const token = localStorage.getItem("accessToken");
+        const storeId = new URLSearchParams(window.location.search).get("storeId");
+        const optionName = document.getElementById("add-option-name").value.trim();
+        const price = parseInt(document.getElementById("add-option-price").value.trim(), 10);
+        const content = document.getElementById("add-option-content").value.trim();
+
+        if (!optionName || isNaN(price)) {
+            alert("모든 필드를 올바르게 입력해주세요!");
+            return;
+        }
+
+        const body = { optionName, price, content };
+
+        fetch(`/api/stores/${storeId}/menus/${currentAddingMenuId}/options`, {
+            method: "POST",
+            headers: {
+                Authorization: "Bearer " + token,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(body)
+        })
+            .then(res => {
+                if (!res.ok) throw new Error("본인 소유의 가게만 수정할 수 있습니다.");
+                return res.json();
+            })
+            .then(() => {
+                alert("옵션이 추가되었습니다!");
+                closeAddOptionModal();
+                loadMenuOptions(currentAddingMenuId); // 옵션 다시 불러오기
+            })
+            .catch(err => alert("오류: " + err.message));
+    }
+
+
+    // ----
+
+    let currentEditingMenuId;
+    let currentEditingOptionId;
+
+    function openEditOptionModal(menuId, optionId, name, price, content) {
+        currentEditingMenuId = menuId;
+        currentEditingOptionId = optionId;
+        document.getElementById("edit-option-name").value = name;
+        document.getElementById("edit-option-price").value = price;
+        document.getElementById("edit-option-content").value = content;
+        document.getElementById("edit-option-modal").style.display = "block";
+    }
+
+    function closeEditOptionModal() {
+        document.getElementById("edit-option-modal").style.display = "none";
+    }
+
+    function submitOptionEdit() {
+        const token = localStorage.getItem("accessToken");
+        const storeId = new URLSearchParams(window.location.search).get("storeId");
+        const optionName = document.getElementById("edit-option-name").value.trim();
+        const price = parseInt(document.getElementById("edit-option-price").value.trim(), 10);
+        const content = document.getElementById("edit-option-content").value.trim();
+
+        if (!optionName || isNaN(price)) {
+            alert("모든 필드를 채워주세요!");
+            return;
+        }
+
+        fetch(`/api/stores/${storeId}/menus/${currentEditingMenuId}/options/${currentEditingOptionId}`, {
+            method: "PATCH",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ optionName, price, content })
+        })
+            .then(res => {
+                if (!res.ok) throw new Error("본인 소유의 가게만 수정할 수 있습니다.");
+                return res.json();
+            })
+            .then(() => {
+                alert("옵션이 수정되었습니다!");
+                closeEditOptionModal();
+                loadMenuOptions(currentEditingMenuId); // 옵션 목록 다시 불러오기
+            })
+            .catch(err => alert("오류: " + err.message));
+    }
+
+    function submitOptionDelete(menuId, optionId) {
+        const token = localStorage.getItem("accessToken");
+        if (!confirm("정말 이 옵션을 삭제할까요?")) return;
+
+        fetch(`/api/stores/${storeId}/menus/${menuId}/options/${optionId}`, {
+            method: "DELETE",
+            headers: { Authorization: "Bearer " + token }
+        })
+            .then(() => {
+                alert("옵션이 삭제되었습니다.");
+                loadMenuOptions(menuId);
+            })
+            .catch(err => alert("옵션 삭제 실패: " + err.message));
+    }
+
+    function setupOrderButton(menuId) {
+        const orderButton = document.getElementById("order-button");
+        orderButton.onclick = function() {
+            const token = localStorage.getItem("accessToken");
+            const storeId = new URLSearchParams(window.location.search).get("storeId");
+
+            fetch(`/api/orders/${menuId}`, {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                }
+            })
+                .then(res => {
+                    if (!res.ok) throw new Error("주문 실패");
+                    return res.json();
+                })
+                .then(() => {
+                    alert("주문이 완료되었습니다!");
+                    closeMenuDetailModal(); // 메뉴 상세 모달 닫기
+                })
+                .catch(err => {
+                    alert("주문 실패: " + err.message);
+                });
+        }
+    }
+
+    function openOrderListPage() {
+        const storeId = new URLSearchParams(window.location.search).get("storeId");
+        // 주문 목록 페이지로 이동 (새 페이지로)
+        window.open(`/order-list.html?storeId=${storeId}`, "_blank", "width=800,height=600");
+    }
+
+
+
+</script>
+
+</body>
+</html>
