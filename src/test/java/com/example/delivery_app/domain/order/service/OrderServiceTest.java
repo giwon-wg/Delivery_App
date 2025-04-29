@@ -239,7 +239,6 @@ class OrderServiceTest {
 
 		// forbidOrderIfHasRole & validateStoreAndMinPrice 메서드
 		when(userAuth.hasRole(UserRole.USER.name())).thenReturn(false);
-		when(userAuth.getId()).thenReturn(2L);
 
 		when(orderRepository.findByIdOrElseThrow(1L)).thenReturn(order);
 		when(order.getStatus()).thenReturn(OrderStatus.REQUESTED);
@@ -278,6 +277,7 @@ class OrderServiceTest {
 
 		// forbidOrderIfHasRole & validateStoreAndMinPrice 메서드
 		when(userAuth.hasRole(UserRole.OWNER.name())).thenReturn(false);
+		when(userAuth.hasRole(UserRole.ADMIN.name())).thenReturn(false);
 		when(userAuth.getId()).thenReturn(2L);
 
 		when(orderRepository.findByIdOrElseThrow(1L)).thenReturn(order);

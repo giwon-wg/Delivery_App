@@ -55,6 +55,7 @@ class OrderTest {
 			.deliveryTip(10)
 			.foodCategory("중식")
 			.minDeliveryPrice(2000)
+			.user(user)
 			.build());
 		Menu savedMenu = Menu.builder()
 			.store(store)
@@ -97,6 +98,7 @@ class OrderTest {
 			.deliveryTip(10)
 			.foodCategory("중식")
 			.minDeliveryPrice(2000)
+			.user(user)
 			.build());
 		Menu savedMenu = Menu.builder()
 			.store(store)
@@ -140,6 +142,7 @@ class OrderTest {
 			.deliveryTip(10)
 			.foodCategory("중식")
 			.minDeliveryPrice(2000)
+			.user(user)
 			.build());
 		Menu savedMenu = Menu.builder()
 			.store(store)

@@ -58,6 +58,7 @@ class OrderRepositoryTest {
 			.deliveryTip(10)
 			.foodCategory("중식")
 			.minDeliveryPrice(2000)
+			.user(owner)
 			.build();
 		userRepository.save(owner);
 		storeRepository.save(store);
@@ -122,6 +123,7 @@ class OrderRepositoryTest {
 			.deliveryTip(10)
 			.foodCategory("중식")
 			.minDeliveryPrice(2000)
+			.user(user)
 			.build();
 		userRepository.saveAll(List.of(admin, user));
 		storeRepository.save(store);
@@ -212,6 +214,7 @@ class OrderRepositoryTest {
 			.deliveryTip(10)
 			.foodCategory("중식")
 			.minDeliveryPrice(2000)
+			.user(user)
 			.build();
 		userRepository.save(user);
 		storeRepository.save(store);
